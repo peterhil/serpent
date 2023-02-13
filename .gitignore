@@ -1,0 +1,29 @@
+# Python
+*.egg-info/
+*.pyc
+MANIFEST
+build/
+dist/
+src/
+
+# Test tools
+*,cover
+*.cover
+.cache/
+.coverage
+.figleaf
+.tox/
+
+# Emacs
+*~
+.\#*
+TAGS
+\#*\#
+
+# Environments
+.direnv/
+venv/
+
+# System specific cruft
+*.core
+.DS_Store
