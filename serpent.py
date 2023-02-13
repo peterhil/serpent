@@ -3,11 +3,13 @@ import numpy as np
 import sys
 
 from collections import Counter
+from itertools import combinations
 from more_itertools import chunked
 from pprint import pp
 from scipy.fft import fft
 
 
+COUNT_LIMIT = 32
 LINE_FEED = False
 PLOT = False
 
@@ -26,6 +28,7 @@ chars64= list(char_range('A', 'Z')) + \
 	(['+', '\n'] if LINE_FEED else ['+', '.'])
 
 alphabet64 = dict({(i, char) for (i, char) in enumerate(chars64)})
+combos = np.array(list(map(lambda cm: ''.join(cm), combinations(chars64, 2))))
 
 
 def decode(dna):
@@ -79,7 +82,7 @@ if __name__ == '__main__':
 
 	counts = Counter(codons)
 	print("Counts:")
-	pp(dict(counts.most_common()))
+	pp(dict(counts.most_common()[:COUNT_LIMIT]))
 
 	decoded = decode(codons)
 	print("Decoded:\n", decoded)
@@ -92,4 +95,15 @@ if __name__ == '__main__':
 
 	counts = Counter(encoded)
 	print("Counts:")
-	pp(dict(counts.most_common()))
+	pp(dict(counts.most_common()[:COUNT_LIMIT]))
+
+	# Bigrams:
+	ch_list = list(chunked(encoded, 2))
+	ch = np.array(list(map(lambda c: ''.join(c), ch_list)), dtype='U2')
+	counts = Counter(ch)
+	print("Bigrams:\m")
+	pp(dict(counts.most_common()[:COUNT_LIMIT]))
+
+	print("Bigrams not appearing:\n")
+	bigrams = combos[[cmb not in ch for cmb in combos]]
+	print(bigrams)
