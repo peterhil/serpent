@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import re
 import sys
 
 from collections import Counter
@@ -7,6 +8,7 @@ from itertools import combinations
 from more_itertools import chunked
 from pprint import pp
 from scipy.fft import fft
+from warnings import warn
 
 
 COUNT_LIMIT = 32
@@ -52,6 +54,18 @@ def pad_to_multiple(data, divisor=3, fill='A'):
 	return data
 
 
+def clean_non_dna(data):
+	"""Clean up non DNA or RNA data. Warns if the data is in multiple parts."""
+	cleaned = ''.join(re.sub(r'[^CGAT]{6,}', '', data).split('\n'))
+	residual = re.sub(r'[CGAT]{6,}', '', cleaned)
+
+	if len(residual) > 1:
+		print('Residual characters:', residual)
+		raise UserWarning(f"Data has { len(residual) } extra characters, please check it carefully!")
+
+	return cleaned
+
+
 def get_codons(data):
 	"""Get codons from data as Numpy array"""
 	codons_list = list(chunked(data, 3, strict=True))
@@ -75,6 +89,7 @@ if __name__ == '__main__':
 	with open(fn) as f:
 		data = f.read().strip()
 
+	data = clean_non_dna(data)
 	data = pad_to_multiple(data, 3, 'A')
 
 	codons = get_codons(data)
