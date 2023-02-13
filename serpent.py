@@ -11,7 +11,7 @@ from scipy.fft import fft
 
 COUNT_LIMIT = 32
 LINE_FEED = False
-PLOT = False
+PLOT = True
 
 
 def char_range(c1, c2):
@@ -85,8 +85,13 @@ if __name__ == '__main__':
 	pp(dict(counts.most_common()[:COUNT_LIMIT]))
 
 	decoded = decode(codons)
-	print("Decoded:\n", decoded)
+	print("Decoded:\n", len(np.unique(decoded)), decoded)
 	if PLOT:
+		counts = Counter(decoded)
+		[index, count] = list(np.array(sorted(list(counts.items()))).T)
+		plt.interactive(True)
+		plt.plot(np.array(index + 1), count)
+		plt.show()
 		ft = np.abs(fft(decoded, n=64, norm='ortho'))
 		plot(ft)
 
