@@ -181,18 +181,18 @@ if __name__ == '__main__':
 	decoded = decode(codons)
 	print("Decoded:\n", len(np.unique(decoded)), decoded)
 	if PLOT:
-		counts = Counter(decoded)
-		[index, count] = list(np.array(sorted(list(counts.items()))).T)
 		plt.interactive(True)
-		plt.plot(index, count)
 		plt.show()
 
-		ft = np.abs(fft(decoded, n=64, norm='ortho'))
-		plot(ft)
+		# counts = Counter(decoded)
+		# [index, count] = list(np.array(sorted(list(counts.items()))).T)
+		# plt.plot(index, count)
+
+		# ft = np.abs(fft(decoded, n=64, norm='ortho'))
+		# plot(ft)
 
 		# TODO Make subcommand
-		# plot_sequence_counts(decoded, 4)
-
+		plot_sequence_counts(decoded, 4)
 
 	encoded = ''.join([alphabet64.get(c, ' ') for c in decoded])
 	print("Encoded:\n", encoded)
@@ -211,3 +211,19 @@ if __name__ == '__main__':
 	print("Bigrams not appearing:\n")
 	bigrams = combos[[cmb not in ch for cmb in combos]]
 	print(bigrams)
+
+	# Print codon sequences
+	print("Codon sequences:\n")
+	seq_length = 4
+	[index, count] = count_sorted(codon_sequences(decoded, seq_length))
+	twice_i = index[count == 2]
+	codes = list(map(lambda a: number_to_digits(a), twice_i))
+	b64_codes = list(map(lambda a: ''.join(list(map(alphabet64.get, number_to_digits(a)))), twice_i))
+	print(b64_codes)
+
+	catg = np.array(list(map(
+		lambda a: ''.join(list(map(bases_inverse.get, pad_to_right(number_to_digits(a, 4), 3, 0)))),
+		np.array(codes).flatten()
+	)))
+
+	print(catg.reshape(int(len(catg) / seq_length), seq_length))
