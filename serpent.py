@@ -186,14 +186,7 @@ def show_image(decoded, width=64, fill=0, mode='RGB'):
 	return img
 
 
-if __name__ == '__main__':
-	args = sys.argv
-	if len(args) < 2: print('Give a filename for DNA data.')
-
-	fn = args[1]
-	with open(fn) as f:
-		data = f.read().strip()
-
+def main(data):
 	data = clean_non_dna(data)
 	data = pad_to_left(data, 3, 'A')
 
@@ -257,3 +250,14 @@ if __name__ == '__main__':
 	print(catg)
 
 	show_image(decoded, width=108, fill=63, mode='RGB')
+
+
+if __name__ == '__main__':
+	args = sys.argv
+	if len(args) < 2: print('Give a filename for DNA data.')
+
+	fn = args[1]
+	with open(fn) as f:
+		data = f.read().strip()
+
+	main(data)
