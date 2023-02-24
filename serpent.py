@@ -47,24 +47,29 @@ def decode_codon(codon):
 	return result
 
 
-def pad_to_left(data, divisor=3, fill='A'):
-	"""Pad data to a length divisible by three by inserting fill character"""
+def get_padding(data, divisor=3, fill='A'):
+	"""Return suitable padding in order to pad the data into a length evenly divisible by the divisor."""
+	padding = []
 	rem = len(data) % divisor
 	if rem != 0:
 		pad_length = divisor - rem
-		data = data + pad_length * fill
+		padding = pad_length * [fill]
 
-	return data
+	return padding
+
+
+def pad_to_left(data, divisor=3, fill='A'):
+	"""Pad data to a length divisible by the divisor with the fill characters on the end"""
+	padding = get_padding(data, divisor, fill)
+
+	return list(data) + padding
 
 
 def pad_to_right(data, divisor=3, fill='A'):
-	"""Pad data to a length divisible by three by inserting fill character"""
-	rem = len(data) % divisor
-	if rem != 0:
-		pad_length = divisor - rem
-		data = pad_length * fill + data
+	"""Pad data to a length divisible by the divisor with the fill character on the beginning"""
+	padding = get_padding(data, divisor, fill)
 
-	return data
+	return padding + list(data)
 
 
 def clean_non_dna(data):
@@ -116,6 +121,45 @@ def plot(data):
 	return plt.plot(data)
 
 
+def codon_sequences(decoded, n=4, fill=0):
+	"""Chunk data into length N sequences of codons.
+	Count the occurences of different kmers as numbers between 0..64**n.
+
+	Return index and counts.
+	"""
+	padded = pad_to_left(list(decoded), n, fill)
+	sequences = list(chunked(padded, n, strict=True))
+	numbers = np.apply_along_axis(digits_to_number, 1, sequences)
+
+	return numbers
+
+
+def count_sorted(items):
+	counts = Counter(items)
+	return np.array(list(sorted(counts.items()))).T
+
+
+def plot_sequence_counts(decoded, n=4):
+	numbers = codon_sequences(decoded, n)
+	[index, count] = count_sorted(numbers)
+
+	plt.plot(index, count)
+
+	return [index, count]
+
+
+def plot_sequence_repeats(decoded, n=4):
+	numbers = codon_sequences(decoded, n)
+	[index, count] = count_sorted(numbers)
+
+	more_than_one_i = index[count > 1]
+	more_than_one_c = count[count > 1]
+
+	plt.plot(more_than_one_i, more_than_one_c)
+
+	return [more_than_one_i, more_than_one_c]
+
+
 if __name__ == '__main__':
 	args = sys.argv
 	if len(args) < 2: print('Give a filename for DNA data.')
@@ -140,10 +184,15 @@ if __name__ == '__main__':
 		counts = Counter(decoded)
 		[index, count] = list(np.array(sorted(list(counts.items()))).T)
 		plt.interactive(True)
-		plt.plot(np.array(index + 1), count)
+		plt.plot(index, count)
 		plt.show()
+
 		ft = np.abs(fft(decoded, n=64, norm='ortho'))
 		plot(ft)
+
+		# TODO Make subcommand
+		# plot_sequence_counts(decoded, 4)
+
 
 	encoded = ''.join([alphabet64.get(c, ' ') for c in decoded])
 	print("Encoded:\n", encoded)
