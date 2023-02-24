@@ -160,15 +160,19 @@ def plot_sequence_repeats(decoded, n=4):
 	return [more_than_one_i, more_than_one_c]
 
 
-def show_image(decoded, width=64, fill=0):
+def show_image(decoded, width=64, fill=0, mode='RGB'):
 	padded = np.array(pad_to_left(decoded, 3 * width, fill))
 	norm = padded / np.amax(padded)
+	channels = len(mode)
 
-	rows = len(norm) / (3 * width)
+	rows = len(norm) / (channels * width)
 	height = int(np.floor(rows))
 
-	rgb = norm.reshape(height, width, 3)
-	img = Image.fromarray(np.uint8(rgb * 255), mode='RGB')
+	if channels > 1:
+		rgb = norm.reshape(height, width, channels)
+	else:
+		rgb = norm.reshape(height, width)
+	img = Image.fromarray(np.uint8(rgb * 255), mode=mode)
 	img.show()
 
 	return img
@@ -242,4 +246,4 @@ if __name__ == '__main__':
 
 	print(catg.reshape(int(len(catg) / seq_length), seq_length))
 
-	show_image(decoded, width=64, fill=0)
+	show_image(decoded, width=108, fill=63, mode='RGB')
