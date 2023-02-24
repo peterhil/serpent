@@ -34,6 +34,10 @@ alphabet64 = dict({(i, char) for (i, char) in enumerate(chars64)})
 combos = np.array(list(map(lambda cm: ''.join(cm), combinations(chars64, 2))))
 
 
+def normalise(array):
+	return array / np.amax(array)
+
+
 def decode(dna):
 	"""Returns dna’s codons encoded into numbers 0..63"""
 	return np.array(list(map(decode_codon, dna)))
