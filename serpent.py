@@ -255,9 +255,17 @@ def main(data):
 if __name__ == '__main__':
 	args = sys.argv
 	if len(args) < 2: print('Give a filename for DNA data.')
-
 	fn = args[1]
-	with open(fn) as f:
-		data = f.read().strip()
+
+	with open(fn, 'r', encoding='UTF-8') as file:
+		lines = [line.rstrip() for line in file]
+		# TODO Read and process files line by line
+		# while (line := file.readline().rstrip()):
+		# 	print(line)
+
+	# TODO Use Regexp to extract data sequences OR
+	# TODO Create iterative FASTA sequence reader OR
+	# TODO Create a TUI to select a sequence or sequences
+	data = '\n'.join([line for line in lines if line[0] != '>'])
 
 	main(data)
