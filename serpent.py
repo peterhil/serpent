@@ -239,15 +239,17 @@ if __name__ == '__main__':
 	seq_length = 4
 	[index, count] = count_sorted(codon_sequences(decoded, seq_length))
 	twice_i = index[count == 2]
-	codes = list(map(lambda a: number_to_digits(a), twice_i))
+	codes = np.array(list(map(lambda a: pad_to_right(number_to_digits(a, 64), seq_length, 0), twice_i)))
 	b64_codes = list(map(lambda a: ''.join(list(map(alphabet64.get, number_to_digits(a)))), twice_i))
 	print(b64_codes)
 
 	catg = np.array(list(map(
 		lambda a: ''.join(list(map(bases_inverse.get, pad_to_right(number_to_digits(a, 4), 3, 0)))),
-		np.array(codes).flatten()
+		codes.flatten()
 	)))
 
-	print(catg.reshape(int(len(catg) / seq_length), seq_length))
+	catg = catg.reshape(int(len(catg) / seq_length), seq_length)
+	catg = np.array(list(map(lambda row: ''.join(row), catg)))
+	print(catg)
 
 	show_image(decoded, width=108, fill=63, mode='RGB')
