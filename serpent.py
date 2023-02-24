@@ -3,13 +3,13 @@ import numpy as np
 import re
 import sys
 
+from PIL import Image
 from collections import Counter
 from itertools import combinations
 from more_itertools import chunked
 from pprint import pp
 from scipy.fft import fft
 from warnings import warn
-
 
 COUNT_LIMIT = 32
 LINE_FEED = False
@@ -160,6 +160,20 @@ def plot_sequence_repeats(decoded, n=4):
 	return [more_than_one_i, more_than_one_c]
 
 
+def show_image(decoded, width=64, fill=0):
+	padded = np.array(pad_to_left(decoded, 3 * width, fill))
+	norm = padded / np.amax(padded)
+
+	rows = len(norm) / (3 * width)
+	height = int(np.floor(rows))
+
+	rgb = norm.reshape(height, width, 3)
+	img = Image.fromarray(np.uint8(rgb * 255), mode='RGB')
+	img.show()
+
+	return img
+
+
 if __name__ == '__main__':
 	args = sys.argv
 	if len(args) < 2: print('Give a filename for DNA data.')
@@ -227,3 +241,5 @@ if __name__ == '__main__':
 	)))
 
 	print(catg.reshape(int(len(catg) / seq_length), seq_length))
+
+	show_image(decoded, width=64, fill=0)
