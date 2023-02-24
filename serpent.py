@@ -23,6 +23,7 @@ def char_range(c1, c2):
 
 
 bases = {'A': 0b00, 'C': 0b01, 'G': 0b10, 'T': 0b11, 'U': 0b11}
+bases_inverse = {0: 'A', 1: 'C', 2: 'G', 3: 'T'}
 
 chars64= list(char_range('A', 'Z')) + \
 	list(char_range('a', 'z')) + \
@@ -46,10 +47,22 @@ def decode_codon(codon):
 	return result
 
 
-def pad_to_multiple(data, divisor=3, fill='A'):
+def pad_to_left(data, divisor=3, fill='A'):
 	"""Pad data to a length divisible by three by inserting fill character"""
-	pad_length = divisor - len(data) % divisor
-	data = data + pad_length * fill
+	rem = len(data) % divisor
+	if rem != 0:
+		pad_length = divisor - rem
+		data = data + pad_length * fill
+
+	return data
+
+
+def pad_to_right(data, divisor=3, fill='A'):
+	"""Pad data to a length divisible by three by inserting fill character"""
+	rem = len(data) % divisor
+	if rem != 0:
+		pad_length = divisor - rem
+		data = pad_length * fill + data
 
 	return data
 
@@ -61,7 +74,7 @@ def clean_non_dna(data):
 
 	if len(residual) > 1:
 		print('Residual characters:', residual)
-		raise UserWarning(f"Data has { len(residual) } extra characters, please check it carefully!")
+		# raise UserWarning(f"Data has { len(residual) } extra characters, please check it carefully!")
 
 	return cleaned
 
@@ -72,6 +85,28 @@ def get_codons(data):
 	codons = np.array(list(map(lambda c: ''.join(c), codons_list)), dtype='U3')
 
 	return codons
+
+
+def digits_to_number(seq, base=64):
+	value = 0
+	for i, n in enumerate(reversed(seq)):
+		value = value + base ** i * n
+
+	return value
+
+
+def number_to_digits(number, base=64):
+	result = []
+	rem = number
+
+	while True:
+		[mul, rem] = divmod(rem, base)
+		result.append(rem)
+		rem = mul
+		if mul == 0:
+			break
+
+	return list(reversed(result))
 
 
 def plot(data):
@@ -90,7 +125,7 @@ if __name__ == '__main__':
 		data = f.read().strip()
 
 	data = clean_non_dna(data)
-	data = pad_to_multiple(data, 3, 'A')
+	data = pad_to_left(data, 3, 'A')
 
 	codons = get_codons(data)
 	print("Codons:\n", codons)
