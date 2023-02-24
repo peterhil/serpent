@@ -22,6 +22,14 @@ def char_range(c1, c2):
 		yield chr(c)
 
 
+def map_array(fn, arr, dtype=None):
+	return np.array(list(map(fn, arr)), dtype=dtype)
+
+
+def normalise(array):
+	return array / np.amax(array)
+
+
 bases = {'A': 0b00, 'C': 0b01, 'G': 0b10, 'T': 0b11, 'U': 0b11}
 bases_inverse = {0: 'A', 1: 'C', 2: 'G', 3: 'T'}
 
@@ -31,16 +39,12 @@ chars64= list(char_range('A', 'Z')) + \
 	(['+', '\n'] if LINE_FEED else ['+', '.'])
 
 alphabet64 = dict({(i, char) for (i, char) in enumerate(chars64)})
-combos = np.array(list(map(lambda cm: ''.join(cm), combinations(chars64, 2))))
-
-
-def normalise(array):
-	return array / np.amax(array)
+combos = map_array(lambda cm: ''.join(cm), combinations(chars64, 2))
 
 
 def decode(dna):
 	"""Returns dna’s codons encoded into numbers 0..63"""
-	return np.array(list(map(decode_codon, dna)))
+	return map_array(decode_codon, dna)
 
 
 def decode_codon(codon):
@@ -91,7 +95,7 @@ def clean_non_dna(data):
 def get_codons(data):
 	"""Get codons from data as Numpy array"""
 	codons_list = list(chunked(data, 3, strict=True))
-	codons = np.array(list(map(lambda c: ''.join(c), codons_list)), dtype='U3')
+	codons = map_array(lambda c: ''.join(c), codons_list, dtype='U3')
 
 	return codons
 
@@ -225,7 +229,7 @@ if __name__ == '__main__':
 
 	# Bigrams:
 	ch_list = list(chunked(encoded, 2))
-	ch = np.array(list(map(lambda c: ''.join(c), ch_list)), dtype='U2')
+	ch = map_array(lambda c: ''.join(c), ch_list, dtype='U2')
 	counts = Counter(ch)
 	print("Bigrams:\m")
 	pp(dict(counts.most_common()[:COUNT_LIMIT]))
@@ -239,17 +243,17 @@ if __name__ == '__main__':
 	seq_length = 4
 	[index, count] = count_sorted(codon_sequences(decoded, seq_length))
 	twice_i = index[count == 2]
-	codes = np.array(list(map(lambda a: pad_to_right(number_to_digits(a, 64), seq_length, 0), twice_i)))
-	b64_codes = list(map(lambda a: ''.join(list(map(alphabet64.get, number_to_digits(a)))), twice_i))
+	codes = map_array(lambda a: pad_to_right(number_to_digits(a, 64), seq_length, 0), twice_i)
+	b64_codes = map_array(lambda a: ''.join(list(map(alphabet64.get, number_to_digits(a)))), twice_i)
 	print(b64_codes)
 
-	catg = np.array(list(map(
+	catg = map_array(
 		lambda a: ''.join(list(map(bases_inverse.get, pad_to_right(number_to_digits(a, 4), 3, 0)))),
 		codes.flatten()
-	)))
+	)
 
 	catg = catg.reshape(int(len(catg) / seq_length), seq_length)
-	catg = np.array(list(map(lambda row: ''.join(row), catg)))
+	catg = map_array(lambda row: ''.join(row), catg)
 	print(catg)
 
 	show_image(decoded, width=108, fill=63, mode='RGB')
