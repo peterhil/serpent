@@ -157,7 +157,7 @@ def plot_sequence_counts(decoded, n=4, *args, **kwargs):
 
 def show_image(decoded, width=64, fill=0, mode='RGB'):
 	padded = np.array(pad_to_left(decoded, 3 * width, fill))
-	norm = padded / np.amax(padded)
+	norm = normalise(padded)
 	channels = len(mode)
 
 	rows = len(norm) / (channels * width)
