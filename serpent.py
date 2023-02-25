@@ -224,7 +224,7 @@ def main(data):
 	ch_list = list(chunked(encoded, 2))
 	ch = map_array(lambda c: ''.join(c), ch_list, dtype='U2')
 	counts = Counter(ch)
-	print("Bigrams:\m")
+	print("Bigrams:\n")
 	pp(dict(counts.most_common()[:COUNT_LIMIT]))
 
 	print("Bigrams not appearing:\n")
