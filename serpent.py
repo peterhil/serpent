@@ -180,7 +180,7 @@ def show_image(decoded, width=64, fill=0, mode='RGB'):
 	return img
 
 
-def main(data, fn):
+def main(data, fn=None):
 	data = clean_non_dna(data)
 	data = pad_to_left(data, 3, 'A')
 
@@ -210,8 +210,11 @@ def main(data, fn):
 
 	encoded = ''.join([alphabet64.get(c, ' ') for c in decoded])
 	print("Encoded:\n", encoded)
-	with open(fn + '.ser64', 'w', encoding='UTF-8') as file:
-		file.write(''.join(map_array(str, encoded)))
+
+	# Write out base64 encoded data
+	if fn:
+		with open(fn + '.ser64', 'w', encoding='UTF-8') as file:
+			file.write(''.join(map_array(str, encoded)))
 
 	counts = Counter(encoded)
 	print("Counts:")
@@ -300,7 +303,8 @@ if __name__ == '__main__':
 	args = sys.argv
 	if len(args) < 2: print('Give a filename for DNA data.')
 	fn = args[1]
-	amino = args[2] == '-a' if len(args) >= 3 else False
+	amino = '-a' in args
+	writeout = '-o' in args
 
 	data = []
 	description_count = 0
@@ -317,7 +321,9 @@ if __name__ == '__main__':
 					data.append(token.value)
 
 	data = '\n'.join(data)
-	decoded = main(data, fn)
+
+	outfile = fn if writeout else None
+	decoded = main(data, fn=outfile)
 
 	if description_count >= 2:
 		print('Warning: File has more than one FASTA sequence!')
