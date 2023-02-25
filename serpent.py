@@ -149,11 +149,15 @@ def count_sorted(items):
 	return np.array(list(sorted(counts.items()))).T
 
 
-def plot_sequence_counts(decoded, n=4):
+def plot_sequence_counts(decoded, n=4, *args, **kwargs):
 	numbers = codon_sequences(decoded, n)
 	[index, count] = count_sorted(numbers)
 
-	plt.plot(index, count)
+	size = 64 ** n
+	data = np.zeros(size, dtype=np.uint64)
+	data[index] = count
+
+	plt.plot(np.arange(size), data, *args, **kwargs)
 
 	return [index, count]
 
@@ -213,7 +217,8 @@ def main(data):
 		# plot(ft)
 
 		# TODO Make subcommand
-		plot_sequence_counts(decoded, 4)
+		seq_length = 1
+		plot_sequence_counts(decoded, seq_length)
 
 	encoded = ''.join([alphabet64.get(c, ' ') for c in decoded])
 	print("Encoded:\n", encoded)
@@ -251,7 +256,7 @@ def main(data):
 	catg = map_array(lambda row: ''.join(row), catg)
 	print(catg)
 
-	show_image(decoded, width=108, fill=63, mode='RGB')
+	# show_image(decoded, width=108, fill=63, mode='RGB')
 
 	return decoded
 
