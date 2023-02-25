@@ -246,7 +246,7 @@ def main(data, fn):
 	catg = map_array(lambda row: ''.join(row), catg)
 	print(catg)
 
-	show_image(decoded, width=192, fill=63, mode='RGB')
+	show_image(decoded, width=64, fill=63, mode='RGB')
 
 	return decoded
 
