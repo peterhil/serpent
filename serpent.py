@@ -1,16 +1,18 @@
-import matplotlib.pyplot as plt
-import numpy as np
 import re
 import sys
 
-from PIL import Image
+import matplotlib.pyplot as plt
+import numpy as np
+
 from collections import Counter
 from itertools import combinations
-from more_itertools import chunked
 from pprint import pp
-from scipy.fft import fft
 from typing import NamedTuple
 from warnings import warn
+
+from PIL import Image
+from more_itertools import chunked
+# from scipy.fft import fft
 
 
 COUNT_LIMIT = 32
