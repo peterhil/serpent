@@ -124,13 +124,6 @@ def number_to_digits(number, base=64):
 	return list(reversed(result))
 
 
-def plot(data):
-	plt.interactive(True)
-	plt.show()
-
-	return plt.plot(data)
-
-
 def codon_sequences(decoded, n=4, fill=0):
 	"""Chunk data into length N sequences of codons.
 	Count the occurences of different kmers as numbers between 0..64**n.
