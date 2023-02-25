@@ -162,18 +162,6 @@ def plot_sequence_counts(decoded, n=4, *args, **kwargs):
 	return [index, count]
 
 
-def plot_sequence_repeats(decoded, n=4):
-	numbers = codon_sequences(decoded, n)
-	[index, count] = count_sorted(numbers)
-
-	more_than_one_i = index[count > 1]
-	more_than_one_c = count[count > 1]
-
-	plt.plot(more_than_one_i, more_than_one_c)
-
-	return [more_than_one_i, more_than_one_c]
-
-
 def show_image(decoded, width=64, fill=0, mode='RGB'):
 	padded = np.array(pad_to_left(decoded, 3 * width, fill))
 	norm = padded / np.amax(padded)
