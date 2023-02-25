@@ -9,7 +9,9 @@ from itertools import combinations
 from more_itertools import chunked
 from pprint import pp
 from scipy.fft import fft
+from typing import NamedTuple
 from warnings import warn
+
 
 COUNT_LIMIT = 32
 LINE_FEED = False
@@ -252,20 +254,73 @@ def main(data):
 	show_image(decoded, width=108, fill=63, mode='RGB')
 
 
+class Token(NamedTuple):
+    type: str
+    value: str
+    line: int
+    column: int
+
+
+DATA_TOKENS = ['AMINO', 'BASE', 'DEGENERATE']
+
+
+def tokenize(data, amino=False):
+	"""Iterative FASTA sequence reader.
+	See: https://docs.python.org/3/library/re.html#writing-a-tokenizer
+	"""
+	BASE = r'[ACGTU\n]'
+	token_specification = [
+		('DESCRIPTION',	 r'>[^\n]*'),
+		('BASE', BASE + r'+'),
+		('DEGENERATE', r'[WSMKRYBDHVNZ-]+?'),  # https://en.wikipedia.org/wiki/Nucleic_acid_sequence#Notation
+		('NEWLINE',	 r'\n'),		   # Line endings
+		('SKIP',	 r'[ \t]+'),	   # Skip over spaces and tabs
+		('MISMATCH', r'.'),			   # Any other character
+	]
+	if amino:
+		# https://en.wikipedia.org/wiki/Proteinogenic_amino_acid
+		token_specification.insert(1, ('AMINO', r'[ARNDCQEGHILKMFPSTWYVUO]+'))
+
+	tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
+	line_num = 1
+	line_start = 0
+	for mo in re.finditer(tok_regex, data):
+		kind = mo.lastgroup
+		value = mo.group()
+		column = mo.start() - line_start
+		if kind == 'NEWLINE':
+			line_start = mo.end()
+			line_num += 1
+			continue
+		elif kind == 'SKIP':
+			continue
+		elif kind == 'MISMATCH':
+			raise RuntimeError(f'{value!r} unexpected on line {line_num}')
+		yield Token(kind, value, line_num, column)
+
+
 if __name__ == '__main__':
 	args = sys.argv
 	if len(args) < 2: print('Give a filename for DNA data.')
 	fn = args[1]
+	amino = args[2] == '-a' if len(args) >= 3 else False
 
+	data = []
+	description_count = 0
 	with open(fn, 'r', encoding='UTF-8') as file:
-		lines = [line.rstrip() for line in file]
-		# TODO Read and process files line by line
-		# while (line := file.readline().rstrip()):
-		# 	print(line)
+		while (line := file.readline().rstrip()) and description_count < 2:
+			for token in tokenize(line, amino):
+				# TODO Create a TUI or add CLI option to select sequences or
+				# otherwise handle multiple sequences
+				if token.type == 'DESCRIPTION':
+					description_count += 1
+				if description_count == 2:
+					break
+				if token.type in DATA_TOKENS:
+					data.append(token.value)
 
-	# TODO Use Regexp to extract data sequences OR
-	# TODO Create iterative FASTA sequence reader OR
-	# TODO Create a TUI to select a sequence or sequences
-	data = '\n'.join([line for line in lines if line[0] != '>'])
-
+	data = '\n'.join(data)
 	main(data)
+
+	if description_count >= 2:
+		print('Warning: File has more than one FASTA sequence!')
