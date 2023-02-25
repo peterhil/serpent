@@ -253,6 +253,8 @@ def main(data):
 
 	show_image(decoded, width=108, fill=63, mode='RGB')
 
+	return decoded
+
 
 class Token(NamedTuple):
     type: str
@@ -320,7 +322,7 @@ if __name__ == '__main__':
 					data.append(token.value)
 
 	data = '\n'.join(data)
-	main(data)
+	decoded = main(data)
 
 	if description_count >= 2:
 		print('Warning: File has more than one FASTA sequence!')
