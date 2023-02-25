@@ -192,8 +192,6 @@ def main(data, fn):
 	pp(dict(counts.most_common()[:COUNT_LIMIT]))
 
 	decoded = decode(codons)
-	with open(fn + '.ser64', 'w', encoding='UTF-8') as file:
-		file.write(''.join(map_array(str, decoded)))
 	print("Decoded:\n", len(np.unique(decoded)), decoded)
 	if PLOT:
 		plt.interactive(True)
@@ -212,6 +210,8 @@ def main(data, fn):
 
 	encoded = ''.join([alphabet64.get(c, ' ') for c in decoded])
 	print("Encoded:\n", encoded)
+	with open(fn + '.ser64', 'w', encoding='UTF-8') as file:
+		file.write(''.join(map_array(str, encoded)))
 
 	counts = Counter(encoded)
 	print("Counts:")
