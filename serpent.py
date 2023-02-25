@@ -180,7 +180,7 @@ def show_image(decoded, width=64, fill=0, mode='RGB'):
 	return img
 
 
-def main(data):
+def main(data, fn):
 	data = clean_non_dna(data)
 	data = pad_to_left(data, 3, 'A')
 
@@ -192,6 +192,8 @@ def main(data):
 	pp(dict(counts.most_common()[:COUNT_LIMIT]))
 
 	decoded = decode(codons)
+	with open(fn + '.ser64', 'w', encoding='UTF-8') as file:
+		file.write(''.join(map_array(str, decoded)))
 	print("Decoded:\n", len(np.unique(decoded)), decoded)
 	if PLOT:
 		plt.interactive(True)
@@ -244,7 +246,7 @@ def main(data):
 	catg = map_array(lambda row: ''.join(row), catg)
 	print(catg)
 
-	# show_image(decoded, width=108, fill=63, mode='RGB')
+	show_image(decoded, width=192, fill=63, mode='RGB')
 
 	return decoded
 
@@ -315,7 +317,7 @@ if __name__ == '__main__':
 					data.append(token.value)
 
 	data = '\n'.join(data)
-	decoded = main(data)
+	decoded = main(data, fn)
 
 	if description_count >= 2:
 		print('Warning: File has more than one FASTA sequence!')
