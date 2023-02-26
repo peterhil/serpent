@@ -12,6 +12,7 @@ from warnings import warn
 
 from PIL import Image
 from more_itertools import chunked
+
 # from scipy.fft import fft
 
 
@@ -22,7 +23,7 @@ PLOT = True
 
 def char_range(c1, c2):
 	"""Generates the characters from `c1` to `c2`, inclusive."""
-	for c in range(ord(c1), ord(c2)+1):
+	for c in range(ord(c1), ord(c2) + 1):
 		yield chr(c)
 
 
@@ -34,16 +35,18 @@ def normalise(array):
 	return array / np.amax(array)
 
 
-bases = {'A': 0b00, 'C': 0b01, 'G': 0b10, 'T': 0b11, 'U': 0b11}
-bases_inverse = {0: 'A', 1: 'C', 2: 'G', 3: 'T'}
+bases = {"A": 0b00, "C": 0b01, "G": 0b10, "T": 0b11, "U": 0b11}
+bases_inverse = {0: "A", 1: "C", 2: "G", 3: "T"}
 
-chars64= list(char_range('A', 'Z')) + \
-	list(char_range('a', 'z')) + \
-	list(char_range('0', '9')) + \
-	(['+', '\n'] if LINE_FEED else ['+', '.'])
+chars64 = (
+	list(char_range("A", "Z"))
+	+ list(char_range("a", "z"))
+	+ list(char_range("0", "9"))
+	+ (["+", "\n"] if LINE_FEED else ["+", "."])
+)
 
 alphabet64 = dict({(i, char) for (i, char) in enumerate(chars64)})
-combos = map_array(lambda cm: ''.join(cm), combinations(chars64, 2))
+combos = map_array(lambda cm: "".join(cm), combinations(chars64, 2))
 
 
 def decode(dna):
@@ -54,12 +57,12 @@ def decode(dna):
 def decode_codon(codon):
 	result = 0
 	for num, char in enumerate(reversed(codon)):
-		result += bases.get(char, 0) << num * 2 # Throw IndexError by using []?
+		result += bases.get(char, 0) << num * 2  # Throw IndexError by using []?
 
 	return result
 
 
-def get_padding(data, divisor=3, fill='A'):
+def get_padding(data, divisor=3, fill="A"):
 	"""Return suitable padding in order to pad the data into a length evenly divisible by the divisor."""
 	padding = []
 	rem = len(data) % divisor
@@ -70,14 +73,14 @@ def get_padding(data, divisor=3, fill='A'):
 	return padding
 
 
-def pad_to_left(data, divisor=3, fill='A'):
+def pad_to_left(data, divisor=3, fill="A"):
 	"""Pad data to a length divisible by the divisor with the fill characters on the end"""
 	padding = get_padding(data, divisor, fill)
 
 	return list(data) + padding
 
 
-def pad_to_right(data, divisor=3, fill='A'):
+def pad_to_right(data, divisor=3, fill="A"):
 	"""Pad data to a length divisible by the divisor with the fill character on the beginning"""
 	padding = get_padding(data, divisor, fill)
 
@@ -86,11 +89,11 @@ def pad_to_right(data, divisor=3, fill='A'):
 
 def clean_non_dna(data):
 	"""Clean up non DNA or RNA data. Warns if the data is in multiple parts."""
-	cleaned = ''.join(re.sub(r'[^CGAT]{6,}', '', data).split('\n'))
-	residual = re.sub(r'[CGAT]{6,}', '', cleaned)
+	cleaned = "".join(re.sub(r"[^CGAT]{6,}", "", data).split("\n"))
+	residual = re.sub(r"[CGAT]{6,}", "", cleaned)
 
 	if len(residual) > 1:
-		print('Residual characters:', residual)
+		print("Residual characters:", residual)
 		# raise UserWarning(f"Data has { len(residual) } extra characters, please check it carefully!")
 
 	return cleaned
@@ -99,7 +102,7 @@ def clean_non_dna(data):
 def get_codons(data):
 	"""Get codons from data as Numpy array"""
 	codons_list = list(chunked(data, 3, strict=True))
-	codons = map_array(lambda c: ''.join(c), codons_list, dtype='U3')
+	codons = map_array(lambda c: "".join(c), codons_list, dtype="U3")
 
 	return codons
 
@@ -107,7 +110,7 @@ def get_codons(data):
 def digits_to_number(seq, base=64):
 	value = 0
 	for i, n in enumerate(reversed(seq)):
-		value = value + base ** i * n
+		value = value + base**i * n
 
 	return value
 
@@ -148,7 +151,7 @@ def plot_sequence_counts(decoded, n=4, *args, **kwargs):
 	numbers = codon_sequences(decoded, n)
 	[index, count] = count_sorted(numbers)
 
-	size = 64 ** n
+	size = 64**n
 	data = np.zeros(size, dtype=np.uint64)
 	data[index] = count
 
@@ -157,7 +160,7 @@ def plot_sequence_counts(decoded, n=4, *args, **kwargs):
 	return [index, count]
 
 
-def show_image(decoded, width=64, fill=0, mode='RGB'):
+def show_image(decoded, width=64, fill=0, mode="RGB"):
 	padded = np.array(pad_to_left(decoded, 3 * width, fill))
 	norm = normalise(padded)
 	channels = len(mode)
@@ -177,7 +180,7 @@ def show_image(decoded, width=64, fill=0, mode='RGB'):
 
 def main(data, fn=None):
 	data = clean_non_dna(data)
-	data = pad_to_left(data, 3, 'A')
+	data = pad_to_left(data, 3, "A")
 
 	codons = get_codons(data)
 	print("Codons:\n", codons)
@@ -203,13 +206,13 @@ def main(data, fn=None):
 		seq_length = 1
 		plot_sequence_counts(decoded, seq_length)
 
-	encoded = ''.join([alphabet64.get(c, ' ') for c in decoded])
+	encoded = "".join([alphabet64.get(c, " ") for c in decoded])
 	print("Encoded:\n", encoded)
 
 	# Write out base64 encoded data
 	if fn:
-		with open(fn + '.ser64', 'w', encoding='UTF-8') as file:
-			file.write(''.join(map_array(str, encoded)))
+		with open(fn + ".ser64", "w", encoding="UTF-8") as file:
+			file.write("".join(map_array(str, encoded)))
 
 	counts = Counter(encoded)
 	print("Counts:")
@@ -217,7 +220,7 @@ def main(data, fn=None):
 
 	# Bigrams:
 	ch_list = list(chunked(encoded, 2))
-	ch = map_array(lambda c: ''.join(c), ch_list, dtype='U2')
+	ch = map_array(lambda c: "".join(c), ch_list, dtype="U2")
 	counts = Counter(ch)
 	print("Bigrams:\n")
 	pp(dict(counts.most_common()[:COUNT_LIMIT]))
@@ -231,20 +234,26 @@ def main(data, fn=None):
 	seq_length = 4
 	[index, count] = count_sorted(codon_sequences(decoded, seq_length))
 	twice_i = index[count == 2]
-	codes = map_array(lambda a: pad_to_right(number_to_digits(a, 64), seq_length, 0), twice_i)
-	b64_codes = map_array(lambda a: ''.join(list(map(alphabet64.get, number_to_digits(a)))), twice_i)
+	codes = map_array(
+		lambda a: pad_to_right(number_to_digits(a, 64), seq_length, 0), twice_i
+	)
+	b64_codes = map_array(
+		lambda a: "".join(list(map(alphabet64.get, number_to_digits(a)))), twice_i
+	)
 	print(b64_codes)
 
 	catg = map_array(
-		lambda a: ''.join(list(map(bases_inverse.get, pad_to_right(number_to_digits(a, 4), 3, 0)))),
-		codes.flatten()
+		lambda a: "".join(
+			list(map(bases_inverse.get, pad_to_right(number_to_digits(a, 4), 3, 0)))
+		),
+		codes.flatten(),
 	)
 
 	catg = catg.reshape(int(len(catg) / seq_length), seq_length)
-	catg = map_array(lambda row: ''.join(row), catg)
+	catg = map_array(lambda row: "".join(row), catg)
 	print(catg)
 
-	show_image(decoded, width=64, fill=63, mode='RGB')
+	show_image(decoded, width=64, fill=63, mode="RGB")
 
 	return decoded
 
@@ -256,69 +265,73 @@ class Token(NamedTuple):
 	column: int
 
 
-DATA_TOKENS = ['AMINO', 'BASE', 'DEGENERATE']
+DATA_TOKENS = ["AMINO", "BASE", "DEGENERATE"]
 
 
 def tokenize(data, amino=False):
 	"""Iterative FASTA sequence reader.
 	See: https://docs.python.org/3/library/re.html#writing-a-tokenizer
 	"""
-	BASE = r'[ACGTU\n]'
+	BASE = r"[ACGTU\n]"
 	token_specification = [
-		('DESCRIPTION',	 r'>[^\n]*'),
-		('BASE', BASE + r'+'),
-		('DEGENERATE', r'[WSMKRYBDHVNZ-]+?'),  # https://en.wikipedia.org/wiki/Nucleic_acid_sequence#Notation
-		('NEWLINE',	 r'\n'),		   # Line endings
-		('SKIP',	 r'[ \t]+'),	   # Skip over spaces and tabs
-		('MISMATCH', r'.'),			   # Any other character
+		("DESCRIPTION", r">[^\n]*"),
+		("BASE", BASE + r"+"),
+		(
+			"DEGENERATE",
+			r"[WSMKRYBDHVNZ-]+?",
+		),  # https://en.wikipedia.org/wiki/Nucleic_acid_sequence#Notation
+		("NEWLINE", r"\n"),  # Line endings
+		("SKIP", r"[ \t]+"),  # Skip over spaces and tabs
+		("MISMATCH", r"."),  # Any other character
 	]
 	if amino:
 		# https://en.wikipedia.org/wiki/Proteinogenic_amino_acid
-		token_specification.insert(1, ('AMINO', r'[ARNDCQEGHILKMFPSTWYVUO]+'))
+		token_specification.insert(1, ("AMINO", r"[ARNDCQEGHILKMFPSTWYVUO]+"))
 
-	tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
+	tok_regex = "|".join("(?P<%s>%s)" % pair for pair in token_specification)
 	line_num = 1
 	line_start = 0
 	for mo in re.finditer(tok_regex, data):
 		kind = mo.lastgroup
 		value = mo.group()
 		column = mo.start() - line_start
-		if kind == 'NEWLINE':
+		if kind == "NEWLINE":
 			line_start = mo.end()
 			line_num += 1
 			continue
-		elif kind == 'SKIP':
+		elif kind == "SKIP":
 			continue
-		elif kind == 'MISMATCH':
-			raise RuntimeError(f'{value!r} unexpected on line {line_num}')
+		elif kind == "MISMATCH":
+			raise RuntimeError(f"{value!r} unexpected on line {line_num}")
 		yield Token(kind, value, line_num, column)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	args = sys.argv
-	if len(args) < 2: print('Give a filename for DNA data.')
+	if len(args) < 2:
+		print("Give a filename for DNA data.")
 	fn = args[1]
-	amino = '-a' in args
-	writeout = '-o' in args
+	amino = "-a" in args
+	writeout = "-o" in args
 
 	data = []
 	description_count = 0
-	with open(fn, 'r', encoding='UTF-8') as file:
+	with open(fn, "r", encoding="UTF-8") as file:
 		while (line := file.readline().rstrip()) and description_count < 2:
 			for token in tokenize(line, amino):
 				# TODO Create a TUI or add CLI option to select sequences or
 				# otherwise handle multiple sequences
-				if token.type == 'DESCRIPTION':
+				if token.type == "DESCRIPTION":
 					description_count += 1
 				if description_count == 2:
 					break
 				if token.type in DATA_TOKENS:
 					data.append(token.value)
 
-	data = '\n'.join(data)
+	data = "\n".join(data)
 
 	outfile = fn if writeout else None
 	decoded = main(data, fn=outfile)
 
 	if description_count >= 2:
-		print('Warning: File has more than one FASTA sequence!')
+		print("Warning: File has more than one FASTA sequence!")
