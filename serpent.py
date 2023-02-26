@@ -8,7 +8,6 @@ from collections import Counter
 from itertools import combinations
 from pprint import pp
 from typing import NamedTuple
-from warnings import warn
 
 from PIL import Image
 from more_itertools import chunked
@@ -63,7 +62,8 @@ def decode_codon(codon):
 
 
 def get_padding(data, divisor=3, fill="A"):
-	"""Return suitable padding in order to pad the data into a length evenly divisible by the divisor."""
+	"""Return suitable padding in order to pad the data into a length
+	evenly divisible by the divisor."""
 	padding = []
 	rem = len(data) % divisor
 	if rem != 0:
@@ -74,14 +74,16 @@ def get_padding(data, divisor=3, fill="A"):
 
 
 def pad_to_left(data, divisor=3, fill="A"):
-	"""Pad data to a length divisible by the divisor with the fill characters on the end"""
+	"""Pad data to a length divisible by the divisor with the fill
+	characters on the end"""
 	padding = get_padding(data, divisor, fill)
 
 	return list(data) + padding
 
 
 def pad_to_right(data, divisor=3, fill="A"):
-	"""Pad data to a length divisible by the divisor with the fill character on the beginning"""
+	"""Pad data to a length divisible by the divisor with the fill
+	character on the beginning"""
 	padding = get_padding(data, divisor, fill)
 
 	return padding + list(data)
@@ -91,10 +93,11 @@ def clean_non_dna(data):
 	"""Clean up non DNA or RNA data. Warns if the data is in multiple parts."""
 	cleaned = "".join(re.sub(r"[^CGAT]{6,}", "", data).split("\n"))
 	residual = re.sub(r"[CGAT]{6,}", "", cleaned)
+	count = len(residual)
 
-	if len(residual) > 1:
+	if count > 1:
+		# TODO Use logger.warn with warnings.warn?
 		print("Residual characters:", residual)
-		# raise UserWarning(f"Data has { len(residual) } extra characters, please check it carefully!")
 
 	return cleaned
 
