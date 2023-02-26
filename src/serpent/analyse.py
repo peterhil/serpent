@@ -18,7 +18,7 @@ from serpent.encoding import alphabet64, combos
 from serpent.fasta import read
 from serpent.fun import map_array
 from serpent.digit import digits_to_number, number_to_digits
-from serpent.math import normalise
+from serpent.mathematics import normalise
 from serpent.padding import pad_to_left, pad_to_right
 from serpent.stats import count_sorted
 
