@@ -1,17 +1,15 @@
-[tool.pdm]
-
 [project]
 name = "serpent"
 version = "0.1.0"
 description = "Serpent is an exploration into DNA sequences, codons, amino acids and genome data"
 authors = [
-	{ name = "Peter Hillerström", email = "peter.hillerstrom@gmail.com" },
+    { name = "Peter Hillerström", email = "peter.hillerstrom@gmail.com" },
 ]
 dependencies = [
-	"Pillow==9.4.0",
-	"matplotlib==3.7.0",
-	"more-itertools==9.0.0",
-	"numpy==1.24.2",
+    "Pillow==9.4.0",
+    "matplotlib==3.7.0",
+    "more-itertools==9.0.0",
+    "numpy==1.24.2",
 ]
 requires-python = ">=3.8"
 readme = "README.md"
@@ -20,3 +18,8 @@ license = {text = "MIT"}
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
+
+[tool.pdm]
+[tool.pdm.dev-dependencies]
+dev = [
+]

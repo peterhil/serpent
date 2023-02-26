@@ -108,7 +108,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "4.1"
-content_hash = "sha256:a39f5cc29bcfae4e00a90eef3fdc991e7a0423f122ecab846a70a69803321505"
+content_hash = "sha256:41a0214ab5957cffaaf8e6192f0c46d431df450d4e0fc6c4e8ecbb272a58738d"
 
 [metadata.files]
 "contourpy 1.0.7" = [
