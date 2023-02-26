@@ -41,12 +41,11 @@ def decode_codon(codon):
 
 
 def clean_non_dna(data):
-	"""Clean up non DNA or RNA data. Warns if the data is in multiple parts."""
-	cleaned = "".join(re.sub(r"[^CGAT]{6,}", "", data).split("\n"))
-	residual = re.sub(r"[CGAT]{6,}", "", cleaned)
-	count = len(residual)
+	"""Clean up non DNA or RNA data. Warns if there are residual characters."""
+	cleaned = "".join(re.sub(r"[^ACGTU]{6,}", "", data).split("\n"))
+	residual = "".join(re.findall(r"[^ACGTU\n]", data))
 
-	if count > 1:
+	if len(residual) > 0:
 		# TODO Use logger.warn with warnings.warn?
 		print("Residual characters:", residual)
 
