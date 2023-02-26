@@ -14,7 +14,7 @@ from PIL import Image
 from more_itertools import chunked
 # from scipy.fft import fft
 
-from serpent.fasta import DATA_TOKENS, tokenize
+from serpent.fasta import tokenize
 
 
 COUNT_LIMIT = 32
@@ -283,7 +283,7 @@ def main(args=None):
 					description_count += 1
 				if description_count == 2:
 					break
-				if token.type in DATA_TOKENS:
+				if token.is_data:
 					data.append(token.value)
 
 	data = "\n".join(data)

@@ -14,6 +14,10 @@ class Token(NamedTuple):
 	line: int
 	column: int
 
+	@property
+	def is_data(self):
+		return self.type in DATA_TOKENS
+
 
 def tokenize(data, amino=False):
 	"""Iterative FASTA sequence reader.
