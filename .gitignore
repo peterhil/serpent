@@ -23,6 +23,7 @@ TAGS
 # Environments
 .direnv/
 venv/
+.pdm.toml
 
 # System specific cruft
 *.core
