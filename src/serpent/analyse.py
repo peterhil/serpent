@@ -7,48 +7,24 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from collections import Counter
-from itertools import combinations
 from pprint import pp
 
 from PIL import Image
 from more_itertools import chunked
 from numpy.fft import fft
 
+from serpent.dna import bases, bases_inverse
+from serpent.encoding import alphabet64, combos
 from serpent.fasta import read
+from serpent.fun import map_array
+from serpent.digit import digits_to_number, number_to_digits
+from serpent.math import normalise
 from serpent.padding import pad_to_left, pad_to_right
+from serpent.stats import count_sorted
 
 
 COUNT_LIMIT = 32
-LINE_FEED = False
 PLOT = True
-
-
-def char_range(c1, c2):
-	"""Generates the characters from `c1` to `c2`, inclusive."""
-	for c in range(ord(c1), ord(c2) + 1):
-		yield chr(c)
-
-
-def map_array(fn, arr, dtype=None):
-	return np.array(list(map(fn, arr)), dtype=dtype)
-
-
-def normalise(array):
-	return array / np.amax(array)
-
-
-bases = {"A": 0b00, "C": 0b01, "G": 0b10, "T": 0b11, "U": 0b11}
-bases_inverse = {0: "A", 1: "C", 2: "G", 3: "T"}
-
-chars64 = (
-	list(char_range("A", "Z"))
-	+ list(char_range("a", "z"))
-	+ list(char_range("0", "9"))
-	+ (["+", "\n"] if LINE_FEED else ["+", "."])
-)
-
-alphabet64 = dict({(i, char) for (i, char) in enumerate(chars64)})
-combos = map_array(lambda cm: "".join(cm), combinations(chars64, 2))
 
 
 def decode(dna):
@@ -85,28 +61,6 @@ def get_codons(data):
 	return codons
 
 
-def digits_to_number(seq, base=64):
-	value = 0
-	for i, n in enumerate(reversed(seq)):
-		value = value + base**i * n
-
-	return value
-
-
-def number_to_digits(number, base=64):
-	result = []
-	rem = number
-
-	while True:
-		[mul, rem] = divmod(rem, base)
-		result.append(rem)
-		rem = mul
-		if mul == 0:
-			break
-
-	return list(reversed(result))
-
-
 def codon_sequences(decoded, n=4, fill=0):
 	"""Chunk data into length N sequences of codons.
 	Count the occurences of different kmers as numbers between 0..64**n.
@@ -118,11 +72,6 @@ def codon_sequences(decoded, n=4, fill=0):
 	numbers = np.apply_along_axis(digits_to_number, 1, sequences)
 
 	return numbers
-
-
-def count_sorted(items):
-	counts = Counter(items)
-	return np.array(list(sorted(counts.items()))).T
 
 
 def plot_sequence_counts(decoded, n=4, *args, **kwargs):
