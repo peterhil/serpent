@@ -12,7 +12,7 @@ from pprint import pp
 
 from PIL import Image
 from more_itertools import chunked
-# from scipy.fft import fft
+from numpy.fft import fft
 
 from serpent.fasta import read
 from serpent.padding import pad_to_left, pad_to_right
@@ -173,12 +173,9 @@ def analyse(data, fn=None):
 		plt.interactive(True)
 		plt.show()
 
-		# counts = Counter(decoded)
-		# [index, count] = list(np.array(sorted(list(counts.items()))).T)
-		# plt.plot(index, count)
-
+		# TODO Make subcommand
 		# ft = np.abs(fft(decoded, n=64, norm='ortho'))
-		# plot(ft)
+		# plt.plot(ft)
 
 		# TODO Make subcommand
 		seq_length = 1
@@ -250,6 +247,8 @@ def main(args=None):
 	outfile = fn if writeout else None
 	decoded = analyse(data, fn=outfile)
 
+	return decoded
+
 
 if __name__ == "__main__":
-	main()
+	decoded = main()
