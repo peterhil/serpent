@@ -13,6 +13,9 @@ dist/
 .figleaf
 .tox/
 
+# Tools
+.ruff-cache/
+
 # Emacs
 *~
 .\#*
