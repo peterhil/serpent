@@ -53,7 +53,7 @@ def tokenize(data, amino=False):
 		elif kind == "SKIP":
 			continue
 		elif kind == "MISMATCH":
-			raise RuntimeError(f"{value!r} unexpected on line {line_num}")
+			raise ValueError(f"{value!r} unexpected on line {line_num} column {column}")
 		yield Token(kind, value, line_num, column)
 
 
