@@ -184,8 +184,9 @@ def analyse(data, fn=None):
 def main(args=None):
 	# Ensure same behavior while testing and using the CLI
 	args = args or sys.argv[1:]
-	if len(args) < 2:
+	if len(args) == 0:
 		print("Give a filename for DNA data.")
+		sys.exit(1)
 	fn = args[0]
 	amino = "-a" in args
 	writeout = "-o" in args
