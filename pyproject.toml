@@ -23,4 +23,5 @@ build-backend = "pdm.pep517.api"
 [tool.pdm]
 [tool.pdm.dev-dependencies]
 dev = [
+    "tan>=22.12.1",
 ]
