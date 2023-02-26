@@ -55,3 +55,25 @@ def tokenize(data, amino=False):
 		elif kind == "MISMATCH":
 			raise RuntimeError(f"{value!r} unexpected on line {line_num}")
 		yield Token(kind, value, line_num, column)
+
+
+def read(fn: str, amino: bool = False) -> str:
+	data = []
+	description_count = 0
+
+	with open(fn, "r", encoding="UTF-8") as file:
+		while (line := file.readline().rstrip()) and description_count < 2:
+			for token in tokenize(line, amino):
+				if token.type == "DESCRIPTION":
+					description_count += 1
+				if description_count == 2:
+					break
+				if token.is_data:
+					data.append(token.value)
+
+	# TODO Create a TUI or add CLI option to select sequences or
+	# otherwise handle multiple sequences
+	if description_count >= 2:
+		print("Warning: File has more than one FASTA sequence!")
+
+	return "\n".join(data)

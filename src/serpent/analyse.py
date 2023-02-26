@@ -14,7 +14,7 @@ from PIL import Image
 from more_itertools import chunked
 # from scipy.fft import fft
 
-from serpent.fasta import tokenize
+from serpent.fasta import read
 from serpent.padding import pad_to_left, pad_to_right
 
 
@@ -245,27 +245,10 @@ def main(args=None):
 	amino = "-a" in args
 	writeout = "-o" in args
 
-	data = []
-	description_count = 0
-	with open(fn, "r", encoding="UTF-8") as file:
-		while (line := file.readline().rstrip()) and description_count < 2:
-			for token in tokenize(line, amino):
-				# TODO Create a TUI or add CLI option to select sequences or
-				# otherwise handle multiple sequences
-				if token.type == "DESCRIPTION":
-					description_count += 1
-				if description_count == 2:
-					break
-				if token.is_data:
-					data.append(token.value)
-
-	data = "\n".join(data)
+	data = read(fn, amino)
 
 	outfile = fn if writeout else None
 	decoded = analyse(data, fn=outfile)
-
-	if description_count >= 2:
-		print("Warning: File has more than one FASTA sequence!")
 
 
 if __name__ == "__main__":
