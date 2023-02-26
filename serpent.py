@@ -250,10 +250,10 @@ def main(data, fn=None):
 
 
 class Token(NamedTuple):
-    type: str
-    value: str
-    line: int
-    column: int
+	type: str
+	value: str
+	line: int
+	column: int
 
 
 DATA_TOKENS = ['AMINO', 'BASE', 'DEGENERATE']
