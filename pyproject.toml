@@ -21,6 +21,12 @@ requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
 
 [tool.pdm]
+
+[tool.pdm.build]
+excludes = ["./**/.git"]
+package-dir = "src"
+source-includes = ["test", "CHANGELOG.md", "LICENSE", "README.md"]
+
 [tool.pdm.dev-dependencies]
 dev = [
     "tan>=22.12.1",

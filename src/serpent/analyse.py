@@ -181,7 +181,7 @@ def show_image(decoded, width=64, fill=0, mode="RGB"):
 	return img
 
 
-def main(data, fn=None):
+def analyse(data, fn=None):
 	data = clean_non_dna(data)
 	data = pad_to_left(data, 3, "A")
 
@@ -309,11 +309,12 @@ def tokenize(data, amino=False):
 		yield Token(kind, value, line_num, column)
 
 
-if __name__ == "__main__":
-	args = sys.argv
+def main(args=None):
+	# Ensure same behavior while testing and using the CLI
+	args = args or sys.argv[1:]
 	if len(args) < 2:
 		print("Give a filename for DNA data.")
-	fn = args[1]
+	fn = args[0]
 	amino = "-a" in args
 	writeout = "-o" in args
 
@@ -334,7 +335,11 @@ if __name__ == "__main__":
 	data = "\n".join(data)
 
 	outfile = fn if writeout else None
-	decoded = main(data, fn=outfile)
+	decoded = analyse(data, fn=outfile)
 
 	if description_count >= 2:
 		print("Warning: File has more than one FASTA sequence!")
+
+
+if __name__ == "__main__":
+	main()
