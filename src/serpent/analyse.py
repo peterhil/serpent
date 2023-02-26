@@ -2,59 +2,25 @@
 
 import sys
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 from collections import Counter
 from pprint import pp
 
-from PIL import Image
 from more_itertools import chunked
-# from numpy.fft import fft
 
 from serpent import dna
 from serpent.encoding import alphabet64, combos
 from serpent.fasta import read
 from serpent.fun import map_array
 from serpent.digit import number_to_digits
-from serpent.mathematics import normalise
 from serpent.padding import pad_to_left, pad_to_right
 from serpent.stats import count_sorted
+from serpent.visual import interactive, plot_fft, plot_sequence_counts, show_image
 
 
 COUNT_LIMIT = 32
 PLOT = True
-
-
-def plot_sequence_counts(decoded, n=4, *args, **kwargs):
-	numbers = dna.codon_sequences(decoded, n)
-	[index, count] = count_sorted(numbers)
-
-	size = 64**n
-	data = np.zeros(size, dtype=np.uint64)
-	data[index] = count
-
-	plt.plot(np.arange(size), data, *args, **kwargs)
-
-	return [index, count]
-
-
-def show_image(decoded, width=64, fill=0, mode="RGB"):
-	padded = np.array(pad_to_left(decoded, 3 * width, fill))
-	norm = normalise(padded)
-	channels = len(mode)
-
-	rows = len(norm) / (channels * width)
-	height = int(np.floor(rows))
-
-	if channels > 1:
-		rgb = norm.reshape(height, width, channels)
-	else:
-		rgb = norm.reshape(height, width)
-	img = Image.fromarray(np.uint8(rgb * 255), mode=mode)
-	img.show()
-
-	return img
 
 
 def analyse(data, fn=None):
@@ -70,16 +36,12 @@ def analyse(data, fn=None):
 
 	decoded = dna.decode(codons)
 	print("Decoded:\n", len(np.unique(decoded)), decoded)
+
+	# TODO Make subcommands
 	if PLOT:
-		plt.interactive(True)
-		plt.show()
-
-		# TODO Make subcommand
-		# ft = np.abs(fft(decoded, n=64, norm='ortho'))
-		# plt.plot(ft)
-
-		# TODO Make subcommand
 		seq_length = 1
+		interactive()
+		plot_fft(decoded, n=64)
 		plot_sequence_counts(decoded, seq_length)
 
 	encoded = "".join([alphabet64.get(c, " ") for c in decoded])

@@ -8,4 +8,5 @@ from serpent import \
 	 fun, \
 	 mathematics, \
 	 padding, \
-	 stats
+	 stats, \
+	 visual
