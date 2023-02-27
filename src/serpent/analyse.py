@@ -2,6 +2,7 @@
 
 import sys
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 from collections import Counter
@@ -16,11 +17,11 @@ from serpent.fun import map_array
 from serpent.digit import number_to_digits
 from serpent.padding import pad_to_left, pad_to_right
 from serpent.stats import count_sorted
-from serpent.visual import interactive, plot_fft, plot_sequence_counts, show_image
+from serpent.visual import interactive, plot_fft, plot_histogram, plot_sequence_counts, show_image
 
 
 COUNT_LIMIT = 20
-PLOT = False
+PLOT = True
 
 
 def analyse(data, fn=None):
@@ -43,7 +44,9 @@ def analyse(data, fn=None):
 		seq_length = 1
 		interactive()
 		plot_fft(decoded, n=64)
-		plot_sequence_counts(decoded, seq_length)
+		plot_sequence_counts(decoded, n=seq_length)
+		plot_histogram(decoded, n=seq_length)
+
 		show_image(decoded, width=64, fill=63, mode="RGB")
 	else:
 		# Encode
