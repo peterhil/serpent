@@ -7,7 +7,7 @@ from PIL import Image
 from numpy.fft import fft
 
 from serpent import dna
-from serpent.mathematics import normalise
+from serpent.mathematics import magnitude, normalise
 from serpent.padding import pad_to_left
 from serpent.stats import count_sorted
 
@@ -24,25 +24,51 @@ def plot_fft(decoded, n=64, *args, **kwargs):
 	return ft
 
 
-def plot_histogram(data, cumulative=False, density=False, *args, **kwargs):
-	hist, bins = np.histogram(data, *args, **kwargs)
+def plot_histogram(
+	data,
+	bins='auto',
+	cumulative=False,
+	density=False,
+	histtype='stepfilled',
+	*args, **kwargs
+):
+	"""
+	Plot histograms using np.histogram and plt.hist.
+
+	size:
+	Histogram with N (=size) automatically sized bins.
+	The np.histogram bins argument seems to have off-by-one error with linspace.
+
+	histtype:
+	step and stepfilled are significantly faster for >1000 bins
+	default is bar and barstacked is also an option.
+	"""
+	hist, bins = np.histogram(data, bins=bins, *args, **kwargs)
 
 	plt.hist(bins[:-1], bins, weights=hist,
-			 histtype='stepfilled',
+			 histtype=histtype,
 			 cumulative=cumulative,
 			 density=density,
+			 *args, **kwargs
 			 )
 
 	return [hist, bins]
 
 
-def plot_histogram_sized(data, size, *args, **kwargs):
-	"""Histogram with N (=size) automatically sized bins.
-	The np.histogram bins argument seems to have off-by-one error with linspace."""
-	bins = np.arange(size + 1)
-	hist, bins = plot_histogram(data, bins=bins, *args, **kwargs)
+def plot_histogram_sized(data, size='auto', base=64, multi=1, *args, **kwargs):
+		"""Histogram with exactly N (=size) integer bins or
+		automatically sized bins.
 
-	return [hist, bins]
+		This function exists, because it makes sense to use base 64 with DNA data.
+		"""
+		if size == 'auto':
+			bins = np.linspace(0, base ** magnitude(np.max(data)), base * multi, endpoint=True)
+		else:
+			bins = np.arange(size + 1)
+
+		hist, bins = plot_histogram(data, bins=bins, *args, **kwargs)
+
+		return [hist, bins]
 
 
 def plot_sequence_counts(decoded, n=4, *args, **kwargs):

@@ -15,6 +15,7 @@ from serpent.encoding import alphabet64, combos
 from serpent.fasta import read
 from serpent.fun import map_array
 from serpent.digit import number_to_digits
+from serpent.mathematics import logn
 from serpent.padding import pad_to_left, pad_to_right
 from serpent.stats import count_sorted
 from serpent.visual import interactive, plot_fft, plot_histogram_sized, plot_sequence_counts, show_image
@@ -44,12 +45,17 @@ def analyse(data, fn=None):
 		interactive()
 		# plot_fft(decoded, n=64)
 
-		seq_length = 1
-		rng = 64 ** seq_length
+		seq_length = 4
 		seqs = dna.codon_sequences(decoded, seq_length)
 
-		plot_histogram_sized(seqs, rng)
-		plot_sequence_counts(decoded, n=seq_length)
+		plot_histogram_sized(
+			seqs,
+			size='auto',
+			multi=max(16, 2 ** seq_length),  # cap to 16 * base = 1024
+			density=False,
+			cumulative=False,
+		)
+		# plot_sequence_counts(decoded, n=seq_length)
 
 		# show_image(decoded, width=64, fill=63, mode="RGB")
 	else:
