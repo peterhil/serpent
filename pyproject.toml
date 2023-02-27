@@ -30,4 +30,5 @@ source-includes = ["test", "CHANGELOG.md", "LICENSE", "README.md"]
 [tool.pdm.dev-dependencies]
 dev = [
     "tan>=22.12.1",
+    "ipython>=8.10.0",
 ]
