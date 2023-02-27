@@ -25,7 +25,6 @@ PLOT = False
 
 def analyse(data, fn=None):
 	data = dna.clean_non_dna(data)
-	data = pad_to_left(data, 3, "A")
 
 	# Codons
 	codons = dna.get_codons(data)

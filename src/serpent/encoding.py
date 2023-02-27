@@ -11,7 +11,9 @@ def char_range(char1, char2):
 		yield chr(ch)
 
 
-# Base 64 alphabet
+# Base 64 alphabet variant.
+# This is the most readable of the different options,
+# so do not change easily.
 base64 = (
 	list(char_range("A", "Z")) +
 	list(char_range("a", "z")) +

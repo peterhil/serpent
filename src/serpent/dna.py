@@ -4,7 +4,7 @@ import re
 
 import numpy as np
 
-from more_itertools import chunked
+from more_itertools import grouper
 
 from serpent.digit import digits_to_number
 from serpent.fun import map_array
@@ -50,9 +50,9 @@ def clean_non_dna(data):
 	return cleaned
 
 
-def get_codons(data):
+def get_codons(data, fill="A"):
 	"""Get codons from data as Numpy array"""
-	codons_list = list(chunked(data, 3, strict=True))
+	codons_list = list(grouper(data, 3, incomplete="fill", fillvalue=fill))
 	codons = map_array(lambda c: "".join(c), codons_list, dtype="U3")
 
 	return codons
@@ -64,8 +64,7 @@ def codon_sequences(decoded, n=4, fill=0):
 
 	Return index and counts.
 	"""
-	padded = pad_to_left(list(decoded), n, fill)
-	sequences = list(chunked(padded, n, strict=True))
+	sequences = list(grouper(decoded, n, incomplete="fill", fillvalue=fill))
 	numbers = np.apply_along_axis(digits_to_number, 1, sequences)
 
 	return numbers
