@@ -2,6 +2,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 
 from PIL import Image
 from numpy.fft import fft
@@ -55,16 +56,29 @@ def plot_histogram(
 	return [hist, bins]
 
 
-def plot_histogram_sized(data, size='auto', base=64, multi=1, *args, **kwargs):
-		"""Histogram with exactly N (=size) integer bins or
-		automatically sized bins.
+def plot_histogram_sized(data, size='base', base=64, multi=1, *args, **kwargs):
+		"""Plot histograms with automatically sized bins.
 
-		This function exists, because it makes sense to use base 64 with DNA data.
+		String size can be:
+		- base (prefer multiples of some numeric base)
+		- auto (fd or sturges)
+		- fd, doane, scott, stone, rice, sturges, sqrt
+
+		It makes sense to use base 64 with DNA data, for example.
+
+		Note! Size can be one of the strings described here:
+		https://numpy.org/doc/stable/reference/generated/numpy.histogram_bin_edges.html
 		"""
-		if size == 'auto':
+		# Prevent overflow and other errors from histogram_bin_edges with long sequences
+		if np.min(data) > sys.maxsize or np.max(data) > sys.maxsize:
+			size = max(1024, base * multi)
+
+		if size == 'base':
 			bins = np.linspace(0, base ** magnitude(np.max(data)), base * multi, endpoint=True)
-		else:
+		elif type(size) == 'int':
 			bins = np.arange(size + 1)
+		else:
+			bins=np.histogram_bin_edges(data, bins=size)
 
 		hist, bins = plot_histogram(data, bins=bins, *args, **kwargs)
 
