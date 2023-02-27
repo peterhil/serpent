@@ -45,12 +45,12 @@ def analyse(data, fn=None):
 		interactive()
 		# plot_fft(decoded, n=64)
 
-		seq_length = 4
+		seq_length = 5
 		seqs = dna.codon_sequences(decoded, seq_length)
 
 		plot_histogram_sized(
 			seqs,
-			size='auto',
+			size='base',
 			multi=max(16, 2 ** seq_length),  # cap to 16 * base = 1024
 			density=False,
 			cumulative=False,
