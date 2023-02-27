@@ -13,12 +13,11 @@ def char_range(char1, char2):
 
 # Base 64 alphabet
 base64 = (
-	list(char_range("A", "Z"))
-	+ list(char_range("a", "z"))
-	+ list(char_range("0", "9"))
-	+ ["+", "."]
+	list(char_range("A", "Z")) +
+	list(char_range("a", "z")) +
+	list(char_range("0", "9")) +
+	["+", "."]
 )
-
 
 alphabet64 = dict({(i, char) for (i, char) in enumerate(base64)})
 combos = map_array(lambda cm: "".join(cm), combinations(base64, 2))
