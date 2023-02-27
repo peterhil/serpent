@@ -48,10 +48,10 @@ def analyse(data, fn=None):
 		rng = 64 ** seq_length
 		seqs = dna.codon_sequences(decoded, seq_length)
 
+		plot_histogram_sized(seqs, rng)
 		plot_sequence_counts(decoded, n=seq_length)
-		plot_histogram_sized(decoded, rng)
 
-		show_image(decoded, width=64, fill=63, mode="RGB")
+		# show_image(decoded, width=64, fill=63, mode="RGB")
 	else:
 		# Encode
 		encoded = "".join([alphabet64.get(c, " ") for c in decoded])

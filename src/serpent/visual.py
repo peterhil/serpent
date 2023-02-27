@@ -24,10 +24,14 @@ def plot_fft(decoded, n=64, *args, **kwargs):
 	return ft
 
 
-def plot_histogram(data, *args, **kwargs):
+def plot_histogram(data, cumulative=False, density=False, *args, **kwargs):
 	hist, bins = np.histogram(data, *args, **kwargs)
 
-	plt.plot(bins[:-1], hist)
+	plt.hist(bins[:-1], bins, weights=hist,
+			 histtype='stepfilled',
+			 cumulative=cumulative,
+			 density=density,
+			 )
 
 	return [hist, bins]
 
