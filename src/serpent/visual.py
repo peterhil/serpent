@@ -24,6 +24,15 @@ def plot_fft(decoded, n=64, *args, **kwargs):
 	return ft
 
 
+def plot_histogram(decoded, n=1):
+	size = 64**n
+	hist, bins = np.histogram(decoded, bins=np.arange(size + 1))
+
+	plt.plot(bins[:-1], hist)
+
+	return [hist, bins]
+
+
 def plot_sequence_counts(decoded, n=4, *args, **kwargs):
 	numbers = dna.codon_sequences(decoded, n)
 	[index, count] = count_sorted(numbers)
@@ -34,7 +43,7 @@ def plot_sequence_counts(decoded, n=4, *args, **kwargs):
 
 	plt.plot(np.arange(size), data, *args, **kwargs)
 
-	return [index, count]
+	return [count, index]
 
 
 def show_image(decoded, width=64, fill=0, mode="RGB"):
