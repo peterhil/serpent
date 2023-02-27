@@ -24,11 +24,19 @@ def plot_fft(decoded, n=64, *args, **kwargs):
 	return ft
 
 
-def plot_histogram(decoded, n=1):
-	size = 64**n
-	hist, bins = np.histogram(decoded, bins=np.arange(size + 1))
+def plot_histogram(data, *args, **kwargs):
+	hist, bins = np.histogram(data, *args, **kwargs)
 
 	plt.plot(bins[:-1], hist)
+
+	return [hist, bins]
+
+
+def plot_histogram_sized(data, size, *args, **kwargs):
+	"""Histogram with N (=size) automatically sized bins.
+	The np.histogram bins argument seems to have off-by-one error with linspace."""
+	bins = np.arange(size + 1)
+	hist, bins = plot_histogram(data, bins=bins, *args, **kwargs)
 
 	return [hist, bins]
 

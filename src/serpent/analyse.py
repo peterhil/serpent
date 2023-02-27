@@ -17,7 +17,7 @@ from serpent.fun import map_array
 from serpent.digit import number_to_digits
 from serpent.padding import pad_to_left, pad_to_right
 from serpent.stats import count_sorted
-from serpent.visual import interactive, plot_fft, plot_histogram, plot_sequence_counts, show_image
+from serpent.visual import interactive, plot_fft, plot_histogram_sized, plot_sequence_counts, show_image
 
 
 COUNT_LIMIT = 20
@@ -41,11 +41,15 @@ def analyse(data, fn=None):
 
 	# TODO Make subcommands
 	if PLOT:
-		seq_length = 1
 		interactive()
-		plot_fft(decoded, n=64)
+		# plot_fft(decoded, n=64)
+
+		seq_length = 1
+		rng = 64 ** seq_length
+		seqs = dna.codon_sequences(decoded, seq_length)
+
 		plot_sequence_counts(decoded, n=seq_length)
-		plot_histogram(decoded, n=seq_length)
+		plot_histogram_sized(decoded, rng)
 
 		show_image(decoded, width=64, fill=63, mode="RGB")
 	else:
