@@ -21,5 +21,5 @@ base64 = (
 	["+", "."]
 )
 
-alphabet64 = dict({(i, char) for (i, char) in enumerate(base64)})
 combos = map_array(lambda cm: "".join(cm), combinations(base64, 2))
+alphabet64 = dict(set(enumerate(base64)))
