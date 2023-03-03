@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterator
 from pathlib import Path
 from typing import NamedTuple
 
@@ -23,7 +24,7 @@ class Token(NamedTuple):
 		return self.type in DATA_TOKENS
 
 
-def tokenize(data, amino=False):
+def tokenize(data: str, amino: bool=False) -> Iterator[Token]:
 	"""Read FASTA sequences iteratively.
 
 	See: https://docs.python.org/3/library/re.html#writing-a-tokenizer.
@@ -45,12 +46,12 @@ def tokenize(data, amino=False):
 		token_specification.insert(1, ("AMINO", r"[ARNDCQEGHILKMFPSTWYVUO]+"))
 
 	tok_regex = "|".join("(?P<%s>%s)" % pair for pair in token_specification)
-	line_num = 1
-	line_start = 0
+	line_num: int = 1
+	line_start: int = 0
 	for matches in re.finditer(tok_regex, data):
-		kind = matches.lastgroup
-		value = matches.group()
-		column = matches.start() - line_start
+		kind: str = matches.lastgroup or "MISMATCH"
+		value: str = matches.group()
+		column: int = matches.start() - line_start
 		if kind == "NEWLINE":
 			line_start = matches.end()
 			line_num += 1
