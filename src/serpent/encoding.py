@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from itertools import combinations
 
 from serpent.fun import map_array, str_join
 
 
-def char_range(start, end):
+def char_range(start: str, end: str) -> Iterable[str]:
 	"""Generate range of characters from `start` to `end`, inclusive."""
 	for char in range(ord(start), ord(end) + 1):
 		yield chr(char)
