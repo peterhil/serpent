@@ -33,4 +33,5 @@ dev = [
     "ipython>=8.10.0",
     "pre-commit>=3.1.1",
     "ruff>=0.0.253",
+    "flake8-tabs>=2.3.2",
 ]

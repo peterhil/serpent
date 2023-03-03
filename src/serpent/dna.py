@@ -24,6 +24,7 @@ bases_inverse = {
 	3: "T"
 }
 
+
 def decode(dna):
 	"""Return codons from DNA decoded into numbers 0..63."""
 	return map_array(decode_codon, dna)

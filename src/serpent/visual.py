@@ -72,16 +72,19 @@ def plot_histogram_sized(data, size='base', base=64, multi=1, *args, **kwargs):
 	Note! Size can be one of the strings described here:
 	https://numpy.org/doc/stable/reference/generated/numpy.histogram_bin_edges.html
 	"""
-	# Prevent overflow and other errors from histogram_bin_edges with long sequences
+	# Prevent overflow and other errors from histogram_bin_edges with long
+	# sequences
 	if np.min(data) > sys.maxsize or np.max(data) > sys.maxsize:
 		size = max(1024, base * multi)
 
 	if size == 'base':
-		bins = np.linspace(0, base ** magnitude(np.max(data)), base * multi, endpoint=True)
+		end = base ** magnitude(np.max(data))
+		step = base * multi
+		bins = np.linspace(0, end, step, endpoint=True)
 	elif type(size) == 'int':
 		bins = np.arange(size + 1)
 	else:
-		bins=np.histogram_bin_edges(data, bins=size)
+		bins = np.histogram_bin_edges(data, bins=size)
 
 	hist, bins = plot_histogram(data, *args, bins=bins, **kwargs)
 
