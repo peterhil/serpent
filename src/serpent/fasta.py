@@ -19,8 +19,9 @@ class Token(NamedTuple):
 
 
 def tokenize(data, amino=False):
-	"""Iterative FASTA sequence reader.
-	See: https://docs.python.org/3/library/re.html#writing-a-tokenizer
+	"""Read FASTA sequences iteratively.
+
+	See: https://docs.python.org/3/library/re.html#writing-a-tokenizer.
 	"""
 	BASE = r"[ACGTU\n]"
 	token_specification = [
@@ -60,20 +61,21 @@ def tokenize(data, amino=False):
 def read(fn: str, amino: bool = False) -> str:
 	data = []
 	description_count = 0
+	max_count = 2
 
 	with Path(fn).open(encoding="UTF-8") as file:
-		while (line := file.readline().rstrip()) and description_count < 2:
+		while (line := file.readline().rstrip()) and description_count < max_count:
 			for token in tokenize(line, amino):
 				if token.type == "DESCRIPTION":
 					description_count += 1
-				if description_count == 2:
+				if description_count == max_count:
 					break
 				if token.is_data:
 					data.append(token.value)
 
 	# TODO Create a TUI or add CLI option to select sequences or
 	# otherwise handle multiple sequences
-	if description_count >= 2:
+	if description_count >= max_count:
 		print("Warning: File has more than one FASTA sequence!")
 
 	return "\n".join(data)

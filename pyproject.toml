@@ -40,7 +40,9 @@ select = [
     "ARG",	# flake8-unused-arguments
     "B", "B904",	# flake8-bugbear
     "C4",	# flake8-comprehensions
-    # "D",	# pydocstyle
+    "D",	# pydocstyle
+    "D211", # no-blank-line-before-class
+    "D213", # multi-line-summary-second-line
     "EM",	# flake8-errmsg
     "EXE",	# flake8-executable
     "G",	# flake8-logging-format
@@ -62,6 +64,13 @@ select = [
     "YTT",	# flake8-2020
 ]
 extend-ignore = [
+    "D100",	# Missing docstring in public module
+    "D101",	# Missing docstring in public class
+    "D102",	# Missing docstring in public method
+    "D103",	# Missing docstring in public function
+    "D203",	# One blank line before class
+    "D206",	# Docstring should be indented with spaces, not tabs
+    "D213",	# multi-line-summary-first-line
     # "E501",	# Line too long
     # "PLR",	# Design related pylint codes
     # "PT004",	# Use underscore for non-returning fixture (use usefixture instead)

@@ -4,9 +4,7 @@ import numpy as np
 
 
 def logn(x, base=np.e):
-    """
-    Logarithm of x on some base.
-    """
+    """Logarithm of x on some base."""
     return np.log2(x) / np.log2(base)
 
 

@@ -6,7 +6,7 @@ from serpent.fun import map_array
 
 
 def char_range(char1, char2):
-	"""Generates the characters from `char1` to `char2`, inclusive."""
+	"""Generate range of characters from `char1` to `char2`, inclusive."""
 	for ch in range(ord(char1), ord(char2) + 1):
 		yield chr(ch)
 
