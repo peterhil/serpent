@@ -1,3 +1,4 @@
+"""DNA and codons data handling."""
 from __future__ import annotations
 
 import re
@@ -6,7 +7,7 @@ import numpy as np
 from more_itertools import grouper
 
 from serpent.digit import digits_to_number
-from serpent.fun import map_array
+from serpent.fun import map_array, str_join
 
 bases = {
 	"A": 0b00,
@@ -30,7 +31,8 @@ def decode(dna):
 	return map_array(decode_codon, dna)
 
 
-def decode_codon(codon):
+def decode_codon(codon: str) -> int:
+	"""Decode a codon string into a a number between 0 and 63."""
 	result = 0
 	for num, char in enumerate(reversed(codon)):
 		result += bases.get(char, 0) << num * 2  # Throw IndexError by using []?
@@ -40,8 +42,8 @@ def decode_codon(codon):
 
 def clean_non_dna(data):
 	"""Clean up non DNA or RNA data. Warns if there are residual characters."""
-	cleaned = "".join(re.sub(r"[^ACGTU]{6,}", "", data).split("\n"))
-	residual = "".join(re.findall(r"[^ACGTU\n]", data))
+	cleaned = str_join(re.sub(r"[^ACGTU]{6,}", "", data).split("\n"))
+	residual = str_join(re.findall(r"[^ACGTU\n]", data))
 
 	if len(residual) > 0:
 		# TODO Use logger.warn with warnings.warn?
@@ -53,7 +55,7 @@ def clean_non_dna(data):
 def get_codons(data, fill="A"):
 	"""Get codons from data as Numpy array."""
 	codons_list = list(grouper(data, 3, incomplete="fill", fillvalue=fill))
-	codons = map_array(lambda c: "".join(c), codons_list, dtype="U3")
+	codons = map_array(str_join, codons_list, dtype="U3")
 
 	return codons
 
