@@ -36,6 +36,7 @@ dev = [
     "flake8-tabs>=2.3.2",
     "pylint>=2.16.3",
     "mypy>=1.0.1",
+    "types-Pillow>=9.4.0.17",
 ]
 
 [tool.pylint]
