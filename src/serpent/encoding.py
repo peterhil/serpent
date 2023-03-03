@@ -1,3 +1,5 @@
+"""Base64 variant and other encodings of DNA data."""
+
 from __future__ import annotations
 
 from itertools import combinations

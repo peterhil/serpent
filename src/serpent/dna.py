@@ -1,3 +1,4 @@
+"""DNA and codons data handling."""
 from __future__ import annotations
 
 import re
@@ -30,7 +31,8 @@ def decode(dna):
 	return map_array(decode_codon, dna)
 
 
-def decode_codon(codon):
+def decode_codon(codon: str) -> int:
+	"""Decode a codon string into a a number between 0 and 63."""
 	result = 0
 	for num, char in enumerate(reversed(codon)):
 		result += bases.get(char, 0) << num * 2  # Throw IndexError by using []?

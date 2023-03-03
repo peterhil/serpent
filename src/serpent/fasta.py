@@ -1,3 +1,5 @@
+"""FASTA data io."""
+
 from __future__ import annotations
 
 import re
@@ -8,6 +10,8 @@ DATA_TOKENS = ["AMINO", "BASE", "DEGENERATE"]
 
 
 class Token(NamedTuple):
+	"""Token of parsed FASTA data."""
+
 	type: str
 	value: str
 	line: int
@@ -15,6 +19,7 @@ class Token(NamedTuple):
 
 	@property
 	def is_data(self):
+		"""True if the token contains sequence data."""
 		return self.type in DATA_TOKENS
 
 
@@ -23,10 +28,10 @@ def tokenize(data, amino=False):
 
 	See: https://docs.python.org/3/library/re.html#writing-a-tokenizer.
 	"""
-	BASE = r"[ACGTU\n]"
+	base = r"[ACGTU\n]"
 	token_specification = [
 		("DESCRIPTION", r">[^\n]*"),
-		("BASE", BASE + r"+"),
+		("BASE", base + r"+"),
 		(
 			"DEGENERATE",
 			r"[WSMKRYBDHVNZ-]+?",
@@ -42,12 +47,12 @@ def tokenize(data, amino=False):
 	tok_regex = "|".join("(?P<%s>%s)" % pair for pair in token_specification)
 	line_num = 1
 	line_start = 0
-	for mo in re.finditer(tok_regex, data):
-		kind = mo.lastgroup
-		value = mo.group()
-		column = mo.start() - line_start
+	for matches in re.finditer(tok_regex, data):
+		kind = matches.lastgroup
+		value = matches.group()
+		column = matches.start() - line_start
 		if kind == "NEWLINE":
-			line_start = mo.end()
+			line_start = matches.end()
 			line_num += 1
 			continue
 		elif kind == "SKIP":
@@ -58,12 +63,18 @@ def tokenize(data, amino=False):
 		yield Token(kind, value, line_num, column)
 
 
-def read(fn: str, amino: bool = False) -> str:
+def read(filename: str, amino: bool = False) -> str:
+	"""Read FASTA data.
+
+	Amino:
+		false = input contains nucleotide bases
+		true  = input contains amino acids
+	"""
 	data = []
 	description_count = 0
 	max_count = 2
 
-	with Path(fn).open(encoding="UTF-8") as file:
+	with Path(filename).open(encoding="UTF-8") as file:
 		while (line := file.readline().rstrip()) and description_count < max_count:
 			for token in tokenize(line, amino):
 				if token.type == "DESCRIPTION":

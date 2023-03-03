@@ -1,3 +1,5 @@
+"""Serpent."""
+
 from __future__ import annotations
 
 from serpent.analyse import main

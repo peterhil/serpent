@@ -1,3 +1,5 @@
+"""Visualise data."""
+
 from __future__ import annotations
 
 import sys
@@ -14,24 +16,27 @@ from serpent.stats import count_sorted
 
 
 def interactive():
+	"""Use interactive mode with pyplot."""
 	plt.interactive(True)
 	plt.show()
 
 
-def plot_fft(decoded, n=64, *args, **kwargs):
-	ft = np.abs(fft(decoded, *args, n=n, norm='ortho', **kwargs))
-	plt.plot(ft)
+def plot_fft(decoded, *args, n=64, **kwargs):
+	"""Plot FFT of the data."""
+	spectra = np.abs(fft(decoded, *args, n=n, norm='ortho', **kwargs))
+	plt.plot(spectra)
 
-	return ft
+	return spectra
 
 
 def plot_histogram(
 	data,
+	*args,
 	bins='auto',
 	cumulative=False,
 	density=False,
 	histtype='stepfilled',
-	*args, **kwargs
+	**kwargs
 ):
 	"""Plot histograms using np.histogram and plt.hist.
 
@@ -59,7 +64,7 @@ def plot_histogram(
 	return [hist, bins]
 
 
-def plot_histogram_sized(data, size='base', base=64, multi=1, *args, **kwargs):
+def plot_histogram_sized(data, *args, size='base', base=64, multi=1, **kwargs):
 	"""Plot histograms with automatically sized bins.
 
 	String size can be:
@@ -81,7 +86,7 @@ def plot_histogram_sized(data, size='base', base=64, multi=1, *args, **kwargs):
 		end = base ** magnitude(np.max(data))
 		step = base * multi
 		bins = np.linspace(0, end, step, endpoint=True)
-	elif type(size) == 'int':
+	elif isinstance(size, int):
 		bins = np.arange(size + 1)
 	else:
 		bins = np.histogram_bin_edges(data, bins=size)
@@ -91,7 +96,8 @@ def plot_histogram_sized(data, size='base', base=64, multi=1, *args, **kwargs):
 	return [hist, bins]
 
 
-def plot_sequence_counts(decoded, n=4, *args, **kwargs):
+def plot_sequence_counts(decoded, *args, n=4, **kwargs):
+	"""Plot codon sequence counts of length N."""
 	numbers = dna.codon_sequences(decoded, n)
 	[index, count] = count_sorted(numbers)
 
@@ -105,6 +111,11 @@ def plot_sequence_counts(decoded, n=4, *args, **kwargs):
 
 
 def show_image(decoded, width=64, fill=0, mode="RGB"):
+	"""Show decoded DNA data as full colour image.
+
+	The codons are mapped quite directly to 64 ** 3 (= 262144)
+	RGB colours, so that: A=0, C=85, G=170, T/U=255
+	"""
 	padded = np.array(pad_to_left(decoded, 3 * width, fill))
 	norm = normalise(padded)
 	channels = len(mode)
