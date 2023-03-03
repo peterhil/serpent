@@ -116,7 +116,7 @@ def show_image(decoded, width=64, fill=0, mode="RGB"):
 	The codons are mapped quite directly to 64 ** 3 (= 262144)
 	RGB colours, so that: A=0, C=85, G=170, T/U=255
 	"""
-	padded = np.array(pad_to_left(decoded, 3 * width, fill))
+	padded = np.array(pad_to_left(decoded, fill, n=3 * width))
 	norm = normalise(padded)
 	channels = len(mode)
 

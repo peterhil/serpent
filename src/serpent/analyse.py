@@ -92,7 +92,7 @@ def analyse(data, filename=None):
 		[index, count] = count_sorted(dna.codon_sequences(decoded, seq_length))
 		twice_i = index[count == occurences]
 		codes = map_array(
-			lambda a: pad_to_right(number_to_digits(a, 64), seq_length, 0),
+			lambda a: pad_to_right(number_to_digits(a, 64), fill=0, n=seq_length),
 			twice_i
 		)
 		b64_codes = map_array(
@@ -105,7 +105,7 @@ def analyse(data, filename=None):
 		catg = map_array(
 			lambda a: str_join(list(map(
 				dna.bases_inverse.get,
-				pad_to_right(number_to_digits(a, 4), 3, 0)))),
+				pad_to_right(number_to_digits(a, 4), fill=0, n=3)))),
 			codes.flatten(),
 		)
 		catg = catg.reshape(int(len(catg) / seq_length), seq_length)
