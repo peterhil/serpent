@@ -7,14 +7,14 @@ repos:
       - id: check-added-large-files
       - id: check-case-conflict
       - id: check-merge-conflict
-      - id: check-symlinks
+      # - id: check-symlinks
       - id: check-yaml
       - id: debug-statements
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: name-tests-test
         args: ["--pytest-test-first"]
-      - id: requirements-txt-fixer
+      # - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: "v0.0.253"
