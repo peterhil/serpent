@@ -5,18 +5,17 @@ from __future__ import annotations
 from typing import TypeVar, Union
 
 import numpy as np
-import numpy.typing as npt
 from numpy import dtype, ndarray
+from numpy.typing import ArrayLike, NBitBase
 
-T = TypeVar('T', bound=npt.NBitBase)
+T = TypeVar('T', bound=NBitBase)
 
 
 LogBase = Union[int, float]
-Numeric = Union[int, float, complex]
-NumericSeq = npt.ArrayLike
+NumericSeq = ArrayLike
 
 
-def logn(number: Numeric, base: LogBase=np.e) -> float:
+def logn(number: NumericSeq, base: LogBase=np.e) -> float:
 	"""Logarithm of number on some base."""
 	return float(np.log2(number) / np.log2(base))
 
