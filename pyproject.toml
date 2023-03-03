@@ -32,6 +32,7 @@ dev = [
     "tan>=22.12.1",
     "ipython>=8.10.0",
     "pre-commit>=3.1.1",
+    "ruff>=0.0.253",
 ]
 
 [tool.ruff]
