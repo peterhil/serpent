@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import TypeVar, Union
 
 import numpy as np
@@ -12,7 +13,8 @@ T = TypeVar('T', bound=NBitBase)
 
 
 LogBase = Union[int, float]
-NumericSeq = ArrayLike
+Numeric = Union[int, float, complex]
+NumericSeq = Union[Sequence[Numeric], ArrayLike]
 
 
 def logn(number: NumericSeq, base: LogBase=np.e) -> float:
