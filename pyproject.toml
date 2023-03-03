@@ -40,6 +40,7 @@ select = [
     "ARG",	# flake8-unused-arguments
     "B", "B904",	# flake8-bugbear
     "C4",	# flake8-comprehensions
+    # "D",	# pydocstyle
     "EM",	# flake8-errmsg
     "EXE",	# flake8-executable
     "G",	# flake8-logging-format
@@ -61,9 +62,9 @@ select = [
     "YTT",	# flake8-2020
 ]
 extend-ignore = [
-    "E501",	# Line too long
-    "PLR",	# Design related pylint codes
-    "PT004",	# Use underscore for non-returning fixture (use usefixture instead)
+    # "E501",	# Line too long
+    # "PLR",	# Design related pylint codes
+    # "PT004",	# Use underscore for non-returning fixture (use usefixture instead)
     "RET504",	# Unnecessary variable assignment before return statement
 ]
 target-version = "py39"
