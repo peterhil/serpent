@@ -54,17 +54,18 @@ select = [
     "PL",	# pylint
     "PT",	# flake8-pytest-style
     "PTH",	# flake8-use-pathlib
-    "RET",	# flake8-return
+    # "RET",	# flake8-return
     "RUF",	# Ruff-specific
     "SIM",	# flake8-simplify
-    "T20",	# flake8-print
+    # "T20",	# flake8-print
     "UP",	# pyupgrade
     "YTT",	# flake8-2020
 ]
 extend-ignore = [
-    "PLR",	# Design related pylint codes
     "E501",	# Line too long
+    "PLR",	# Design related pylint codes
     "PT004",	# Use underscore for non-returning fixture (use usefixture instead)
+    "RET504",	# Unnecessary variable assignment before return statement
 ]
 target-version = "py39"
 typing-modules = ["serpent.typing"]
