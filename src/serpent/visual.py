@@ -15,7 +15,7 @@ from serpent.padding import pad_to_left
 from serpent.stats import count_sorted
 
 
-def interactive():
+def interactive() -> None:
 	"""Use interactive mode with pyplot."""
 	plt.interactive(True)
 	plt.show()
