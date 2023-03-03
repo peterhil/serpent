@@ -34,4 +34,18 @@ dev = [
     "pre-commit>=3.1.1",
     "ruff>=0.0.253",
     "flake8-tabs>=2.3.2",
+    "pylint>=2.16.3",
+]
+
+[tool.pylint]
+py-version = "3.8"
+jobs = "0"
+reports.output-format = "colorized"
+
+[tool.pylint.messages_control]
+enable = [
+    "useless-suppression",
+]
+disable = [
+    "bad-indentation",
 ]
