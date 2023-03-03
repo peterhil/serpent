@@ -1,9 +1,8 @@
-#!/usr/bin/env python
+from __future__ import annotations
 
 import re
-
+from pathlib import Path
 from typing import NamedTuple
-
 
 DATA_TOKENS = ["AMINO", "BASE", "DEGENERATE"]
 
@@ -53,7 +52,8 @@ def tokenize(data, amino=False):
 		elif kind == "SKIP":
 			continue
 		elif kind == "MISMATCH":
-			raise ValueError(f"{value!r} unexpected on line {line_num} column {column}")
+			err_msg = f"{value!r} unexpected on line {line_num} column {column}"
+			raise ValueError(err_msg)
 		yield Token(kind, value, line_num, column)
 
 
@@ -61,7 +61,7 @@ def read(fn: str, amino: bool = False) -> str:
 	data = []
 	description_count = 0
 
-	with open(fn, "r", encoding="UTF-8") as file:
+	with Path(fn).open(encoding="UTF-8") as file:
 		while (line := file.readline().rstrip()) and description_count < 2:
 			for token in tokenize(line, amino):
 				if token.type == "DESCRIPTION":

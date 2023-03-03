@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+from __future__ import annotations
+
+import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
-
-from PIL import Image
 from numpy.fft import fft
+from PIL import Image
 
 from serpent import dna
 from serpent.mathematics import magnitude, normalise
@@ -19,7 +19,7 @@ def interactive():
 
 
 def plot_fft(decoded, n=64, *args, **kwargs):
-	ft = np.abs(fft(decoded, n=n, norm='ortho', *args, **kwargs))
+	ft = np.abs(fft(decoded, *args, n=n, norm='ortho', **kwargs))
 	plt.plot(ft)
 
 	return ft
@@ -44,14 +44,18 @@ def plot_histogram(
 	step and stepfilled are significantly faster for >1000 bins
 	default is bar and barstacked is also an option.
 	"""
-	hist, bins = np.histogram(data, bins=bins, *args, **kwargs)
+	hist, bins = np.histogram(data, *args, bins=bins, **kwargs)
 
-	plt.hist(bins[:-1], bins, weights=hist,
-			 histtype=histtype,
-			 cumulative=cumulative,
-			 density=density,
-			 *args, **kwargs
-			 )
+	plt.hist(
+		bins[:-1],
+		bins,
+		*args,
+		weights=hist,
+		histtype=histtype,
+		cumulative=cumulative,
+		density=density,
+		**kwargs
+	)
 
 	return [hist, bins]
 
@@ -80,7 +84,7 @@ def plot_histogram_sized(data, size='base', base=64, multi=1, *args, **kwargs):
 		else:
 			bins=np.histogram_bin_edges(data, bins=size)
 
-		hist, bins = plot_histogram(data, bins=bins, *args, **kwargs)
+		hist, bins = plot_histogram(data, *args, bins=bins, **kwargs)
 
 		return [hist, bins]
 

@@ -1,23 +1,20 @@
-#!/usr/bin/env python
+from __future__ import annotations
 
 import re
 
 import numpy as np
-
 from more_itertools import grouper
 
 from serpent.digit import digits_to_number
 from serpent.fun import map_array
-from serpent.padding import pad_to_left
 
-
-bases = dict(
-	A=0b00,
-	C=0b01,
-	G=0b10,
-	T=0b11,
-	U=0b11,
-)
+bases = {
+	"A": 0b00,
+	"C": 0b01,
+	"G": 0b10,
+	"T": 0b11,
+	"U": 0b11,
+}
 bases_inverse = {
 	0: "A",
 	1: "C",
@@ -26,7 +23,7 @@ bases_inverse = {
 }
 
 def decode(dna):
-	"""Returns dna’s codons encoded into numbers 0..63"""
+	"""Returns dna's codons encoded into numbers 0..63"""
 	return map_array(decode_codon, dna)
 
 

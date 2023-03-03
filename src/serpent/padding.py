@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+from __future__ import annotations
 
 
 def get_padding(data, divisor=3, fill="A"):
