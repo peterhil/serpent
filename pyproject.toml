@@ -39,6 +39,33 @@ dev = [
     "types-Pillow>=9.4.0.17",
 ]
 
+
+[tool.mypy]
+files = "src"
+python_version = "3.8"
+
+# Gradually stricter options:
+check_untyped_defs = true
+# disallow_untyped_defs = true
+# disallow_incomplete_defs = true
+# strict = true
+
+show_error_codes = true
+enable_error_code = [
+    "ignore-without-code",
+    "redundant-expr",
+    "truthy-bool",
+]
+warn_unreachable = true
+
+# You can disable imports or control per-module/file settings here
+[[tool.mypy.overrides]]
+module = [
+    "matplotlib.*",
+]
+ignore_missing_imports = true
+
+
 [tool.pylint]
 py-version = "3.8"
 jobs = "0"
