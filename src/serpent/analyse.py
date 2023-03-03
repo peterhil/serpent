@@ -13,7 +13,7 @@ from serpent import dna
 from serpent.digit import number_to_digits
 from serpent.encoding import alphabet64, combos
 from serpent.fasta import read
-from serpent.fun import map_array
+from serpent.fun import map_array, str_join
 from serpent.padding import pad_to_right
 from serpent.stats import count_sorted
 from serpent.visual import (
@@ -60,7 +60,7 @@ def analyse(data, fn=None):
 		# show_image(decoded, width=64, fill=63, mode="RGB")
 	else:
 		# Encode
-		encoded = "".join([alphabet64.get(c, " ") for c in decoded])
+		encoded = str_join([alphabet64.get(c, " ") for c in decoded])
 		print("Encoded:\n", encoded)
 		counts = Counter(encoded)
 		print("Counts:")
@@ -69,11 +69,11 @@ def analyse(data, fn=None):
 		# Write out base64 encoded data
 		if fn:
 			with Path(fn + ".ser64").open("w", encoding="UTF-8") as file:
-				file.write("".join(map_array(str, encoded)))
+				file.write(str_join(map_array(str, encoded)))
 
 		# Bigrams:
 		ch_list = list(chunked(encoded, 2))
-		ch = map_array(lambda c: "".join(c), ch_list, dtype="U2")
+		ch = map_array(str_join, ch_list, dtype="U2")
 		counts = Counter(ch)
 		print("Bigrams:\n")
 		pp(dict(counts.most_common()[:COUNT_LIMIT]))
@@ -92,20 +92,20 @@ def analyse(data, fn=None):
 			twice_i
 		)
 		b64_codes = map_array(
-			lambda a: "".join(list(map(
+			lambda a: str_join(list(map(
 				alphabet64.get,
 				number_to_digits(a)))),
 			twice_i
 		)
 		print(b64_codes)
 		catg = map_array(
-			lambda a: "".join(list(map(
+			lambda a: str_join(list(map(
 				dna.bases_inverse.get,
 				pad_to_right(number_to_digits(a, 4), 3, 0)))),
 			codes.flatten(),
 		)
 		catg = catg.reshape(int(len(catg) / seq_length), seq_length)
-		catg = map_array(lambda row: "".join(row), catg)
+		catg = map_array(str_join, catg)
 		print(catg)
 
 	return decoded

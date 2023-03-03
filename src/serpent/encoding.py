@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from itertools import combinations
 
-from serpent.fun import map_array
+from serpent.fun import map_array, str_join
 
 
-def char_range(char1, char2):
-	"""Generate range of characters from `char1` to `char2`, inclusive."""
-	for ch in range(ord(char1), ord(char2) + 1):
-		yield chr(ch)
+def char_range(start, end):
+	"""Generate range of characters from `start` to `end`, inclusive."""
+	for char in range(ord(start), ord(end) + 1):
+		yield chr(char)
 
 
 # Base 64 alphabet variant.
@@ -21,5 +21,5 @@ base64 = (
 	["+", "."]
 )
 
-combos = map_array(lambda cm: "".join(cm), combinations(base64, 2))
 alphabet64 = dict(set(enumerate(base64)))
+combos = map_array(str_join, combinations(base64, 2))
