@@ -61,32 +61,32 @@ def plot_histogram(
 
 
 def plot_histogram_sized(data, size='base', base=64, multi=1, *args, **kwargs):
-		"""Plot histograms with automatically sized bins.
+	"""Plot histograms with automatically sized bins.
 
-		String size can be:
-		- base (prefer multiples of some numeric base)
-		- auto (fd or sturges)
-		- fd, doane, scott, stone, rice, sturges, sqrt
+	String size can be:
+	- base (prefer multiples of some numeric base)
+	- auto (fd or sturges)
+	- fd, doane, scott, stone, rice, sturges, sqrt
 
-		It makes sense to use base 64 with DNA data, for example.
+	It makes sense to use base 64 with DNA data, for example.
 
-		Note! Size can be one of the strings described here:
-		https://numpy.org/doc/stable/reference/generated/numpy.histogram_bin_edges.html
-		"""
-		# Prevent overflow and other errors from histogram_bin_edges with long sequences
-		if np.min(data) > sys.maxsize or np.max(data) > sys.maxsize:
-			size = max(1024, base * multi)
+	Note! Size can be one of the strings described here:
+	https://numpy.org/doc/stable/reference/generated/numpy.histogram_bin_edges.html
+	"""
+	# Prevent overflow and other errors from histogram_bin_edges with long sequences
+	if np.min(data) > sys.maxsize or np.max(data) > sys.maxsize:
+		size = max(1024, base * multi)
 
-		if size == 'base':
-			bins = np.linspace(0, base ** magnitude(np.max(data)), base * multi, endpoint=True)
-		elif type(size) == 'int':
-			bins = np.arange(size + 1)
-		else:
-			bins=np.histogram_bin_edges(data, bins=size)
+	if size == 'base':
+		bins = np.linspace(0, base ** magnitude(np.max(data)), base * multi, endpoint=True)
+	elif type(size) == 'int':
+		bins = np.arange(size + 1)
+	else:
+		bins=np.histogram_bin_edges(data, bins=size)
 
-		hist, bins = plot_histogram(data, *args, bins=bins, **kwargs)
+	hist, bins = plot_histogram(data, *args, bins=bins, **kwargs)
 
-		return [hist, bins]
+	return [hist, bins]
 
 
 def plot_sequence_counts(decoded, n=4, *args, **kwargs):
