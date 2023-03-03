@@ -5,7 +5,7 @@ from __future__ import annotations
 def get_padding(data, divisor=3, fill="A"):
 	"""Get padding for the divisor.
 
-	The length of data and padding wil be evenly divisible by the divisor.
+	The length of data and padding will be evenly divisible by the divisor.
 	"""
 	padding = []
 	rem = len(data) % divisor
