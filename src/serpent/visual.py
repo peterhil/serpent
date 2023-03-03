@@ -21,9 +21,10 @@ def interactive():
 	plt.show()
 
 
-def plot_fft(decoded, *args, n=64, **kwargs):
+def plot_fft(decoded, *, n=64, norm='ortho', **kwargs):
 	"""Plot FFT of the data."""
-	spectra = np.abs(fft(decoded, *args, n=n, norm='ortho', **kwargs))
+	# kwargs.update(n=n, norm=norm)
+	spectra = np.abs(fft(decoded, n=n, norm=norm, **kwargs))
 	plt.plot(spectra)
 
 	return spectra
@@ -31,7 +32,7 @@ def plot_fft(decoded, *args, n=64, **kwargs):
 
 def plot_histogram(
 	data,
-	*args,
+	*,
 	bins='auto',
 	cumulative=False,
 	density=False,
@@ -48,12 +49,11 @@ def plot_histogram(
 	step and stepfilled are significantly faster for >1000 bins
 	default is bar and barstacked is also an option.
 	"""
-	hist, bins = np.histogram(data, *args, bins=bins, **kwargs)
+	hist, bins = np.histogram(data, bins=bins, **kwargs)
 
 	plt.hist(
 		bins[:-1],
 		bins,
-		*args,
 		weights=hist,
 		histtype=histtype,
 		cumulative=cumulative,

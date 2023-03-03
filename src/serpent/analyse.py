@@ -20,6 +20,7 @@ from serpent.padding import pad_to_right
 from serpent.stats import count_sorted
 from serpent.visual import (
 	interactive,
+	plot_fft,
 	plot_histogram_sized,
 )
 
@@ -46,9 +47,9 @@ def analyse(data, filename=None):
 	# TODO Make subcommands
 	if PLOT:
 		interactive()
-		# plot_fft(decoded, n=64)
+		plot_fft(decoded, n=64)
 
-		seq_length = 5
+		seq_length = 1
 		seqs = dna.codon_sequences(decoded, seq_length)
 
 		plot_histogram_sized(
