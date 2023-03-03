@@ -7,6 +7,12 @@ version = "0.1.3"
 summary = "Disable App Nap on macOS >= 10.9"
 
 [[package]]
+name = "argh"
+version = "0.28.1"
+requires_python = ">=3.8"
+summary = "An unobtrusive argparse wrapper with natural syntax"
+
+[[package]]
 name = "asttokens"
 version = "2.2.1"
 summary = "Annotate AST trees with source code positions"
@@ -335,12 +341,16 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "4.1"
-content_hash = "sha256:64c1003a1ceaedd2e95966d6106341f2b00009cb142881db81a2bd52cb58415a"
+content_hash = "sha256:5b9e2780a97b98e0d741c1ba7a4649a62e5442b56342cb91ee84b5b23dd167f5"
 
 [metadata.files]
 "appnope 0.1.3" = [
     {url = "https://files.pythonhosted.org/packages/41/4a/381783f26df413dde4c70c734163d88ca0550a1361cb74a1c68f47550619/appnope-0.1.3-py2.py3-none-any.whl", hash = "sha256:265a455292d0bd8a72453494fa24df5a11eb18373a60c7c0430889f22548605e"},
     {url = "https://files.pythonhosted.org/packages/6a/cd/355842c0db33192ac0fc822e2dcae835669ef317fe56c795fb55fcddb26f/appnope-0.1.3.tar.gz", hash = "sha256:02bd91c4de869fbb1e1c50aafc4098827a7a54ab2f39d9dcba6c9547ed920e24"},
+]
+"argh 0.28.1" = [
+    {url = "https://files.pythonhosted.org/packages/b2/03/7cad222e3aed5ed668c3c93c35f7ee866bc1da5cdcac945275f45e8caf80/argh-0.28.1-py3-none-any.whl", hash = "sha256:10e7311f3ea54a78a366e5456900d8b81049f44d8d653b524eb90cf7d29a71ee"},
+    {url = "https://files.pythonhosted.org/packages/bf/77/6758074453c83c7ac0456d397e95aaa91b33fbd2ec977dcf38be736ea177/argh-0.28.1.tar.gz", hash = "sha256:b2093086f0e809a3ecc24b64a2145309ee8f56d034936cd59e57c558a357329d"},
 ]
 "asttokens 2.2.1" = [
     {url = "https://files.pythonhosted.org/packages/c8/e3/b0b4f32162621126fbdaba636c152c6b6baec486c99f48686e66343d638f/asttokens-2.2.1.tar.gz", hash = "sha256:4622110b2a6f30b77e1473affaa97e711bc2f07d3f10848420ff1898edbe94f3"},
