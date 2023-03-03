@@ -1,25 +1,25 @@
 #!/usr/bin/env python
+from __future__ import annotations
 
 import sys
-
-import matplotlib.pyplot as plt
-import numpy as np
-
 from collections import Counter
+from pathlib import Path
 from pprint import pp
 
+import numpy as np
 from more_itertools import chunked
 
 from serpent import dna
+from serpent.digit import number_to_digits
 from serpent.encoding import alphabet64, combos
 from serpent.fasta import read
 from serpent.fun import map_array
-from serpent.digit import number_to_digits
-from serpent.mathematics import logn
-from serpent.padding import pad_to_left, pad_to_right
+from serpent.padding import pad_to_right
 from serpent.stats import count_sorted
-from serpent.visual import interactive, plot_fft, plot_histogram_sized, plot_sequence_counts, show_image
-
+from serpent.visual import (
+	interactive,
+	plot_histogram_sized,
+)
 
 COUNT_LIMIT = 20
 PLOT = True
@@ -68,7 +68,7 @@ def analyse(data, fn=None):
 
 		# Write out base64 encoded data
 		if fn:
-			with open(fn + ".ser64", "w", encoding="UTF-8") as file:
+			with Path(fn + ".ser64").open("w", encoding="UTF-8") as file:
 				file.write("".join(map_array(str, encoded)))
 
 		# Bigrams:

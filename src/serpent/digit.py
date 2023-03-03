@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+from __future__ import annotations
 
 
 def digits_to_number(seq, base=64):

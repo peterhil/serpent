@@ -1,10 +1,10 @@
-#!/usr/bin/env python
-
-import numpy as np
+from __future__ import annotations
 
 from collections import Counter
+
+import numpy as np
 
 
 def count_sorted(items):
 	counts = Counter(items)
-	return np.array(list(sorted(counts.items()))).T
+	return np.array(sorted(counts.items())).T
