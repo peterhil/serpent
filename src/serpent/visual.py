@@ -33,8 +33,7 @@ def plot_histogram(
 	histtype='stepfilled',
 	*args, **kwargs
 ):
-	"""
-	Plot histograms using np.histogram and plt.hist.
+	"""Plot histograms using np.histogram and plt.hist.
 
 	size:
 	Histogram with N (=size) automatically sized bins.

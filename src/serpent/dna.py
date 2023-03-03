@@ -15,6 +15,8 @@ bases = {
 	"T": 0b11,
 	"U": 0b11,
 }
+
+
 bases_inverse = {
 	0: "A",
 	1: "C",
@@ -23,7 +25,7 @@ bases_inverse = {
 }
 
 def decode(dna):
-	"""Returns dna's codons encoded into numbers 0..63"""
+	"""Return codons from DNA decoded into numbers 0..63."""
 	return map_array(decode_codon, dna)
 
 
@@ -48,7 +50,7 @@ def clean_non_dna(data):
 
 
 def get_codons(data, fill="A"):
-	"""Get codons from data as Numpy array"""
+	"""Get codons from data as Numpy array."""
 	codons_list = list(grouper(data, 3, incomplete="fill", fillvalue=fill))
 	codons = map_array(lambda c: "".join(c), codons_list, dtype="U3")
 
@@ -57,8 +59,8 @@ def get_codons(data, fill="A"):
 
 def codon_sequences(decoded, n=4, fill=0):
 	"""Chunk data into length N sequences of codons.
-	Count the occurences of different kmers as numbers between 0..64**n.
 
+	Count the occurences of different kmers as numbers between 0..64**n.
 	Return index and counts.
 	"""
 	sequences = list(grouper(decoded, n, incomplete="fill", fillvalue=fill))

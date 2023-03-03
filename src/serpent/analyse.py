@@ -84,8 +84,9 @@ def analyse(data, fn=None):
 		# Print codon sequences
 		print("Codon sequences:\n")
 		seq_length = 4
+		occurences = 2
 		[index, count] = count_sorted(dna.codon_sequences(decoded, seq_length))
-		twice_i = index[count == 2]
+		twice_i = index[count == occurences]
 		codes = map_array(
 			lambda a: pad_to_right(number_to_digits(a, 64), seq_length, 0),
 			twice_i
