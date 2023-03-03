@@ -16,3 +16,7 @@ repos:
         args: ["--pytest-test-first"]
       - id: requirements-txt-fixer
       - id: trailing-whitespace
+  - repo: https://github.com/jleclanche/tan
+    rev: 22.8.0
+    hooks:
+      - id: black
