@@ -14,13 +14,10 @@ def get_padding(data: NDArray[T], fill: T, n: int=3) -> NDArray[T]:
 
 	The length of data and padding will be evenly divisible by the divisor.
 	"""
-	padding = []
-	rem = len(data) % n
-	if rem != 0:
-		pad_length = n - rem
-		padding = pad_length * [fill]
+	remainder = len(data) % n
+	pad_length = (n - remainder) % n
 
-	return np.array(padding)
+	return np.repeat([fill], pad_length)
 
 
 def pad_to_left(data: NDArray[T], fill: T, *, n: int=3) -> NDArray[T]:
