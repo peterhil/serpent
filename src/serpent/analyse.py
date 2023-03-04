@@ -29,22 +29,8 @@ from serpent.visual import (
 COUNT_LIMIT = 20
 
 
-def analyse(data, plot=False, filename=None):
+def analyse(decoded, plot=False, filename=None):
 	"""Analyse data."""
-	data = dna.clean_non_dna(data)
-
-	# Codons
-	codons = dna.get_codons(data)
-	counts = Counter(codons)
-	print("Codons used:\n", np.unique(codons))
-	print("Codons total:", len(codons), "unique:", len(np.unique(codons)))
-	print("Counts:")
-	pp(dict(counts.most_common()[:COUNT_LIMIT]))
-
-	# Decode
-	decoded = dna.decode(codons)
-	# print("Decoded:\n", len(np.unique(decoded)), decoded)
-
 	# TODO Make subcommands
 	if plot:
 		interactive()
@@ -130,7 +116,22 @@ def serpent(filename, amino=False, plot=False, writeout=False):
 	"""Explore DNA data with Serpent."""
 	data = read(filename, amino)
 	outfile = filename if writeout else None
-	decoded = analyse(data, plot, filename=outfile)
+
+	data = dna.clean_non_dna(data)
+
+	# Codons
+	codons = dna.get_codons(data)
+	counts = Counter(codons)
+	print("Codons used:\n", np.unique(codons))
+	print("Codons total:", len(codons), "unique:", len(np.unique(codons)))
+	print("Counts:")
+	pp(dict(counts.most_common()[:COUNT_LIMIT]))
+
+	# Decode
+	decoded = dna.decode(codons)
+	# print("Decoded:\n", len(np.unique(decoded)), decoded)
+
+	analyse(decoded, plot, filename=outfile)
 
 	return decoded
 
