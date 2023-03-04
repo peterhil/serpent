@@ -73,7 +73,7 @@ def read(filename: str, amino: bool = False) -> str:
 	"""
 	data = []
 	description_count = 0
-	max_count = 2
+	max_count = 2000
 
 	with Path(filename).open(encoding="UTF-8") as file:
 		while (line := file.readline().rstrip()) and description_count < max_count:
@@ -88,6 +88,6 @@ def read(filename: str, amino: bool = False) -> str:
 	# TODO Create a TUI or add CLI option to select sequences or
 	# otherwise handle multiple sequences
 	if description_count >= max_count:
-		print("Warning: File has more than one FASTA sequence!")
+		print("Warning: File has more than {max_count} FASTA sequences!")
 
 	return "\n".join(data)

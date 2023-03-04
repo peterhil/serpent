@@ -156,11 +156,12 @@ def autowidth(n, base=4):
 	return int(base ** magnitude(np.sqrt(n), base))
 
 
+@arg('--amino', '-a', help='Read input as amino acids')
 @arg('--width', '-w', help='Image width')
-@arg('--out', '-o', help='Write image to file')
-def image(filename, width=None, out=False):
-	data = read(filename)  # TODO Handle amino
-	decoded = decode(data)
+@arg('--out',   '-o', help='Write image to file')
+def image(filename, amino=False, width=None, out=False):
+	data = read(filename, amino)  # TODO Handle amino
+	decoded = decode(data, amino)
 
 	width = int(width) if width else autowidth(len(decoded))
 

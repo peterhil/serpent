@@ -27,9 +27,9 @@ bases_inverse = {
 }
 
 
-def decode(dna):
+def decode(dna, amino=False):
 	"""Return codons from DNA decoded into numbers 0..63."""
-	return map_array(decode_codon, dna)
+	return map_array(decode_amino if amino else decode_codon, dna)
 
 
 def decode_amino(amino: str) -> int:
