@@ -5,7 +5,9 @@ from __future__ import annotations
 from collections.abc import Iterable
 from itertools import combinations
 
-from serpent.fun import map_array, str_join
+import numpy as np
+
+from serpent.fun import str_join
 
 
 def char_range(start: str, end: str) -> Iterable[str]:
@@ -25,4 +27,4 @@ base64 = (
 )
 
 alphabet64 = dict(set(enumerate(base64)))
-combos = map_array(str_join, combinations(base64, 2))
+combos = np.fromiter(map(str_join, combinations(base64, 2)), dtype='<U2')
