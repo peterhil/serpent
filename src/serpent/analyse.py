@@ -25,7 +25,7 @@ from serpent.visual import (
 )
 
 COUNT_LIMIT = 20
-PLOT = True
+PLOT = False
 
 
 def analyse(data, filename=None):

@@ -13,6 +13,7 @@ from serpent import dna
 from serpent.mathematics import magnitude, normalise
 from serpent.padding import pad_to_left
 from serpent.stats import count_sorted
+from serpent.typing import CodonData
 
 
 def interactive() -> None:
@@ -110,7 +111,7 @@ def plot_sequence_counts(decoded, *args, n=4, **kwargs):
 	return [count, index]
 
 
-def show_image(decoded, width=64, fill=0, mode="RGB"):
+def show_image(decoded: CodonData, width=64, fill=0, mode="RGB"):
 	"""Show decoded DNA data as full colour image.
 
 	The codons are mapped quite directly to 64 ** 3 (= 262144)
