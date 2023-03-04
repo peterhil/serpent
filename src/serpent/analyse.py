@@ -19,13 +19,14 @@ from serpent.fun import map_array, str_join
 from serpent.padding import pad_to_right
 from serpent.stats import count_sorted
 from serpent.visual import (
+	dna_image,
 	interactive,
 	plot_fft,
 	plot_histogram_sized,
 )
 
 COUNT_LIMIT = 20
-PLOT = False
+PLOT = True
 
 
 def analyse(data, filename=None):
@@ -61,7 +62,8 @@ def analyse(data, filename=None):
 		)
 		# plot_sequence_counts(decoded, n=seq_length)
 
-		# show_image(decoded, width=64, fill=63, mode="RGB")
+		img = dna_image(decoded, width=64, fill=63, mode="RGB")
+		img.show()
 	else:
 		# Encode
 		encoded = str_join([alphabet64.get(c, " ") for c in decoded])

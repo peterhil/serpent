@@ -111,7 +111,7 @@ def plot_sequence_counts(decoded, *args, n=4, **kwargs):
 	return [count, index]
 
 
-def show_image(decoded: CodonData, width=64, fill=0, mode="RGB"):
+def dna_image(decoded: CodonData, width=64, fill=0, mode="RGB") -> Image.Image:
 	"""Show decoded DNA data as full colour image.
 
 	The codons are mapped quite directly to 64 ** 3 (= 262144)
@@ -128,7 +128,7 @@ def show_image(decoded: CodonData, width=64, fill=0, mode="RGB"):
 		rgb = norm.reshape(height, width, channels)
 	else:
 		rgb = norm.reshape(height, width)
+
 	img = Image.fromarray(np.uint8(rgb * 255), mode=mode)
-	img.show()
 
 	return img
