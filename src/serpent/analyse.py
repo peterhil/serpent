@@ -29,6 +29,34 @@ from serpent.visual import (
 COUNT_LIMIT = 20
 
 
+def format_lines(data, width=80, sep=' '):
+	"""Format lines for printing."""
+	def fmt(chunk):
+		return str_join(chunk, sep)
+	lines = [
+		f"{i * width}:\t{fmt(chunk)}"
+		for i, chunk
+		in enumerate(chunked(data, width))
+	]
+
+	return lines
+
+
+def decode(data, verbose=False):
+	data = dna.clean_non_dna(data)
+	codons = dna.get_codons(data)
+	decoded = dna.decode(codons)
+
+	if verbose:
+		uniq = len(np.unique(decoded))
+		print(f"Decoded ({len(decoded)}, unique: {uniq}):")
+		strings = map(str, iter(decoded))
+		lines = format_lines(strings, 32)
+		{print(line) for line in lines}
+
+	return decoded
+
+
 def analyse(decoded, plot=False, filename=None):
 	"""Analyse data."""
 	# TODO Make subcommands
@@ -126,12 +154,7 @@ def codons(filename, width=20, stats=False):
 		pp(dict(counts.most_common()[:COUNT_LIMIT]))
 	else:
 		print("Codons:")
-		# TODO Make this a generic print helper
-		lines = [
-			f"{i * width}:\t{str_join(chunk, ' ')}"
-			for i, chunk
-			in enumerate(chunked(codons, width))
-		]
+		lines = format_lines(codons, width)
 		{print(line) for line in lines}
 
 	# return codons
@@ -139,17 +162,13 @@ def codons(filename, width=20, stats=False):
 
 @arg('--amino',    '-a', help='Read input as amino acids')
 @arg('--plot',     '-p', help='Use plotting')
+@arg('--verbose',  '-v', help='Verbose')
 @arg('--writeout', '-w', help='Write base 64 encoded data out')
-def serpent(filename, amino=False, plot=False, writeout=False):
+def serpent(filename, amino=False, plot=False, verbose=False, writeout=False):
 	"""Explore DNA data with Serpent."""
 	data = read(filename, amino)
 	outfile = filename if writeout else None
-
-	# Decode
-	data = dna.clean_non_dna(data)
-	codons = dna.get_codons(data)
-	decoded = dna.decode(codons)
-	# print("Decoded:\n", len(np.unique(decoded)), decoded)
+	decoded = decode(data, verbose)
 
 	analyse(decoded, plot, filename=outfile)
 
