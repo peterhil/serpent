@@ -118,10 +118,10 @@ def show_image(decoded, width=64, fill=0, mode="RGB"):
 	"""
 	padded = np.array(pad_to_left(decoded, fill, n=3 * width))
 	norm = normalise(padded)
-	channels = len(mode)
+	channels: int = len(mode)
 
-	rows = len(norm) / (channels * width)
-	height = int(np.floor(rows))
+	rows: float = len(norm) / (channels * width)
+	height: int = int(np.ceil(rows))
 
 	if channels > 1:
 		rgb = norm.reshape(height, width, channels)
