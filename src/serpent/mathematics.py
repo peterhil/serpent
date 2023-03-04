@@ -3,14 +3,10 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TypeVar, Union
+from typing import Union
 
 import numpy as np
-from numpy import dtype, ndarray
-from numpy.typing import ArrayLike, NBitBase
-
-T = TypeVar('T', bound=NBitBase)
-
+from numpy.typing import ArrayLike, NDArray
 
 LogBase = Union[int, float]
 Numeric = Union[int, float, complex]
@@ -27,6 +23,6 @@ def magnitude(data: NumericSeq, base: LogBase=64) -> int:
 	return int(np.ceil(logn(np.max(data), base)))
 
 
-def normalise(seq: np.floating[T]) -> ndarray[T, dtype[np.floating[T]]]:
+def normalise(seq: NumericSeq) -> NDArray[np.float64]:
 	"""Normalise data max to be 1."""
-	return np.asanyarray(seq) / np.amax(seq)
+	return np.asanyarray(seq, dtype=np.float64) / np.amax(seq)
