@@ -109,6 +109,33 @@ def analyse(decoded, plot=False, filename=None):
 	return decoded
 
 
+@arg('--stats',  '-s', help='Show statistics')
+def codons(filename, stats=False):
+	"""Print codons and statistics."""
+	data = read(filename)
+	data = dna.clean_non_dna(data)
+
+	codons = dna.get_codons(data)
+
+	if stats:
+		counts = Counter(codons)
+		print("Codons used:\n", np.unique(codons))
+		print("Codons total:", len(codons), "unique:", len(np.unique(codons)))
+		print("Counts:")
+		pp(dict(counts.most_common()[:COUNT_LIMIT]))
+	else:
+		print("Codons:")
+		per_line = 20
+		lines = [
+			f"{i * per_line}:\t{str_join(chunk, ' ')}"
+			for i, chunk
+			in enumerate(chunked(codons, per_line))
+		]
+		{print(line) for line in lines}
+
+	# return codons
+
+
 @arg('--amino',    '-a', help='Read input as amino acids')
 @arg('--plot',     '-p', help='Use plotting')
 @arg('--writeout', '-w', help='Write base 64 encoded data out')
@@ -117,17 +144,9 @@ def serpent(filename, amino=False, plot=False, writeout=False):
 	data = read(filename, amino)
 	outfile = filename if writeout else None
 
-	data = dna.clean_non_dna(data)
-
-	# Codons
-	codons = dna.get_codons(data)
-	counts = Counter(codons)
-	print("Codons used:\n", np.unique(codons))
-	print("Codons total:", len(codons), "unique:", len(np.unique(codons)))
-	print("Counts:")
-	pp(dict(counts.most_common()[:COUNT_LIMIT]))
-
 	# Decode
+	data = dna.clean_non_dna(data)
+	codons = dna.get_codons(data)
 	decoded = dna.decode(codons)
 	# print("Decoded:\n", len(np.unique(decoded)), decoded)
 
@@ -138,8 +157,11 @@ def serpent(filename, amino=False, plot=False, writeout=False):
 
 def main():
 	parser = argh.ArghParser()
-	# parser.add_commands([serpent])
-	parser.set_default_command(serpent)
+	parser.add_commands([
+		codons,
+		serpent,
+	])
+	# parser.set_default_command(serpent)
 	return parser.dispatch()
 
 

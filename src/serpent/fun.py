@@ -13,6 +13,6 @@ def map_array(function, arr, dtype=None):
 	return np.array(list(map(function, arr)), dtype=dtype)
 
 
-def str_join(seq: Iterable) -> str:
+def str_join(seq: Iterable, joiner='') -> str:
 	"""Join a sequence into a string."""
-	return "".join(seq)
+	return joiner.join(seq)
