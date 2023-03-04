@@ -27,10 +27,9 @@ from serpent.visual import (
 )
 
 COUNT_LIMIT = 20
-PLOT = False
 
 
-def analyse(data, filename=None):
+def analyse(data, plot=False, filename=None):
 	"""Analyse data."""
 	data = dna.clean_non_dna(data)
 
@@ -44,14 +43,14 @@ def analyse(data, filename=None):
 
 	# Decode
 	decoded = dna.decode(codons)
-	print("Decoded:\n", len(np.unique(decoded)), decoded)
+	# print("Decoded:\n", len(np.unique(decoded)), decoded)
 
 	# TODO Make subcommands
-	if PLOT:
+	if plot:
 		interactive()
-		plot_fft(decoded, n=64)
+		plot_fft(decoded, n=238)
 
-		seq_length = 1
+		seq_length = 3
 		seqs = dna.codon_sequences(decoded, seq_length)
 
 		plot_histogram_sized(
@@ -63,8 +62,14 @@ def analyse(data, filename=None):
 		)
 		# plot_sequence_counts(decoded, n=seq_length)
 
-		img = dna_image(decoded, width=64, fill=63, mode="RGB")
+		# width = 64
+		width = 119
+		# width = 64 ** 2 - 1
+		img = dna_image(decoded, width=width, fill=63, mode="RGB")
 		img.show()
+
+		if filename:
+			img.save(filename + f".w{width}.png")
 	else:
 		# Encode
 		encoded = str_join([alphabet64.get(c, " ") for c in decoded])
@@ -119,12 +124,13 @@ def analyse(data, filename=None):
 
 
 @arg('--amino',    '-a', help='Read input as amino acids')
+@arg('--plot',     '-p', help='Use plotting')
 @arg('--writeout', '-w', help='Write base 64 encoded data out')
-def serpent(filename, amino=False, writeout=False):
+def serpent(filename, amino=False, plot=False, writeout=False):
 	"""Explore DNA data with Serpent."""
 	data = read(filename, amino)
 	outfile = filename if writeout else None
-	decoded = analyse(data, filename=outfile)
+	decoded = analyse(data, plot, filename=outfile)
 
 	return decoded
 
