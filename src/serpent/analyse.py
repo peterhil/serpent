@@ -19,7 +19,9 @@ from serpent.fun import map_array, str_join
 from serpent.padding import pad_to_right
 from serpent.stats import count_sorted
 from serpent.visual import (
+	dna_image,
 	interactive,
+	plot_fft,
 	plot_histogram_sized,
 )
 
@@ -46,9 +48,9 @@ def analyse(data, filename=None):
 	# TODO Make subcommands
 	if PLOT:
 		interactive()
-		# plot_fft(decoded, n=64)
+		plot_fft(decoded, n=64)
 
-		seq_length = 5
+		seq_length = 1
 		seqs = dna.codon_sequences(decoded, seq_length)
 
 		plot_histogram_sized(
@@ -60,7 +62,8 @@ def analyse(data, filename=None):
 		)
 		# plot_sequence_counts(decoded, n=seq_length)
 
-		# show_image(decoded, width=64, fill=63, mode="RGB")
+		img = dna_image(decoded, width=64, fill=63, mode="RGB")
+		img.show()
 	else:
 		# Encode
 		encoded = str_join([alphabet64.get(c, " ") for c in decoded])
@@ -91,7 +94,7 @@ def analyse(data, filename=None):
 		[index, count] = count_sorted(dna.codon_sequences(decoded, seq_length))
 		twice_i = index[count == occurences]
 		codes = map_array(
-			lambda a: pad_to_right(number_to_digits(a, 64), seq_length, 0),
+			lambda a: pad_to_right(number_to_digits(a, 64), fill=0, n=seq_length),
 			twice_i
 		)
 		b64_codes = map_array(
@@ -104,7 +107,7 @@ def analyse(data, filename=None):
 		catg = map_array(
 			lambda a: str_join(list(map(
 				dna.bases_inverse.get,
-				pad_to_right(number_to_digits(a, 4), 3, 0)))),
+				pad_to_right(number_to_digits(a, 4), fill=0, n=3)))),
 			codes.flatten(),
 		)
 		catg = catg.reshape(int(len(catg) / seq_length), seq_length)

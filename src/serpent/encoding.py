@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from itertools import combinations
 
-from serpent.fun import map_array, str_join
+import numpy as np
+
+from serpent.fun import str_join
 
 
-def char_range(start, end):
+def char_range(start: str, end: str) -> Iterable[str]:
 	"""Generate range of characters from `start` to `end`, inclusive."""
 	for char in range(ord(start), ord(end) + 1):
 		yield chr(char)
@@ -24,4 +27,4 @@ base64 = (
 )
 
 alphabet64 = dict(set(enumerate(base64)))
-combos = map_array(str_join, combinations(base64, 2))
+combos = np.fromiter(map(str_join, combinations(base64, 2)), dtype='<U2')

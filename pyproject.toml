@@ -35,7 +35,46 @@ dev = [
     "ruff>=0.0.253",
     "flake8-tabs>=2.3.2",
     "pylint>=2.16.3",
+    "mypy>=1.0.1",
+    "types-Pillow>=9.4.0.17",
 ]
+
+
+[tool.mypy]
+files = "src"
+python_version = "3.8"
+
+# Start off with these
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_optional = true
+
+# Getting these passing should be easy
+strict_equality = true
+strict_concatenate = true
+
+# Gradually stricter options:
+check_untyped_defs = true
+# disallow_untyped_defs = true
+# disallow_incomplete_defs = true
+# strict = true
+
+show_error_codes = true
+enable_error_code = [
+    "ignore-without-code",
+    "redundant-expr",
+    "truthy-bool",
+]
+warn_unreachable = true
+
+# You can disable imports or control per-module/file settings here
+[[tool.mypy.overrides]]
+module = [
+    "matplotlib.*",
+]
+ignore_missing_imports = true
+
 
 [tool.pylint]
 py-version = "3.8"

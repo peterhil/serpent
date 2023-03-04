@@ -13,17 +13,19 @@ from serpent import dna
 from serpent.mathematics import magnitude, normalise
 from serpent.padding import pad_to_left
 from serpent.stats import count_sorted
+from serpent.typing import CodonData
 
 
-def interactive():
+def interactive() -> None:
 	"""Use interactive mode with pyplot."""
 	plt.interactive(True)
 	plt.show()
 
 
-def plot_fft(decoded, *args, n=64, **kwargs):
+def plot_fft(decoded, *, n=64, norm='ortho', **kwargs):
 	"""Plot FFT of the data."""
-	spectra = np.abs(fft(decoded, *args, n=n, norm='ortho', **kwargs))
+	# kwargs.update(n=n, norm=norm)
+	spectra = np.abs(fft(decoded, n=n, norm=norm, **kwargs))
 	plt.plot(spectra)
 
 	return spectra
@@ -31,7 +33,7 @@ def plot_fft(decoded, *args, n=64, **kwargs):
 
 def plot_histogram(
 	data,
-	*args,
+	*,
 	bins='auto',
 	cumulative=False,
 	density=False,
@@ -48,12 +50,11 @@ def plot_histogram(
 	step and stepfilled are significantly faster for >1000 bins
 	default is bar and barstacked is also an option.
 	"""
-	hist, bins = np.histogram(data, *args, bins=bins, **kwargs)
+	hist, bins = np.histogram(data, bins=bins, **kwargs)
 
 	plt.hist(
 		bins[:-1],
 		bins,
-		*args,
 		weights=hist,
 		histtype=histtype,
 		cumulative=cumulative,
@@ -110,24 +111,24 @@ def plot_sequence_counts(decoded, *args, n=4, **kwargs):
 	return [count, index]
 
 
-def show_image(decoded, width=64, fill=0, mode="RGB"):
+def dna_image(decoded: CodonData, width=64, fill=0, mode="RGB") -> Image.Image:
 	"""Show decoded DNA data as full colour image.
 
 	The codons are mapped quite directly to 64 ** 3 (= 262144)
 	RGB colours, so that: A=0, C=85, G=170, T/U=255
 	"""
-	padded = np.array(pad_to_left(decoded, 3 * width, fill))
+	padded = np.array(pad_to_left(decoded, fill, n=3 * width))
 	norm = normalise(padded)
-	channels = len(mode)
+	channels: int = len(mode)
 
-	rows = len(norm) / (channels * width)
-	height = int(np.floor(rows))
+	rows: float = len(norm) / (channels * width)
+	height: int = int(np.ceil(rows))
 
 	if channels > 1:
 		rgb = norm.reshape(height, width, channels)
 	else:
 		rgb = norm.reshape(height, width)
+
 	img = Image.fromarray(np.uint8(rgb * 255), mode=mode)
-	img.show()
 
 	return img
