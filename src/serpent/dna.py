@@ -6,6 +6,7 @@ import re
 import numpy as np
 from more_itertools import grouper
 
+from serpent.amino import aminos, aminos_inverse
 from serpent.digit import digits_to_number
 from serpent.fun import map_array, str_join
 
@@ -29,6 +30,16 @@ bases_inverse = {
 def decode(dna):
 	"""Return codons from DNA decoded into numbers 0..63."""
 	return map_array(decode_codon, dna)
+
+
+def decode_amino(amino: str) -> int:
+	"""Decode an amino acid IUPAC string into a number between 0 and 63."""
+	return aminos.get(amino)
+
+
+def encode_amino(code: int) -> str:
+	"""Decode an amino acid IUPAC string into a number between 0 and 63."""
+	return aminos_inverse.get(code, '')
 
 
 def decode_codon(codon: str) -> int:
