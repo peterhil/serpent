@@ -39,6 +39,9 @@ dev = [
     "types-Pillow>=9.4.0.17",
 ]
 
+[tool.pdm.scripts]
+analyse =  {call = "serpent.analyse:main"}
+
 
 [tool.mypy]
 files = "src"

@@ -3,12 +3,13 @@
 
 from __future__ import annotations
 
-import sys
 from collections import Counter
 from pathlib import Path
 from pprint import pp
 
+import argh
 import numpy as np
+from argh.decorators import arg
 from more_itertools import chunked
 
 from serpent import dna
@@ -26,7 +27,7 @@ from serpent.visual import (
 )
 
 COUNT_LIMIT = 20
-PLOT = True
+PLOT = False
 
 
 def analyse(data, filename=None):
@@ -117,24 +118,23 @@ def analyse(data, filename=None):
 	return decoded
 
 
-def main(args=None):
-	"""Serpent main."""
-	# Ensure same behavior while testing and using the CLI
-	args = args or sys.argv[1:]
-	if len(args) == 0:
-		print("Give a filename for DNA data.")
-		sys.exit(1)
-	filename = args[0]
-	amino = "-a" in args
-	writeout = "-o" in args
-
+@arg('--amino',    '-a', help='Read input as amino acids')
+@arg('--writeout', '-w', help='Write base 64 encoded data out')
+def serpent(filename, amino=False, writeout=False):
+	"""Explore DNA data with Serpent."""
 	data = read(filename, amino)
-
 	outfile = filename if writeout else None
 	decoded = analyse(data, filename=outfile)
 
 	return decoded
 
 
-if __name__ == "__main__":
+def main():
+	parser = argh.ArghParser()
+	# parser.add_commands([serpent])
+	parser.set_default_command(serpent)
+	return parser.dispatch()
+
+
+if __name__ == '__main__':
 	decoded = main()
