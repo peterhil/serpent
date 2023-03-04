@@ -110,7 +110,8 @@ def analyse(decoded, plot=False, filename=None):
 
 
 @arg('--stats',  '-s', help='Show statistics')
-def codons(filename, stats=False):
+@arg('--width',  '-w', help='Codons per line')
+def codons(filename, width=20, stats=False):
 	"""Print codons and statistics."""
 	data = read(filename)
 	data = dna.clean_non_dna(data)
@@ -125,11 +126,11 @@ def codons(filename, stats=False):
 		pp(dict(counts.most_common()[:COUNT_LIMIT]))
 	else:
 		print("Codons:")
-		per_line = 20
+		# TODO Make this a generic print helper
 		lines = [
-			f"{i * per_line}:\t{str_join(chunk, ' ')}"
+			f"{i * width}:\t{str_join(chunk, ' ')}"
 			for i, chunk
-			in enumerate(chunked(codons, per_line))
+			in enumerate(chunked(codons, width))
 		]
 		{print(line) for line in lines}
 
