@@ -17,6 +17,7 @@ from serpent.digit import number_to_digits
 from serpent.encoding import alphabet64, combos
 from serpent.fasta import read
 from serpent.fun import map_array, str_join
+from serpent.mathematics import magnitude
 from serpent.padding import pad_to_right
 from serpent.stats import count_sorted
 from serpent.visual import (
@@ -75,15 +76,6 @@ def analyse(decoded, plot=False, filename=None):
 			cumulative=False,
 		)
 		# plot_sequence_counts(decoded, n=seq_length)
-
-		# width = 64
-		width = 119
-		# width = 64 ** 2 - 1
-		img = dna_image(decoded, width=width, fill=63, mode="RGB")
-		img.show()
-
-		if filename:
-			img.save(filename + f".w{width}.png")
 	else:
 		# Encode
 		encoded = str_join([alphabet64.get(c, " ") for c in decoded])
@@ -160,6 +152,25 @@ def codons(filename, width=20, stats=False):
 	# return codons
 
 
+def autowidth(n, base=4):
+	return int(base ** magnitude(np.sqrt(n), base))
+
+
+@arg('--width', '-w', help='Image width')
+@arg('--out', '-o', help='Write image to file')
+def image(filename, width=None, out=False):
+	data = read(filename)  # TODO Handle amino
+	decoded = decode(data)
+
+	width = int(width) if width else autowidth(len(decoded))
+
+	img = dna_image(decoded, width=width, fill=63, mode="RGB")
+	img.show()
+
+	if out:
+		img.save(filename + f".w{width}.png")
+
+
 @arg('--amino',    '-a', help='Read input as amino acids')
 @arg('--plot',     '-p', help='Use plotting')
 @arg('--verbose',  '-v', help='Verbose')
@@ -179,6 +190,7 @@ def main():
 	parser = argh.ArghParser()
 	parser.add_commands([
 		codons,
+		image,
 		serpent,
 	])
 	# parser.set_default_command(serpent)
