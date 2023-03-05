@@ -13,6 +13,9 @@ Numeric = Union[int, float, complex]
 NumericSeq = Union[Sequence[Numeric], ArrayLike]
 
 
+phi = (1 + np.sqrt(5)) / 2
+
+
 def logn(number: NumericSeq, base: LogBase=np.e) -> float:
 	"""Logarithm of number on some base."""
 	return float(np.log2(number) / np.log2(base))

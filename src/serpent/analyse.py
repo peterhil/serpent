@@ -17,7 +17,7 @@ from serpent.digit import number_to_digits
 from serpent.encoding import alphabet64, combos
 from serpent.fasta import read
 from serpent.fun import map_array, str_join
-from serpent.mathematics import magnitude
+from serpent.mathematics import magnitude, phi
 from serpent.padding import pad_to_right
 from serpent.printing import format_lines
 from serpent.stats import count_sorted
@@ -141,20 +141,28 @@ def codons(filename, width=20, stats=False):
 	# return codons
 
 
-def autowidth(n, base=4):
-	return int(base ** magnitude(np.sqrt(n), base))
+def autowidth(n, base=64, method="magn", aspect=phi):
+	if method == 'magn':
+		return int(base ** magnitude(np.sqrt(n), base))
+	elif method == 'round':
+		return int(base * np.round(aspect * np.sqrt(n) / base))
+	else:
+		err_msg = f"Unknown method: {method}"
+		raise ValueError(err_msg)
 
 
 @arg('--amino', '-a', help='Read input as amino acids')
-@arg('--width', '-w', help='Image width')
+@arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L'))
 @arg('--out',   '-o', help='Write image to file')
-def image(filename, amino=False, width=None, out=False):
+@arg('--width', '-w', help='Image width', type=int)
+def image(filename, amino=False, width=None, mode="RGB", out=False):
 	data = read(filename, amino)  # TODO Handle amino
 	decoded = decode(data, amino)
 
-	width = int(width) if width else autowidth(len(decoded))
+	if not width:
+		width = autowidth(len(decoded) / len(mode), method='round', base=64)
 
-	img = dna_image(decoded, width=width, fill=63, mode="RGB")
+	img = dna_image(decoded, width=width, fill=63, mode=mode)
 	img.show()
 
 	if out:
