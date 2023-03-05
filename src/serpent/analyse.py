@@ -17,7 +17,7 @@ from serpent.digit import number_to_digits
 from serpent.encoding import alphabet64, combos
 from serpent.fasta import read
 from serpent.fun import map_array, str_join
-from serpent.mathematics import phi
+from serpent.mathematics import autowidth, phi
 from serpent.padding import pad_to_right
 from serpent.printing import format_lines
 from serpent.stats import count_sorted
@@ -139,10 +139,6 @@ def codons(filename, width=20, stats=False):
 		{print(line) for line in lines}
 
 	# return codons
-
-
-def autowidth(n, base=64, aspect=phi):
-	return int(base * np.round(aspect * np.sqrt(n) / base))
 
 
 @arg('--amino', '-a', help='Read input as amino acids')
