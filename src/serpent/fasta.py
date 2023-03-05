@@ -101,6 +101,6 @@ def read(filename: str, amino: bool = False) -> str:
 	# TODO Create a TUI or add CLI option to select sequences or
 	# otherwise handle multiple sequences
 	if description_count >= max_count:
-		print("Warning: File has more than {max_count} FASTA sequences!")
+		print(f"Warning: File has more than {max_count} FASTA sequences!")
 
 	return "\n".join(data)
