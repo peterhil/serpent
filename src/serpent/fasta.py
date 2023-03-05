@@ -29,6 +29,7 @@ def tokenize(data: str, amino: bool=False) -> Iterator[Token]:
 
 	See: https://docs.python.org/3/library/re.html#writing-a-tokenizer.
 	"""
+	data = data.upper()  # TODO Handle insertions, see FASTA format
 	base = r"[ACGTU\n]"
 	token_specification = [
 		("DESCRIPTION", r">[^\n]*"),
