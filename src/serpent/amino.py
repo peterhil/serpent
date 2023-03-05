@@ -81,6 +81,8 @@ aminos_inverse = OrderedDict({
 	# Z = E | Q
 	17: "Z",  # Q
 	33: "Z",  # E
+	64: "X",  # Any
+	65: "-",  # Gap of indeterminmate length
 })
 
 

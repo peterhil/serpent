@@ -43,7 +43,7 @@ def tokenize(data: str, amino: bool=False) -> Iterator[Token]:
 	]
 	if amino:
 		# https://en.wikipedia.org/wiki/Proteinogenic_amino_acid
-		token_specification.insert(1, ("AMINO", r"[ARNDCQEGHILKMFPSTWYVUO]+"))
+		token_specification.insert(1, ("AMINO", r"[ARNDCQEGHILKMFPSTWYVUOX*-]+"))
 
 	tok_regex = "|".join("(?P<%s>%s)" % pair for pair in token_specification)
 	line_num: int = 1

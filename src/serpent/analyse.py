@@ -43,8 +43,9 @@ def format_lines(data, width=80, sep=' '):
 	return lines
 
 
-def decode(data, verbose=False):
-	data = dna.clean_non_dna(data)
+def decode(data, amino=False, verbose=False):
+	if not amino:  # TODO Handle degenerate data properly
+		data = dna.clean_non_dna(data)
 	codons = dna.get_codons(data)
 	decoded = dna.decode(codons)
 
