@@ -92,22 +92,28 @@ def codons(filename, width=20, stats=False):
 @arg('--amino', '-a', help='Read input as amino acids')
 @arg('--count', '-c', help='Print counts')
 @arg('--out',   '-o', help='Write out to file')
-def encode(filename, amino=False, count=False, out=False):
+@arg('--width', '-w', help='Line width', type=int)
+def encode(filename, amino=False, count=False, out=False, width=64):
 	"""Encode data into various formats."""
+	# TODO Read and decode data iteratively
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino)
 
-	encoded = str_join([alphabet64.get(c, " ") for c in decoded])
+	encoded = (alphabet64.get(c, " ") for c in decoded)
 
 	if count:
 		counts = Counter(encoded)
-		pp(dict(counts.most_common()[:COUNT_LIMIT]))
-	else:
-		print(encoded)
+		return (f"{count}\t{codon}" for codon, count in counts.most_common())
 
+	lines = (str_join(line) for line in chunked(encoded, width))
 	if out:
-		with Path(filename + ".ser64").open("w", encoding="UTF-8") as file:
-			file.write(str_join(map_array(str, encoded)))
+		outfile = filename + ".ser64"
+		with Path(outfile).open("w", encoding="UTF-8") as file:
+			file.write(str_join(lines, "\n"))
+			print(f"Wrote: {outfile}")
+		return None
+	else:
+		return lines
 
 
 @arg('--amino', '-a', help='Read input as amino acids')
