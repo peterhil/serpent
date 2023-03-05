@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import itertools as itr
 from collections import Counter
 from pathlib import Path
 from pprint import pp
@@ -14,7 +15,7 @@ from more_itertools import chunked
 
 from serpent import dna
 from serpent.digit import number_to_digits
-from serpent.encoding import alphabet64, combos
+from serpent.encoding import alphabet64, base64
 from serpent.fasta import read
 from serpent.fun import map_array, str_join
 from serpent.mathematics import autowidth, phi
@@ -35,19 +36,6 @@ DEFAULT_COLOR = '#70e'  # TODO Add config file
 
 def analyse(decoded):
 	"""Analyse data."""
-	# TODO Make subcommands
-
-	# Bigrams:
-	encoded = str_join([alphabet64.get(c, " ") for c in decoded])
-	ngram_list = list(chunked(encoded, 2))
-	ngrams = map_array(str_join, ngram_list, dtype="U2")
-	counts = Counter(ngrams)
-	print("Bigrams:\n")
-	pp(dict(counts.most_common()[:COUNT_LIMIT]))
-	print("Bigrams not appearing:\n")
-	bigrams = combos[[combo not in ngrams for combo in combos]]
-	print(bigrams)
-
 	# Print codon sequences
 	print("Codon sequences:\n")
 	seq_length = 4
@@ -197,10 +185,56 @@ def seq(filename, amino=False, length=1):
 	plot_sequence_counts(decoded, n=length, color=DEFAULT_COLOR)
 
 
+@arg('--amino',   '-a', help='Read input as amino acids')
+@arg('--length',  '-l', help='Peptide length', type=int)
+@arg('--missing', '-m', help='Missing peptides')
+def pep(filename, amino=False, length=2, missing=False):
+	"""Peptide statistics."""
+	data = read(filename, amino)
+	decoded = dna.decode(data, amino)
+	dtype = f'U{length}'
+
+	# TODO Allow using amino acid codes?
+	encoded = str_join([alphabet64.get(c, " ") for c in decoded])
+
+	# TODO Use iterators only if Counter accepts them
+	peptide_list = list(chunked(encoded, length))
+	peptides = map_array(str_join, peptide_list, dtype=dtype)
+
+	if not missing:
+		print("Peptides:")
+		lines = format_lines(peptides, 32)
+		{print(line) for line in lines}
+
+		print()
+		print("Counts:")
+		counts = Counter(peptides)
+		# groups = itr.groupby(counts.most_common(), lambda x: x[1])
+		# {print(f"{count}:\t{list(item[0])}") for [count, items] in groups}
+
+		# TODO There must be batter way to use these iterators!
+		grouped = [
+			(c, [k for k, c in group])
+			for c, group in itr.groupby(counts.most_common(), lambda x: x[1])
+			if c > 1
+		]
+		for count, values in grouped:
+			lines = format_lines(sorted(values), 32)
+			print(f"-- {count} times --")
+			{print(line) for line in lines}
+
+	if missing:
+		print("Peptides not appearing:\n")
+		combos = np.fromiter(map(str_join, itr.product(base64, repeat=length)), dtype=dtype)
+		absent = combos[[combo not in peptides for combo in combos]]
+
+		lines = format_lines(absent, 64)
+		{print(line) for line in lines}
+
+
 @arg('--amino',    '-a', help='Read input as amino acids')
-@arg('--plot',     '-p', help='Use plotting')
 @arg('--verbose',  '-v', help='Verbose')
-def serpent(filename, amino=False, plot=False, verbose=False):
+def serpent(filename, amino=False, verbose=False):
 	"""Explore DNA data with Serpent."""
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino)
@@ -209,7 +243,7 @@ def serpent(filename, amino=False, plot=False, verbose=False):
 		lines = format_decoded(decoded)
 		{print(line) for line in lines}
 
-	analyse(decoded, plot)
+	analyse(decoded)
 
 	return decoded
 
@@ -222,6 +256,7 @@ def main():
 		fft,
 		hist,
 		image,
+		pep,
 		seq,
 		serpent,
 	])
