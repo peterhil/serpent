@@ -7,7 +7,24 @@ from collections.abc import Iterator
 from pathlib import Path
 from typing import NamedTuple
 
-DATA_TOKENS = ["AMINO", "BASE", "DEGENERATE"]
+DATA_TOKENS = [
+	"AMINO",
+	"BASE",
+	# "DEGENERATE",  # TODO Enable or handle
+]
+
+# IUPAC encodings
+#
+# Amino acids:
+# https://en.wikipedia.org/wiki/Proteinogenic_amino_acid
+#
+# DNA/RNA with degenarate data:
+# https://en.wikipedia.org/wiki/Nucleic_acid_sequence#Notation
+#
+# Note: Keep `-` at the end for regexp character ranges!
+AMINO = "ARNDCQEGHILKMFPSTWYVUOX*-"  # TODO Handle 'X*-' as degenerate?
+BASE = "ACGTU"
+DEGENERATE = "WSMKRYBDHVNZ-"
 
 
 class Token(NamedTuple):
@@ -30,21 +47,16 @@ def tokenize(data: str, amino: bool=False) -> Iterator[Token]:
 	See: https://docs.python.org/3/library/re.html#writing-a-tokenizer.
 	"""
 	data = data.upper()  # TODO Handle insertions, see FASTA format
-	base = r"[ACGTU\n]"
 	token_specification = [
 		("DESCRIPTION", r">[^\n]*"),
-		("BASE", base + r"+"),
-		(
-			"DEGENERATE",
-			r"[WSMKRYBDHVNZ-]+?",
-		),  # https://en.wikipedia.org/wiki/Nucleic_acid_sequence#Notation
+		("BASE", fr"[{BASE}\n]+"),
+		("DEGENERATE", fr"[{DEGENERATE}]+?"),
 		("NEWLINE", r"\n"),  # Line endings
 		("SKIP", r"[ \t]+"),  # Skip over spaces and tabs
 		("MISMATCH", r"."),  # Any other character
 	]
 	if amino:
-		# https://en.wikipedia.org/wiki/Proteinogenic_amino_acid
-		token_specification.insert(1, ("AMINO", r"[ARNDCQEGHILKMFPSTWYVUOX*-]+"))
+		token_specification.insert(1, ("AMINO", fr"[{AMINO}]+"))
 
 	tok_regex = "|".join("(?P<%s>%s)" % pair for pair in token_specification)
 	line_num: int = 1
