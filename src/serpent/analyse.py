@@ -90,29 +90,21 @@ def codons(filename, width=20, stats=False):
 
 
 @arg('--amino', '-a', help='Read input as amino acids')
-@arg('--count', '-c', help='Print out counts')
-@arg('--out',   '-o', help='Write image to file')
-@arg('--verbose',  '-v', help='Verbose')
-def encode(filename, amino=False, count=False, out=False, verbose=False):
-	"""Encode data into various formats.
-
-	Base 64: Uses characters A-Za-z0-9+. for numbers 0..63.
-	"""
+@arg('--count', '-c', help='Print counts')
+@arg('--out',   '-o', help='Write out to file')
+def encode(filename, amino=False, count=False, out=False):
+	"""Encode data into various formats."""
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino)
 
 	encoded = str_join([alphabet64.get(c, " ") for c in decoded])
-	if verbose:
-		print("Encoded:")
-	print(encoded)
 
 	if count:
 		counts = Counter(encoded)
-		if verbose:
-			print("Counts:")
 		pp(dict(counts.most_common()[:COUNT_LIMIT]))
+	else:
+		print(encoded)
 
-	# Write out encoded data
 	if out:
 		with Path(filename + ".ser64").open("w", encoding="UTF-8") as file:
 			file.write(str_join(map_array(str, encoded)))
