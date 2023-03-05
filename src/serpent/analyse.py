@@ -26,67 +26,54 @@ from serpent.visual import (
 	interactive,
 	plot_fft,
 	plot_histogram_sized,
+	plot_sequence_counts,
 )
 
 COUNT_LIMIT = 20
+DEFAULT_COLOR = '#70e'  # TODO Add config file
 
 
-def analyse(decoded, plot=False):
+def analyse(decoded):
 	"""Analyse data."""
 	# TODO Make subcommands
-	if plot:
-		interactive()
-		plot_fft(decoded, n=238)
 
-		seq_length = 3
-		seqs = dna.codon_sequences(decoded, seq_length)
+	# Bigrams:
+	encoded = str_join([alphabet64.get(c, " ") for c in decoded])
+	ngram_list = list(chunked(encoded, 2))
+	ngrams = map_array(str_join, ngram_list, dtype="U2")
+	counts = Counter(ngrams)
+	print("Bigrams:\n")
+	pp(dict(counts.most_common()[:COUNT_LIMIT]))
+	print("Bigrams not appearing:\n")
+	bigrams = combos[[combo not in ngrams for combo in combos]]
+	print(bigrams)
 
-		plot_histogram_sized(
-			seqs,
-			size='base',
-			multi=max(16, 2 ** seq_length),  # cap to 16 * base = 1024
-			density=False,
-			cumulative=False,
-		)
-		# plot_sequence_counts(decoded, n=seq_length)
-	else:
-		# Bigrams:
-		encoded = str_join([alphabet64.get(c, " ") for c in decoded])
-		ngram_list = list(chunked(encoded, 2))
-		ngrams = map_array(str_join, ngram_list, dtype="U2")
-		counts = Counter(ngrams)
-		print("Bigrams:\n")
-		pp(dict(counts.most_common()[:COUNT_LIMIT]))
-		print("Bigrams not appearing:\n")
-		bigrams = combos[[combo not in ngrams for combo in combos]]
-		print(bigrams)
-
-		# Print codon sequences
-		print("Codon sequences:\n")
-		seq_length = 4
-		occurences = 2
-		[index, count] = count_sorted(dna.codon_sequences(decoded, seq_length))
-		twice_i = index[count == occurences]
-		codes = map_array(
-			lambda a: pad_to_right(number_to_digits(a, 64), fill=0, n=seq_length),
-			twice_i
-		)
-		b64_codes = map_array(
-			lambda a: str_join(list(map(
-				alphabet64.get,
-				number_to_digits(a)))),
-			twice_i
-		)
-		print(b64_codes)
-		catg = map_array(
-			lambda a: str_join(list(map(
-				dna.bases_inverse.get,
-				pad_to_right(number_to_digits(a, 4), fill=0, n=3)))),
-			codes.flatten(),
-		)
-		catg = catg.reshape(int(len(catg) / seq_length), seq_length)
-		catg = map_array(str_join, catg)
-		print(catg)
+	# Print codon sequences
+	print("Codon sequences:\n")
+	seq_length = 4
+	occurences = 2
+	[index, count] = count_sorted(dna.codon_sequences(decoded, seq_length))
+	twice_i = index[count == occurences]
+	codes = map_array(
+		lambda a: pad_to_right(number_to_digits(a, 64), fill=0, n=seq_length),
+		twice_i
+	)
+	b64_codes = map_array(
+		lambda a: str_join(list(map(
+			alphabet64.get,
+			number_to_digits(a)))),
+		twice_i
+	)
+	print(b64_codes)
+	catg = map_array(
+		lambda a: str_join(list(map(
+			dna.bases_inverse.get,
+			pad_to_right(number_to_digits(a, 4), fill=0, n=3)))),
+		codes.flatten(),
+	)
+	catg = catg.reshape(int(len(catg) / seq_length), seq_length)
+	catg = map_array(str_join, catg)
+	print(catg)
 
 	return decoded
 
@@ -161,6 +148,55 @@ def image(filename, amino=False, width=None, mode="RGB", out=False):
 		img.save(filename + f".w{width}.png")
 
 
+@arg('--amino', '-a', help='Read input as amino acids')
+@arg('--length', '-l', help='Fourier transform length', type=int)
+def fft(filename, amino=False, length=64):
+	"""Plot Fourier transform of the DNA data."""
+	data = read(filename, amino)
+	decoded = dna.decode(data, amino)
+
+	interactive()
+	plot_fft(decoded, n=length, color=DEFAULT_COLOR)
+
+
+@arg('--amino', '-a', help='Read input as amino acids')
+@arg('--cumulative', '-c', help='Cumulative distribution')
+@arg('--density', '-d', help='Normalise histogram into density')
+@arg('--length', '-l', help='Sequence length', type=int)
+def hist(
+	filename,
+	amino=False,
+	length=1,
+	density=False,
+	cumulative=False,
+):
+	"""Plot DNA data histograms."""
+	data = read(filename, amino)
+	decoded = dna.decode(data, amino)
+	seqs = dna.codon_sequences(decoded, length)
+
+	interactive()
+	plot_histogram_sized(
+		seqs,
+		size='base',
+		multi=max(16, 2 ** length),  # cap to 16 * base = 1024
+		color=DEFAULT_COLOR,
+		cumulative=cumulative,
+		density=density,
+	)
+
+
+@arg('--amino', '-a', help='Read input as amino acids')
+@arg('--length', '-l', help='Sequence length', type=int)
+def seq(filename, amino=False, length=1):
+	"""Plot DNA sequence count statistics."""
+	data = read(filename, amino)
+	decoded = dna.decode(data, amino)
+
+	interactive()
+	plot_sequence_counts(decoded, n=length, color=DEFAULT_COLOR)
+
+
 @arg('--amino',    '-a', help='Read input as amino acids')
 @arg('--plot',     '-p', help='Use plotting')
 @arg('--verbose',  '-v', help='Verbose')
@@ -183,7 +219,10 @@ def main():
 	parser.add_commands([
 		codons,
 		encode,
+		fft,
+		hist,
 		image,
+		seq,
 		serpent,
 	])
 	# parser.set_default_command(serpent)
