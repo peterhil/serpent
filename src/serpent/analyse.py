@@ -19,6 +19,7 @@ from serpent.fasta import read
 from serpent.fun import map_array, str_join
 from serpent.mathematics import magnitude
 from serpent.padding import pad_to_right
+from serpent.printing import format_lines
 from serpent.stats import count_sorted
 from serpent.visual import (
 	dna_image,
@@ -28,19 +29,6 @@ from serpent.visual import (
 )
 
 COUNT_LIMIT = 20
-
-
-def format_lines(data, width=80, sep=' '):
-	"""Format lines for printing."""
-	def fmt(chunk):
-		return str_join(chunk, sep)
-	lines = [
-		f"{i * width}:\t{fmt(chunk)}"
-		for i, chunk
-		in enumerate(chunked(data, width))
-	]
-
-	return lines
 
 
 def decode(data, amino=False, verbose=False):
