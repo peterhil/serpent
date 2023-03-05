@@ -31,7 +31,7 @@ from serpent.visual import (
 COUNT_LIMIT = 20
 
 
-def analyse(decoded, plot=False, filename=None):
+def analyse(decoded, plot=False):
 	"""Analyse data."""
 	# TODO Make subcommands
 	if plot:
@@ -50,19 +50,8 @@ def analyse(decoded, plot=False, filename=None):
 		)
 		# plot_sequence_counts(decoded, n=seq_length)
 	else:
-		# Encode
-		encoded = str_join([alphabet64.get(c, " ") for c in decoded])
-		print("Encoded:\n", encoded)
-		counts = Counter(encoded)
-		print("Counts:")
-		pp(dict(counts.most_common()[:COUNT_LIMIT]))
-
-		# Write out base64 encoded data
-		if filename:
-			with Path(filename + ".ser64").open("w", encoding="UTF-8") as file:
-				file.write(str_join(map_array(str, encoded)))
-
 		# Bigrams:
+		encoded = str_join([alphabet64.get(c, " ") for c in decoded])
 		ngram_list = list(chunked(encoded, 2))
 		ngrams = map_array(str_join, ngram_list, dtype="U2")
 		counts = Counter(ngrams)
@@ -126,11 +115,40 @@ def codons(filename, width=20, stats=False):
 
 
 @arg('--amino', '-a', help='Read input as amino acids')
+@arg('--count', '-c', help='Print out counts')
+@arg('--out',   '-o', help='Write image to file')
+@arg('--verbose',  '-v', help='Verbose')
+def encode(filename, amino=False, count=False, out=False, verbose=False):
+	"""Encode data into various formats.
+
+	Base 64: Uses characters A-Za-z0-9+. for numbers 0..63.
+	"""
+	data = read(filename, amino)
+	decoded = dna.decode(data, amino)
+
+	encoded = str_join([alphabet64.get(c, " ") for c in decoded])
+	if verbose:
+		print("Encoded:")
+	print(encoded)
+
+	if count:
+		counts = Counter(encoded)
+		if verbose:
+			print("Counts:")
+		pp(dict(counts.most_common()[:COUNT_LIMIT]))
+
+	# Write out encoded data
+	if out:
+		with Path(filename + ".ser64").open("w", encoding="UTF-8") as file:
+			file.write(str_join(map_array(str, encoded)))
+
+
+@arg('--amino', '-a', help='Read input as amino acids')
 @arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L'))
 @arg('--out',   '-o', help='Write image to file')
 @arg('--width', '-w', help='Image width', type=int)
 def image(filename, amino=False, width=None, mode="RGB", out=False):
-	data = read(filename, amino)  # TODO Handle amino
+	data = read(filename, amino)
 	decoded = dna.decode(data, amino)
 
 	if not width:
@@ -146,18 +164,16 @@ def image(filename, amino=False, width=None, mode="RGB", out=False):
 @arg('--amino',    '-a', help='Read input as amino acids')
 @arg('--plot',     '-p', help='Use plotting')
 @arg('--verbose',  '-v', help='Verbose')
-@arg('--writeout', '-w', help='Write base 64 encoded data out')
-def serpent(filename, amino=False, plot=False, verbose=False, writeout=False):
+def serpent(filename, amino=False, plot=False, verbose=False):
 	"""Explore DNA data with Serpent."""
 	data = read(filename, amino)
-	outfile = filename if writeout else None
 	decoded = dna.decode(data, amino)
 
 	if verbose:
 		lines = format_decoded(decoded)
 		{print(line) for line in lines}
 
-	analyse(decoded, plot, filename=outfile)
+	analyse(decoded, plot)
 
 	return decoded
 
@@ -166,6 +182,7 @@ def main():
 	parser = argh.ArghParser()
 	parser.add_commands([
 		codons,
+		encode,
 		image,
 		serpent,
 	])
