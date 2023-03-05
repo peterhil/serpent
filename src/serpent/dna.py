@@ -28,8 +28,14 @@ bases_inverse = {
 
 
 def decode(dna, amino=False):
-	"""Return codons from DNA decoded into numbers 0..63."""
-	return map_array(decode_amino if amino else decode_codon, dna)
+	"""Return codons or amino acids from DNA decoded into numbers 0..63."""
+	# TODO Handle degenerate DNA data properly
+	if amino:
+		return map_array(decode_amino, dna)
+	else:
+		dna = clean_non_dna(dna)  # TODO Handle degenerate data
+		codons = get_codons(dna)
+		return map_array(decode_codon, codons)
 
 
 def decode_amino(amino: str) -> int:

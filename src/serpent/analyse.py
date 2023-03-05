@@ -19,7 +19,7 @@ from serpent.fasta import read
 from serpent.fun import map_array, str_join
 from serpent.mathematics import autowidth, phi
 from serpent.padding import pad_to_right
-from serpent.printing import format_lines
+from serpent.printing import format_decoded, format_lines
 from serpent.stats import count_sorted
 from serpent.visual import (
 	dna_image,
@@ -29,22 +29,6 @@ from serpent.visual import (
 )
 
 COUNT_LIMIT = 20
-
-
-def decode(data, amino=False, verbose=False):
-	if not amino:  # TODO Handle degenerate data properly
-		data = dna.clean_non_dna(data)
-	codons = dna.get_codons(data)
-	decoded = dna.decode(codons)
-
-	if verbose:
-		uniq = len(np.unique(decoded))
-		print(f"Decoded ({len(decoded)}, unique: {uniq}):")
-		strings = map(str, iter(decoded))
-		lines = format_lines(strings, 32)
-		{print(line) for line in lines}
-
-	return decoded
 
 
 def analyse(decoded, plot=False, filename=None):
@@ -147,7 +131,7 @@ def codons(filename, width=20, stats=False):
 @arg('--width', '-w', help='Image width', type=int)
 def image(filename, amino=False, width=None, mode="RGB", out=False):
 	data = read(filename, amino)  # TODO Handle amino
-	decoded = decode(data, amino)
+	decoded = dna.decode(data, amino)
 
 	if not width:
 		width = autowidth(len(decoded) / len(mode), aspect=phi-1, base=64)
@@ -167,7 +151,11 @@ def serpent(filename, amino=False, plot=False, verbose=False, writeout=False):
 	"""Explore DNA data with Serpent."""
 	data = read(filename, amino)
 	outfile = filename if writeout else None
-	decoded = decode(data, verbose)
+	decoded = dna.decode(data, amino)
+
+	if verbose:
+		lines = format_decoded(decoded)
+		{print(line) for line in lines}
 
 	analyse(decoded, plot, filename=outfile)
 
