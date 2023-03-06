@@ -41,7 +41,7 @@ class Token(NamedTuple):
 		return self.type in DATA_TOKENS
 
 
-def tokenize(data: str, amino: bool=False) -> Iterator[Token]:
+def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[Token]:
 	"""Read FASTA sequences iteratively.
 
 	See:
@@ -62,7 +62,7 @@ def tokenize(data: str, amino: bool=False) -> Iterator[Token]:
 	spec = "|".join("(?P<%s>%s)" % pair for pair in token_specification)
 	# TODO Handle lowercase insertions better, see FASTA format
 	rec_token = re.compile(spec, flags=re.I)
-	line_num: int = 1
+	# line: int = 1
 	line_start: int = 0
 	for matches in rec_token.finditer(data):
 		kind: str = matches.lastgroup or "MISMATCH"
@@ -70,14 +70,14 @@ def tokenize(data: str, amino: bool=False) -> Iterator[Token]:
 		column: int = matches.start() - line_start
 		if kind == "NEWLINE":
 			line_start = matches.end()
-			line_num += 1
+			line += 1
 			continue
 		elif kind == "SKIP":
 			continue
 		elif kind == "MISMATCH":
-			err_msg = f"{value!r} unexpected on line {line_num} column {column}"
+			err_msg = f"{value!r} unexpected on line {line} column {column}"
 			raise ValueError(err_msg)
-		yield Token(kind, value, line_num, column)
+		yield Token(kind, value, line, column)
 
 
 def read(filename: str, amino: bool = False) -> str:
