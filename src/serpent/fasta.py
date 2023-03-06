@@ -49,7 +49,7 @@ def tokenize(data: str, amino: bool=False) -> Iterator[Token]:
 	https://docs.python.org/3/library/re.html#writing-a-tokenizer.
 	"""
 	token_specification = [
-		("DESCRIPTION", r">[^\n]*"),
+		("DESCRIPTION", r"^[>;][^\n]*"),
 		("BASE", fr"[{BASE}]+"),
 		("DEGENERATE", fr"[{DEGENERATE}]+?"),
 		("NEWLINE", r"\n"),  # Line endings
