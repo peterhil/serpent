@@ -44,9 +44,10 @@ class Token(NamedTuple):
 def tokenize(data: str, amino: bool=False) -> Iterator[Token]:
 	"""Read FASTA sequences iteratively.
 
-	See: https://docs.python.org/3/library/re.html#writing-a-tokenizer.
+	See:
+	https://en.wikipedia.org/wiki/FASTA_format
+	https://docs.python.org/3/library/re.html#writing-a-tokenizer.
 	"""
-	data = data.upper()  # TODO Handle insertions, see FASTA format
 	token_specification = [
 		("DESCRIPTION", r">[^\n]*"),
 		("BASE", fr"[{BASE}\n]+"),
@@ -58,10 +59,12 @@ def tokenize(data: str, amino: bool=False) -> Iterator[Token]:
 	if amino:
 		token_specification.insert(1, ("AMINO", fr"[{AMINO}]+"))
 
-	tok_regex = "|".join("(?P<%s>%s)" % pair for pair in token_specification)
+	spec = "|".join("(?P<%s>%s)" % pair for pair in token_specification)
+	# TODO Handle lowercase insertions better, see FASTA format
+	rec_token = re.compile(spec, flags=re.I)
 	line_num: int = 1
 	line_start: int = 0
-	for matches in re.finditer(tok_regex, data):
+	for matches in rec_token.finditer(data):
 		kind: str = matches.lastgroup or "MISMATCH"
 		value: str = matches.group()
 		column: int = matches.start() - line_start
