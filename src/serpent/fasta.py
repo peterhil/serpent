@@ -50,7 +50,7 @@ def tokenize(data: str, amino: bool=False) -> Iterator[Token]:
 	"""
 	token_specification = [
 		("DESCRIPTION", r">[^\n]*"),
-		("BASE", fr"[{BASE}\n]+"),
+		("BASE", fr"[{BASE}]+"),
 		("DEGENERATE", fr"[{DEGENERATE}]+?"),
 		("NEWLINE", r"\n"),  # Line endings
 		("SKIP", r"[ \t]+"),  # Skip over spaces and tabs
