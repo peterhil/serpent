@@ -2,6 +2,18 @@ from __future__ import annotations
 
 from collections import OrderedDict
 
+# Condensed translation table for the Standard Genetic Code
+#
+# From the NCBI Taxonomy webpage (which also has 25 alternative tables):
+# https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG1
+
+# AAs    = FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG
+# Starts = ---M------**--*----M---------------M----------------------------
+# Base1  = TTTTTTTTTTTTTTTTCCCCCCCCCCCCCCCCAAAAAAAAAAAAAAAAGGGGGGGGGGGGGGGG
+# Base2  = TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG
+# Base3  = TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG
+
+
 # ruff: noqa: F601
 aminos_inverse = OrderedDict({
 	# A
