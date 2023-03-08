@@ -26,6 +26,15 @@ AMINO = "ARNDCQEGHILKMFPSTWYVUOX*-"  # TODO Handle 'X*-' as degenerate?
 BASE = "ACGTU"
 DEGENERATE = "WSMKRYBDHVNZ-"
 
+RE_DESCRIPTION = r"^[>;](?P<description>.*)\n?"
+
+
+def get_description(string: str) -> str | None:
+	re_description = re.compile(RE_DESCRIPTION)
+	matches = re_description.match(string)
+
+	return matches.group(1).strip() if matches else None
+
 
 class Token(NamedTuple):
 	"""Token of parsed FASTA data."""
@@ -49,7 +58,7 @@ def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[Token]:
 	https://docs.python.org/3/library/re.html#writing-a-tokenizer.
 	"""
 	token_specification = [
-		("DESCRIPTION", r"^[>;][^\n]*"),
+		("DESCRIPTION", RE_DESCRIPTION),
 		("BASE", fr"[{BASE}]+"),
 		("DEGENERATE", fr"[{DEGENERATE}]+?"),
 		("NEWLINE", r"\n"),  # Line endings

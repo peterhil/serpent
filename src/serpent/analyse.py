@@ -19,7 +19,7 @@ from serpent.digit import number_to_digits
 from serpent.encoding import alphabet64, base64
 from serpent.fasta import read
 from serpent.fun import map_array, str_join
-from serpent.io import check_inputs
+from serpent.io import check_inputs, err, find_fasta_files, openhook
 from serpent.mathematics import autowidth, phi
 from serpent.padding import pad_to_right
 from serpent.printing import format_decoded, format_lines
@@ -93,14 +93,27 @@ def codons(filename, width=20, stats=False):
 
 def cat(*inputs):
 	"""Concatenates and prints FASTA sequences from files."""
-	# TODO Use fileinput methods: filename, nextfile, fileno, lineno, filelineno etc...
 	# TODO Implement read_sequences with more_itertools.partition and chain
-	# TODO Check out: fileinput.hook_compressed and zzzip
-
+	# TODO Handle compressed files and archives
 	inputs = check_inputs(inputs)
-	with fileinput.input(inputs, mode='r') as fi:
+	with fileinput.input(inputs, mode='r', openhook=openhook) as fi:
 		for line in fi:
 			yield line.rstrip()
+
+
+@arg('--seq',  '-s', help='Print sequences')
+def find(*inputs, seq=False):
+	"""Find FASTA sequences from files and directories."""
+	# TODO Handle compressed files and archives
+	debug = False
+	inputs = check_inputs(inputs, recurse=True)
+
+	with fileinput.input(inputs, mode='r', openhook=openhook) as fi:
+		if seq:
+			# TODO Handle printing single and multiple sequences
+			err('Not implemented')
+		else:
+			yield from find_fasta_files(fi, debug)
 
 
 @arg('--amino', '-a', help='Read input as amino acids')
@@ -267,6 +280,7 @@ def main():
 		codons,
 		encode,
 		fft,
+		find,
 		hist,
 		image,
 		pep,
