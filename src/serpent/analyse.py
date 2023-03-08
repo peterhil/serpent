@@ -22,6 +22,7 @@ from serpent.fasta import read
 from serpent.fun import map_array, str_join
 from serpent.io import (
 	check_inputs,
+	echo,
 	find_fasta_files,
 	find_fasta_sequences,
 	openhook,
@@ -37,38 +38,6 @@ from serpent.visual import (
 	plot_histogram_sized,
 	plot_sequence_counts,
 )
-
-
-def analyse(decoded):
-	"""Analyse data."""
-	# Print codon sequences
-	print("Codon sequences:\n")
-	seq_length = 4
-	occurences = 2
-	[index, count] = count_sorted(dna.codon_sequences(decoded, seq_length))
-	twice_i = index[count == occurences]
-	codes = map_array(
-		lambda a: pad_to_right(number_to_digits(a, 64), fill=0, n=seq_length),
-		twice_i
-	)
-	b64_codes = map_array(
-		lambda a: str_join(list(map(
-			alphabet64.get,
-			number_to_digits(a)))),
-		twice_i
-	)
-	print(b64_codes)
-	catg = map_array(
-		lambda a: str_join(list(map(
-			dna.bases_inverse.get,
-			pad_to_right(number_to_digits(a, 4), fill=0, n=3)))),
-		codes.flatten(),
-	)
-	catg = catg.reshape(int(len(catg) / seq_length), seq_length)
-	catg = map_array(str_join, catg)
-	print(catg)
-
-	return decoded
 
 
 @arg('--stats',  '-s', help='Show statistics')
@@ -95,7 +64,7 @@ def codons(filename, width=20, stats=False):
 
 
 def cat(*inputs):
-	"""Concatenates and prints FASTA sequences from files."""
+	"""Concatenate and print FASTA sequences from files."""
 	# TODO Implement read_sequences with more_itertools.partition and chain
 	# TODO Handle compressed files and archives
 	inputs = check_inputs(inputs)
@@ -116,6 +85,16 @@ def find(*inputs, seq=False):
 			yield from find_fasta_sequences(fi, debug)
 		else:
 			yield from find_fasta_files(fi, debug)
+
+
+@arg('--amino', '-a', help='Read input as amino acids')
+def decode(filename, amino=False):
+	"""Explore DNA data with Serpent."""
+	data = read(filename, amino)
+	decoded = dna.decode(data, amino)
+
+	lines = format_decoded(decoded)
+	{print(line) for line in lines}
 
 
 @arg('--amino', '-a', help='Read input as amino acids')
@@ -150,6 +129,7 @@ def encode(filename, amino=False, count=False, out=False, width=64):
 @arg('--out',   '-o', help='Write image to file')
 @arg('--width', '-w', help='Image width', type=int)
 def image(filename, amino=False, width=None, mode="RGB", out=False):
+	"""Visualise FASTA data as images."""
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino)
 
@@ -259,20 +239,49 @@ def pep(filename, amino=False, length=2, missing=False):
 		{print(line) for line in lines}
 
 
-@arg('--amino',    '-a', help='Read input as amino acids')
-@arg('--verbose',  '-v', help='Verbose')
-def serpent(filename, amino=False, verbose=False):
-	"""Explore DNA data with Serpent."""
+def analyse_repeats(decoded, length=4, limit=2, encode=False):
+	"""Analyse codon sequence repeats."""
+	echo("Repeated codon sequences:")
+	[index, count] = count_sorted(dna.codon_sequences(decoded, length))
+	repeats = index[count >= limit]
+
+	# TODO Move conversions to helper functions
+	if encode:
+		b64_codes = map_array(
+			lambda a: str_join(map(alphabet64.get, number_to_digits(a))),
+			repeats
+		)
+
+		lines = format_lines(b64_codes, 32)
+		{print(line) for line in lines}
+	else:
+		codes = map_array(
+			lambda a: pad_to_right(number_to_digits(a, 64), fill=0, n=length),
+			repeats
+		)
+		catg = map_array(
+			lambda a: str_join(map(
+				dna.bases_inverse.get,
+				pad_to_right(number_to_digits(a, 4), fill=0, n=3))),
+			codes.flatten(),
+		)
+		catg = catg.reshape(int(len(catg) / length), length)
+		catg = map_array(str_join, catg)
+
+		lines = format_lines(catg, 8)
+		{print(line) for line in lines}
+
+
+@arg('--amino',   '-a', help='Read input as amino acids')
+@arg('--encode',  '-e', help='Encode output as base 64')
+@arg('--limit',   '-l', help='Limit to at least this many repeats', type=int)
+@arg('--seq',     '-s', help='Sequence length', type=int)
+def repeats(filename, amino=False, seq=2, limit=2, encode=False):
+	"""Find repeated sequences."""
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino)
 
-	if verbose:
-		lines = format_decoded(decoded)
-		{print(line) for line in lines}
-
-	analyse(decoded)
-
-	return decoded
+	analyse_repeats(decoded, length=seq, limit=limit, encode=encode)
 
 
 def main():
@@ -280,14 +289,15 @@ def main():
 	parser.add_commands([
 		cat,
 		codons,
+		decode,
 		encode,
 		fft,
 		find,
 		hist,
 		image,
 		pep,
+		repeats,
 		seq,
-		serpent,
 	])
 	# parser.set_default_command(serpent)
 	return parser.dispatch()

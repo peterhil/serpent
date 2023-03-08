@@ -41,7 +41,7 @@ dev = [
 ]
 
 [tool.pdm.scripts]
-analyse =  {call = "serpent.analyse:main"}
+serpent = {call = "serpent.analyse:main"}
 
 
 [tool.mypy]
