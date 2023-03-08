@@ -5,6 +5,9 @@ from fileinput import FileInput, hook_encoded
 from pathlib import Path
 from sys import argv, stderr, stdout
 
+from termcolor import colored
+
+from serpent.config import DEFAULT_TERM_COLOR
 from serpent.fasta import get_description
 
 # TODO Check out hook_compressed and zzzip
@@ -55,7 +58,7 @@ def find_fasta_sequences(fi: FileInput, debug=False) -> Iterator[str]:
 		if description:
 			if newfile:
 				filename = fi.filename()
-				yield filename
+				yield colored(filename, DEFAULT_TERM_COLOR)
 			yield f">{description}"
 		elif newfile:
 			fi.nextfile()

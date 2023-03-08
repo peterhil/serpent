@@ -15,6 +15,7 @@ from argh.decorators import arg
 from more_itertools import chunked
 
 from serpent import dna
+from serpent.config import COUNT_LIMIT, DEFAULT_COLOR
 from serpent.digit import number_to_digits
 from serpent.encoding import alphabet64, base64
 from serpent.fasta import read
@@ -36,9 +37,6 @@ from serpent.visual import (
 	plot_histogram_sized,
 	plot_sequence_counts,
 )
-
-COUNT_LIMIT = 20
-DEFAULT_COLOR = '#70e'  # TODO Add config file
 
 
 def analyse(decoded):
