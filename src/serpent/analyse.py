@@ -19,7 +19,12 @@ from serpent.digit import number_to_digits
 from serpent.encoding import alphabet64, base64
 from serpent.fasta import read
 from serpent.fun import map_array, str_join
-from serpent.io import check_inputs, err, find_fasta_files, openhook
+from serpent.io import (
+	check_inputs,
+	find_fasta_files,
+	find_fasta_sequences,
+	openhook,
+)
 from serpent.mathematics import autowidth, phi
 from serpent.padding import pad_to_right
 from serpent.printing import format_decoded, format_lines
@@ -110,8 +115,7 @@ def find(*inputs, seq=False):
 
 	with fileinput.input(inputs, mode='r', openhook=openhook) as fi:
 		if seq:
-			# TODO Handle printing single and multiple sequences
-			err('Not implemented')
+			yield from find_fasta_sequences(fi, debug)
 		else:
 			yield from find_fasta_files(fi, debug)
 

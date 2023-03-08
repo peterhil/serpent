@@ -7,8 +7,7 @@ from sys import argv, stderr, stdout
 
 from serpent.fasta import get_description
 
-# TODO Handle compressed files and archives
-# with hook_compressed or zzzip
+# TODO Check out hook_compressed and zzzip
 openhook = hook_encoded("utf-8", "surrogateescape")
 
 
@@ -46,3 +45,19 @@ def find_fasta_files(fi: FileInput, debug=False) -> Iterator[str]:
 		elif debug:
 			err(f"{filename}: Not FASTA!")
 		fi.nextfile()
+
+
+def find_fasta_sequences(fi: FileInput, debug=False) -> Iterator[str]:
+	"""Find FASTA files and print single and multiple sequences."""
+	for line in fi:
+		description = get_description(line)
+		newfile = fi.isfirstline()
+		if description:
+			if newfile:
+				filename = fi.filename()
+				yield filename
+			yield f">{description}"
+		elif newfile:
+			fi.nextfile()
+		if not description and debug:  # TODO Use with cat
+			yield line.rstrip()
