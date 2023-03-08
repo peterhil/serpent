@@ -1,6 +1,6 @@
 [project]
 name = "serpent"
-version = "0.1.0"
+version = "0.2.0"
 description = "Serpent is an exploration into DNA sequences, codons, amino acids and genome data"
 authors = [
 	{ name = "Peter Hillerström", email = "peter.hillerstrom@gmail.com" },
