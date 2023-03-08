@@ -65,7 +65,7 @@ def codons(filename, width=20, stats=False):
 
 def cat(*inputs):
 	"""Concatenate and print FASTA sequences from files."""
-	# TODO Implement read_sequences with more_itertools.partition and chain
+	# TODO Implement read_sequences with more_itertools.split_with and chain
 	# TODO Handle compressed files and archives
 	inputs = check_inputs(inputs)
 	with fileinput.input(inputs, mode='r', openhook=openhook) as fi:
@@ -73,7 +73,7 @@ def cat(*inputs):
 			yield line.rstrip()
 
 
-@arg('--seq',  '-s', help='Print sequences')
+@arg('--seq', '-s', help='Print sequences')
 def find(*inputs, seq=False):
 	"""Find FASTA sequences from files and directories."""
 	# TODO Handle compressed files and archives
@@ -241,11 +241,11 @@ def pep(filename, amino=False, length=2, missing=False):
 
 def analyse_repeats(decoded, length=4, limit=2, encode=False):
 	"""Analyse codon sequence repeats."""
-	echo("Repeated codon sequences:")
 	[index, count] = count_sorted(dna.codon_sequences(decoded, length))
 	repeats = index[count >= limit]
 
 	# TODO Move conversions to helper functions
+	echo("Repeated codon sequences:")
 	if encode:
 		b64_codes = map_array(
 			lambda a: str_join(map(alphabet64.get, number_to_digits(a))),
