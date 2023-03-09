@@ -6,7 +6,9 @@ import re
 import numpy as np
 from more_itertools import grouper
 
+from serpent.amino import aminos, aminos_inverse
 from serpent.digit import digits_to_number
+from serpent.fasta import AMINO, BASE
 from serpent.fun import map_array, str_join
 
 bases = {
@@ -26,24 +28,41 @@ bases_inverse = {
 }
 
 
-def decode(dna):
-	"""Return codons from DNA decoded into numbers 0..63."""
-	return map_array(decode_codon, dna)
+def decode(dna, amino=False):
+	"""Return codons or amino acids from DNA decoded into numbers 0..63."""
+	# TODO Handle degenerate DNA data properly
+	dna = clean_non_dna(dna, amino)  # TODO Handle degenerate data better
+	if amino:
+		return map_array(decode_amino, dna)
+	else:
+		codons = get_codons(dna)
+		return map_array(decode_codon, codons)
+
+
+def decode_amino(amino: str) -> int:
+	"""Decode an amino acid IUPAC string into a number between 0 and 63."""
+	return aminos[amino]
+
+
+def encode_amino(code: int) -> str:
+	"""Decode an amino acid IUPAC string into a number between 0 and 63."""
+	return aminos_inverse.get(code, '')
 
 
 def decode_codon(codon: str) -> int:
 	"""Decode a codon string into a a number between 0 and 63."""
 	result = 0
 	for num, char in enumerate(reversed(codon)):
-		result += bases.get(char, 0) << num * 2  # Throw IndexError by using []?
+		result += bases[char] << num * 2
 
 	return result
 
 
-def clean_non_dna(data):
+def clean_non_dna(data, amino=False):
 	"""Clean up non DNA or RNA data. Warns if there are residual characters."""
-	cleaned = str_join(re.sub(r"[^ACGTU]{6,}", "", data).split("\n"))
-	residual = str_join(re.findall(r"[^ACGTU\n]", data))
+	CODES = AMINO if amino else BASE
+	cleaned = str_join(re.sub(fr"[^{CODES}]{6,}", "", data).split("\n"))
+	residual = str_join(re.findall(fr"[^\n{CODES}]", data))
 
 	if len(residual) > 0:
 		# TODO Use logger.warn with warnings.warn?

@@ -2,12 +2,8 @@
 
 from __future__ import annotations
 
+from collections import OrderedDict
 from collections.abc import Iterable
-from itertools import combinations
-
-import numpy as np
-
-from serpent.fun import str_join
 
 
 def char_range(start: str, end: str) -> Iterable[str]:
@@ -27,4 +23,4 @@ base64 = (
 )
 
 alphabet64 = dict(set(enumerate(base64)))
-combos = np.fromiter(map(str_join, combinations(base64, 2)), dtype='<U2')
+alphabet64_inverse = OrderedDict([(v, k) for k, v in alphabet64.items()])
