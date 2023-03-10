@@ -14,6 +14,8 @@ NumericSeq = Union[Sequence[Numeric], ArrayLike]
 
 
 phi = (1 + np.sqrt(5)) / 2
+phi_large = 1 / phi
+phi_small = 1 - phi_large
 
 
 def autowidth(n, base=64, aspect=phi):

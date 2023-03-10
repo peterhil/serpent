@@ -11,6 +11,7 @@ from pathlib import Path
 from pprint import pp
 
 import argh
+import matplotlib.pyplot as plt
 import numpy as np
 from argh.decorators import arg
 from more_itertools import chunked
@@ -28,10 +29,10 @@ from serpent.io import (
 	find_fasta_sequences,
 	openhook,
 )
-from serpent.mathematics import autowidth, phi
+from serpent.mathematics import autowidth, phi, phi_small
 from serpent.padding import pad_to_right
 from serpent.printing import format_decoded, format_lines
-from serpent.stats import count_sorted
+from serpent.stats import ac_peaks, autocorrelogram, count_sorted
 from serpent.visual import (
 	dna_image,
 	interactive,
@@ -39,6 +40,28 @@ from serpent.visual import (
 	plot_histogram_sized,
 	plot_sequence_counts,
 )
+
+
+@arg('--amino', '-a', help='Read input as amino acids')
+@arg('--limit', '-l', help='Peak limit', type=float)
+@arg('--seq',   '-s', help='Sequence length', type=int)
+@arg('--width', '-w', help='Autocorrelogram width', type=int)
+def ac(filename, amino=False, limit=0.05, width=256, seq=1):
+	"""Plot autocorrelation of sequences."""
+	data = read(filename, amino)
+	data = dna.clean_non_dna(data, amino)
+
+	decoded = dna.decode(data, amino)
+	if seq > 1:
+		decoded = dna.codon_sequences(decoded, seq)
+
+	ac = autocorrelogram(decoded, width)
+
+	interactive()
+	plt.plot(ac[1:], color=DEFAULT_COLOR)
+
+	peaks = ac_peaks(ac, limit)
+	{print(f"{peak}:	{np.round(value, 3)}") for peak, value in peaks.items()}
 
 
 @arg('--stats',  '-s', help='Show statistics')
@@ -294,6 +317,7 @@ def repeats(filename, amino=False, seq=2, limit=2, encode=False):
 def main():
 	parser = argh.ArghParser()
 	parser.add_commands([
+		ac,
 		cat,
 		codons,
 		decode,
