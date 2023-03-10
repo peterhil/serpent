@@ -1,6 +1,7 @@
 """DNA and codons data handling."""
 from __future__ import annotations
 
+import itertools as itr
 import re
 
 import numpy as np
@@ -89,3 +90,15 @@ def codon_sequences(decoded, n=4, fill=0):
 	numbers = np.apply_along_axis(digits_to_number, 1, sequences)
 
 	return numbers
+
+
+def codons():
+	"""Sequence of the 64 codons using order ACGT."""
+	return np.fromiter(map(str_join, itr.product('ACGT', repeat=3)), dtype='<U3')
+
+
+def oligopeptides(length):
+	"""Sequence of all oligopeptide combinations of requested length."""
+	oligos = map(str_join, itr.product(codons(), repeat=length))
+
+	return np.fromiter(oligos, dtype=f'<U{3*length}')
