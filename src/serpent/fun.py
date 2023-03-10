@@ -2,9 +2,15 @@
 
 from __future__ import annotations
 
+from collections import OrderedDict
 from collections.abc import Iterable
 
 import numpy as np
+
+
+def inverse_od(mapping: OrderedDict) -> OrderedDict:
+	"""Swap keys and values on an OrderedDict."""
+	return OrderedDict([(v, k) for k, v in mapping.items()])
 
 
 def map_array(function, arr, dtype=None):
