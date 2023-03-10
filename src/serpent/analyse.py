@@ -141,7 +141,7 @@ def image(filename, amino=False, width=None, mode="RGB", out=False):
 	img.show()
 
 	if out:
-		img.save(filename + f".w{width}.png")
+		img.save(filename + f".w{width}.{dna.BASE_ORDER}.png")
 
 
 @arg('--amino', '-a', help='Read input as amino acids')

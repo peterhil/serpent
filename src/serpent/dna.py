@@ -21,7 +21,7 @@ from serpent.fun import inverse_od, map_array, str_join
 # A 00 0
 # C 01 1
 # T 11 3
-BASE_ORDER = 'ACGT'
+BASE_ORDER = 'GACT'
 
 # Bases =
 # A 00 0
