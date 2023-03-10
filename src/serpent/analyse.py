@@ -157,8 +157,9 @@ def fft(filename, amino=False, length=64):
 
 @arg('--amino', '-a', help='Read input as amino acids')
 @arg('--bins', '-b', help='Histogram bin sizing', choices=[
-	'base', 'auto', 'fd', 'doane', 'scott', 'stone', 'rice', 'sturges', 'sqrt', int
+	'base', 'auto', 'fd', 'doane', 'scott', 'stone', 'rice', 'sturges', 'sqrt',
 ])
+@arg('--num', '-n', help='Number of bins (overrides bins option)', type=int)
 @arg('--cumulative', '-c', help='Cumulative distribution')
 @arg('--density', '-d', help='Normalise histogram into density')
 @arg('--length', '-l', help='Sequence length', type=int)
@@ -166,6 +167,7 @@ def hist(
 	filename,
 	amino=False,
 	bins='base',
+	num=None,
 	length=1,
 	density=False,
 	cumulative=False,
@@ -178,7 +180,7 @@ def hist(
 	interactive()
 	plot_histogram_sized(
 		seqs,
-		size=bins,
+		size=num or bins,
 		multi=max(16, 2 ** length),  # cap to 16 * base = 1024
 		color=DEFAULT_COLOR,
 		cumulative=cumulative,
