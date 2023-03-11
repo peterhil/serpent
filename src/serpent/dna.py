@@ -7,8 +7,8 @@ import re
 import numpy as np
 from more_itertools import grouper
 
-from serpent.amino import aminos, aminos_inverse
 from serpent.config import BASE_ORDER
+from serpent.convert.amino import aminos, aminos_inverse
 from serpent.convert.digits import digits_to_num
 from serpent.convert.nucleotide import nt_to_num
 from serpent.fasta import AMINO, BASE
