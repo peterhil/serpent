@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from collections import OrderedDict
 
-from serpent.config import BASE_ORDER
 from serpent.fun import inverse_od
+from serpent.settings import BASE_ORDER
 
 __all__ = [
 	'nt_to_num',

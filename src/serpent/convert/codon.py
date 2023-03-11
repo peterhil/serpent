@@ -7,9 +7,9 @@ from collections import OrderedDict
 
 import numpy as np
 
-from serpent.config import BASE_ORDER
 from serpent.convert.nucleotide import nt_to_num
 from serpent.fun import inverse_od, str_join
+from serpent.settings import BASE_ORDER
 
 
 def codons_array(bases=BASE_ORDER):

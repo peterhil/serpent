@@ -7,12 +7,12 @@ import re
 import numpy as np
 from more_itertools import grouper
 
-from serpent.config import BASE_ORDER
 from serpent.convert.amino import amino_to_num
 from serpent.convert.codon import codon_to_num, codons_array
 from serpent.convert.digits import digits_to_num
 from serpent.fasta import AMINO, BASE
 from serpent.fun import map_array, str_join
+from serpent.settings import BASE_ORDER
 
 
 def decode(dna, amino=False):

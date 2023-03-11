@@ -17,7 +17,6 @@ from argh.decorators import arg
 from more_itertools import chunked
 
 from serpent import dna
-from serpent.config import COUNT_LIMIT, DEFAULT_COLOR
 from serpent.convert.base64 import base64_to_num, num_to_base64
 from serpent.convert.digits import num_to_digits
 from serpent.convert.nucleotide import num_to_nt
@@ -34,6 +33,7 @@ from serpent.io import (
 from serpent.mathematics import autowidth, phi, phi_small
 from serpent.padding import pad_start
 from serpent.printing import format_decoded, format_lines
+from serpent.settings import COUNT_LIMIT, DEFAULT_COLOR
 from serpent.stats import ac_peaks, autocorrelogram, count_sorted
 from serpent.visual import (
 	dna_image,

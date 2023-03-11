@@ -7,8 +7,8 @@ from sys import argv, stderr, stdout
 
 from termcolor import colored
 
-from serpent.config import DEFAULT_TERM_COLOR
 from serpent.fasta import get_description
+from serpent.settings import DEFAULT_TERM_COLOR
 
 # TODO Check out hook_compressed and zzzip
 openhook = hook_encoded("utf-8", "surrogateescape")
