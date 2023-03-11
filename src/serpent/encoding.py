@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from collections import OrderedDict
 from collections.abc import Iterable
 
-from serpent.fun import inverse_od, str_join
+from serpent.fun import str_join
 
 
 def char_range(start: str, end: str) -> Iterable[str]:
@@ -23,6 +22,3 @@ BASE64 = str_join(
 	list(char_range("0", "9")) +
 	["+", "."]
 )
-
-num_to_base64 = OrderedDict(enumerate(BASE64))
-base64_to_num = inverse_od(num_to_base64)
