@@ -8,7 +8,7 @@ from .codon import codon_to_num, codons_array, num_to_codon
 from .genetic_code import GENETIC_CODE
 
 CODONS_NCBI = codons_array('TCAG')
-TRANSL_TABLE = 11
+TRANSL_TABLE = 1
 
 codon_to_amino = OrderedDict(reversed(list(zip(
 	CODONS_NCBI,
