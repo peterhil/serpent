@@ -16,7 +16,6 @@ from serpent.fun import inverse_od
 # Base3  = TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG
 
 
-# ruff: noqa: F601
 aminos_inverse = OrderedDict({
 	# A
 	0:  "K",  # AAA
