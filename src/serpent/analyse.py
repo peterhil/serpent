@@ -31,7 +31,7 @@ from serpent.io import (
 	openhook,
 )
 from serpent.mathematics import autowidth, phi, phi_small
-from serpent.padding import pad_to_right
+from serpent.padding import pad_start
 from serpent.printing import format_decoded, format_lines
 from serpent.stats import ac_peaks, autocorrelogram, count_sorted
 from serpent.visual import (
@@ -291,13 +291,13 @@ def analyse_repeats(decoded, length=4, limit=2, encode=False):
 		{print(line) for line in lines}
 	else:
 		codes = map_array(
-			lambda a: pad_to_right(number_to_digits(a, 64), fill=0, n=length),
+			lambda a: pad_start(number_to_digits(a, 64), fill=0, n=length),
 			repeats
 		)
 		catg = map_array(
 			lambda a: str_join(map(
 				dna.num_to_base.get,
-				pad_to_right(number_to_digits(a, 4), fill=0, n=3))),
+				pad_start(number_to_digits(a, 4), fill=0, n=3))),
 			codes.flatten(),
 		)
 		catg = catg.reshape(int(len(catg) / length), length)

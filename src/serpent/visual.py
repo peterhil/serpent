@@ -11,7 +11,7 @@ from PIL import Image
 
 from serpent import dna
 from serpent.mathematics import magnitude, normalise
-from serpent.padding import pad_to_left
+from serpent.padding import pad_end
 from serpent.stats import count_sorted
 from serpent.typing import CodonData
 
@@ -122,7 +122,7 @@ def dna_image(decoded: CodonData, width=64, fill=0, mode="RGB") -> Image.Image:
 	The codons are mapped quite directly to 64 ** 3 (= 262144)
 	RGB colours, so that: A=0, C=85, G=170, T/U=255
 	"""
-	padded = np.array(pad_to_left(decoded, fill, n=3 * width))
+	padded = np.array(pad_end(decoded, fill, n=3 * width))
 	norm = normalise(padded)
 	channels: int = len(mode)
 
