@@ -3,33 +3,15 @@ from __future__ import annotations
 
 import itertools as itr
 import re
-from collections import OrderedDict
 
 import numpy as np
 from more_itertools import grouper
 
 from serpent.amino import aminos, aminos_inverse
 from serpent.convert.digits import digits_to_num
+from serpent.convert.nucleotide import nt_to_num
 from serpent.fasta import AMINO, BASE
-from serpent.fun import inverse_od, map_array, str_join
-
-# TODO Mapping order and numbering could be distinct if using a gray code like
-# scheme. For example: With GACT/GACU order the numbering could be 2013, which
-# would be the same as ACGT in linear ordering.
-#
-# G 10 2
-# A 00 0
-# C 01 1
-# T 11 3
-BASE_ORDER = 'GACT'
-
-# Bases =
-# A 00 0
-# C 01 1
-# G 10 2
-# T 11 3
-num_to_base = OrderedDict(enumerate(BASE_ORDER))
-base_to_num = inverse_od(num_to_base)
+from serpent.fun import map_array, str_join
 
 
 def decode(dna, amino=False):
@@ -57,7 +39,7 @@ def decode_codon(codon: str) -> int:
 	"""Decode a codon string into a a number between 0 and 63."""
 	result = 0
 	for num, char in enumerate(reversed(codon)):
-		result += base_to_num[char] << num * 2
+		result += nt_to_num[char] << num * 2
 
 	return result
 

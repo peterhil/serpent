@@ -1,4 +1,5 @@
 """Digit conversions into various numerical bases."""
+
 from __future__ import annotations
 
 __all__ = [

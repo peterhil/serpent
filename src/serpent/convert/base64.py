@@ -1,4 +1,4 @@
-"""Convert data between numbers and base64 encoding."""
+"""Convert data between base64 encoding and numbers."""
 
 from __future__ import annotations
 
