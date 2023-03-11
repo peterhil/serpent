@@ -39,6 +39,7 @@ dev = [
     "mypy>=1.0.1",
     "types-Pillow>=9.4.0.17",
     "pytest>=7.2.2",
+    "hypothesis>=6.68.2",
 ]
 
 [tool.pdm.scripts]
