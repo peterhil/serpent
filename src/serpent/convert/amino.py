@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from collections import OrderedDict
 
+from serpent.fun import inverse_od
+
 # Condensed translation table for the Standard Genetic Code
 #
 # From the NCBI Taxonomy webpage (which also has 25 alternative tables):
@@ -84,18 +86,29 @@ aminos_inverse = OrderedDict({
 	61: "L",  # UUG
 	62: "F",  # UUC
 	63: "F",  # UUU
-	# B = D | N
-	3:  "B",  # N
-	35: "B",  # D
-	# J = L | I
-	15: "J",  # I
-	61: "J",  # L
-	# Z = E | Q
-	17: "Z",  # Q
-	33: "Z",  # E
-	64: "X",  # Any
-	65: "-",  # Gap of indeterminmate length
+	# TODO: Handle degenerate data
+	# # B = D | N
+	# 3:  "B",  # N
+	# 35: "B",  # D
+	# # J = L | I
+	# 15: "J",  # I
+	# 61: "J",  # L
+	# # Z = E | Q
+	# 17: "Z",  # Q
+	# 33: "Z",  # E
+	# 64: "X",  # Any
+	# 65: "-",  # Gap of indeterminmate length
 })
 
 
-aminos = OrderedDict([(v, k) for k, v in aminos_inverse.items()])
+aminos = inverse_od(aminos_inverse)
+
+
+def amino_to_num(amino: str) -> int:
+	"""Decode an amino acid IUPAC string into a number between 0 and 63."""
+	return aminos[amino]
+
+
+def num_to_amino(code: int) -> str:
+	"""Encode a number between 0 and 63 into an amino acid IUPAC string."""
+	return aminos_inverse[code]

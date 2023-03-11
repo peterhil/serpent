@@ -8,7 +8,7 @@ import numpy as np
 from more_itertools import grouper
 
 from serpent.config import BASE_ORDER
-from serpent.convert.amino import aminos, aminos_inverse
+from serpent.convert.amino import amino_to_num
 from serpent.convert.digits import digits_to_num
 from serpent.convert.nucleotide import nt_to_num
 from serpent.fasta import AMINO, BASE
@@ -20,20 +20,10 @@ def decode(dna, amino=False):
 	# TODO Handle degenerate DNA data properly
 	dna = clean_non_dna(dna, amino)  # TODO Handle degenerate data better
 	if amino:
-		return map_array(decode_amino, dna)
+		return map_array(amino_to_num, dna)
 	else:
 		codons = get_codons(dna)
 		return map_array(decode_codon, codons)
-
-
-def decode_amino(amino: str) -> int:
-	"""Decode an amino acid IUPAC string into a number between 0 and 63."""
-	return aminos[amino]
-
-
-def encode_amino(code: int) -> str:
-	"""Encode a number between 0 and 63 into an amino acid IUPAC string."""
-	return aminos_inverse.get(code, '')
 
 
 def decode_codon(codon: str) -> int:
