@@ -24,5 +24,5 @@ BASE64 = str_join(
 	["+", "."]
 )
 
-num_to_alphabet64 = OrderedDict(enumerate(BASE64))
-alphabet64_to_num = inverse_od(num_to_alphabet64)
+num_to_base64 = OrderedDict(enumerate(BASE64))
+base64_to_num = inverse_od(num_to_base64)
