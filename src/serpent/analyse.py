@@ -16,9 +16,9 @@ import numpy as np
 from argh.decorators import arg
 from more_itertools import chunked
 
-from serpent import convert
 from serpent import dna
 from serpent.config import COUNT_LIMIT, DEFAULT_COLOR
+from serpent.convert.base64 import base64_to_num, num_to_base64
 from serpent.digit import num_to_digits
 from serpent.encoding import BASE64
 from serpent.fasta import read
@@ -136,7 +136,7 @@ def encode(filename, amino=False, count=False, out=False, width=64):
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino)
 
-	encoded = (convert.num_to_base64.get(c, " ") for c in decoded)
+	encoded = (num_to_base64.get(c, " ") for c in decoded)
 
 	if count:
 		counts = Counter(encoded)
@@ -237,7 +237,7 @@ def pep(filename, amino=False, length=2, missing=False):
 	dtype = f'U{length}'
 
 	# TODO Allow using amino acid codes?
-	encoded = str_join([convert.num_to_base64.get(c, " ") for c in decoded])
+	encoded = str_join([num_to_base64.get(c, " ") for c in decoded])
 
 	# TODO Use iterators only if Counter accepts them
 	peptide_list = list(chunked(encoded, length))
@@ -283,7 +283,7 @@ def analyse_repeats(decoded, length=4, limit=2, encode=False):
 	echo("Repeated codon sequences:")
 	if encode:
 		b64_codes = map_array(
-			lambda a: str_join(map(convert.num_to_base64.get, num_to_digits(a))),
+			lambda a: str_join(map(num_to_base64.get, num_to_digits(a))),
 			repeats
 		)
 
