@@ -31,7 +31,7 @@ def decode_amino(amino: str) -> int:
 
 
 def encode_amino(code: int) -> str:
-	"""Decode an amino acid IUPAC string into a number between 0 and 63."""
+	"""Encode a number between 0 and 63 into an amino acid IUPAC string."""
 	return aminos_inverse.get(code, '')
 
 
