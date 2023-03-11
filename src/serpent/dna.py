@@ -8,6 +8,7 @@ import numpy as np
 from more_itertools import grouper
 
 from serpent.amino import aminos, aminos_inverse
+from serpent.config import BASE_ORDER
 from serpent.convert.digits import digits_to_num
 from serpent.convert.nucleotide import nt_to_num
 from serpent.fasta import AMINO, BASE
@@ -79,9 +80,9 @@ def codon_sequences(decoded, n=4, fill=0):
 	return numbers
 
 
-def codons():
-	"""Sequence of the 64 codons using order ACGT."""
-	return np.fromiter(map(str_join, itr.product('ACGT', repeat=3)), dtype='<U3')
+def codons(bases=BASE_ORDER):
+	"""Sequence of the 64 codons using the given order."""
+	return np.fromiter(map(str_join, itr.product(bases, repeat=3)), dtype='<U3')
 
 
 def oligopeptides(length):
