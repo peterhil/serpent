@@ -9,7 +9,7 @@ import numpy as np
 from more_itertools import grouper
 
 from serpent.amino import aminos, aminos_inverse
-from serpent.digit import digits_to_num
+from serpent.convert.digits import digits_to_num
 from serpent.fasta import AMINO, BASE
 from serpent.fun import inverse_od, map_array, str_join
 

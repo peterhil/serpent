@@ -19,7 +19,7 @@ from more_itertools import chunked
 from serpent import dna
 from serpent.config import COUNT_LIMIT, DEFAULT_COLOR
 from serpent.convert.base64 import base64_to_num, num_to_base64
-from serpent.digit import num_to_digits
+from serpent.convert.digits import num_to_digits
 from serpent.encoding import BASE64
 from serpent.fasta import read
 from serpent.fun import map_array, sort_values, str_join

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from serpent import (
          analyse,
-         digit,
+         convert,
          dna,
          encoding,
          fasta,
