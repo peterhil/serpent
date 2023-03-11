@@ -58,7 +58,7 @@ def ac(filename, amino=False, limit=0.05, width=256, seq=1):
 	ac = autocorrelogram(decoded, width)
 
 	interactive()
-	plt.plot(np.arange(1, len(ac)), ac[1:], color=DEFAULT_COLOR)
+	plt.plot(ac, color=DEFAULT_COLOR)
 
 	peaks = ac_peaks(ac, limit)
 	{print("%s	%1.3f" % (peak, value)) for peak, value in peaks.items()}
