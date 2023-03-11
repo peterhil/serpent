@@ -5,23 +5,15 @@ from collections import OrderedDict
 from serpent.fun import inverse_od
 
 from .codon import codon_to_num, codons_array, num_to_codon
-
-# Condensed translation table for the Standard Genetic Code
-#
-# From the NCBI Taxonomy webpage (which also has 25 alternative tables):
-# https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG1
-
-AMINO_CODE = {
-	1:       "FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start: "---M------**--*----M---------------M----------------------------"
-	# Base1: "TTTTTTTTTTTTTTTTCCCCCCCCCCCCCCCCAAAAAAAAAAAAAAAAGGGGGGGGGGGGGGGG"
-	# Base2: "TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG"
-	# Base3: "TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG"
-}
+from .genetic_code import GENETIC_CODE
 
 CODONS_NCBI = codons_array('TCAG')
+TRANSL_TABLE = 11
 
-codon_to_amino = OrderedDict(reversed(list(zip(CODONS_NCBI, AMINO_CODE[1]))))
+codon_to_amino = OrderedDict(reversed(list(zip(
+	CODONS_NCBI,
+	GENETIC_CODE[TRANSL_TABLE],
+))))
 
 # TODO: Handle degenerate data
 # codon_to_amino.update({
