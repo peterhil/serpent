@@ -71,7 +71,7 @@ def get_codons(data, fill="A"):
 def codon_sequences(decoded, n=4, fill=0):
 	"""Chunk data into length N sequences of codons.
 
-	Count the occurences of different kmers as numbers between 0..64**n.
+	Count the occurences of different k-mers as numbers between 0..64**n.
 	Return index and counts.
 	"""
 	sequences = list(grouper(decoded, n, incomplete="fill", fillvalue=fill))
@@ -86,7 +86,10 @@ def codons(bases=BASE_ORDER):
 
 
 def oligopeptides(length):
-	"""Sequence of all oligopeptide combinations of requested length."""
+	"""Sequence of all oligopeptide combinations of requested length.
+
+	Wikipedia: https://en.wikipedia.org/wiki/Oligopeptide
+	"""
 	oligos = map(str_join, itr.product(codons(), repeat=length))
 
 	return np.fromiter(oligos, dtype=f'<U{3*length}')
