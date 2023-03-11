@@ -17,7 +17,8 @@ from serpent.settings import BASE_ORDER
 
 def decode(dna, amino=False):
 	"""Return codons or amino acids from DNA decoded into numbers 0..63."""
-	# TODO Handle degenerate DNA data properly
+	# TODO: Handle degenerate DNA data properly
+	# TODO: Check data against amino option and warn if used incorrectly?
 	dna = clean_non_dna(dna, amino)  # TODO Handle degenerate data better
 	if amino:
 		return map_array(amino_to_num, dna)
