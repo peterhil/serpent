@@ -9,8 +9,8 @@ from more_itertools import grouper
 
 from serpent.config import BASE_ORDER
 from serpent.convert.amino import amino_to_num
+from serpent.convert.codon import codon_to_num, codons_array
 from serpent.convert.digits import digits_to_num
-from serpent.convert.nucleotide import nt_to_num
 from serpent.fasta import AMINO, BASE
 from serpent.fun import map_array, str_join
 
@@ -23,16 +23,7 @@ def decode(dna, amino=False):
 		return map_array(amino_to_num, dna)
 	else:
 		codons = get_codons(dna)
-		return map_array(decode_codon, codons)
-
-
-def decode_codon(codon: str) -> int:
-	"""Decode a codon string into a a number between 0 and 63."""
-	result = 0
-	for num, char in enumerate(reversed(codon)):
-		result += nt_to_num[char] << num * 2
-
-	return result
+		return map_array(codon_to_num, codons)
 
 
 def clean_non_dna(data, amino=False):
@@ -70,16 +61,11 @@ def codon_sequences(decoded, n=4, fill=0):
 	return numbers
 
 
-def codons(bases=BASE_ORDER):
-	"""Sequence of the 64 codons using the given order."""
-	return np.fromiter(map(str_join, itr.product(bases, repeat=3)), dtype='<U3')
-
-
-def oligopeptides(length):
+def oligopeptides(length, bases=BASE_ORDER):
 	"""Sequence of all oligopeptide combinations of requested length.
 
 	Wikipedia: https://en.wikipedia.org/wiki/Oligopeptide
 	"""
-	oligos = map(str_join, itr.product(codons(), repeat=length))
+	oligos = map(str_join, itr.product(codons_array(bases), repeat=length))
 
 	return np.fromiter(oligos, dtype=f'<U{3*length}')
