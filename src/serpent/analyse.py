@@ -21,7 +21,7 @@ from serpent.config import COUNT_LIMIT, DEFAULT_COLOR
 from serpent.digit import number_to_digits
 from serpent.encoding import num_to_alphabet64, BASE64
 from serpent.fasta import read
-from serpent.fun import map_array, str_join
+from serpent.fun import map_array, sort_values, str_join
 from serpent.io import (
 	check_inputs,
 	echo,
@@ -42,11 +42,12 @@ from serpent.visual import (
 )
 
 
-@arg('--amino', '-a', help='Read input as amino acids')
-@arg('--limit', '-l', help='Peak limit', type=float)
-@arg('--seq',   '-s', help='Sequence length', type=int)
-@arg('--width', '-w', help='Autocorrelogram width', type=int)
-def ac(filename, amino=False, limit=0.05, width=256, seq=1):
+@arg('--amino',  '-a', help='Read input as amino acids')
+@arg('--limit',  '-l', help='Peak limit', type=float)
+@arg('--linear', '-n', help='Linear output (do not sort results)')
+@arg('--seq',    '-s', help='Sequence length', type=int)
+@arg('--width',  '-w', help='Autocorrelogram width', type=int)
+def ac(filename, amino=False, limit=0.05, linear=False, width=256, seq=1):
 	"""Plot autocorrelation of sequences."""
 	data = read(filename, amino)
 	data = dna.clean_non_dna(data, amino)
@@ -61,7 +62,10 @@ def ac(filename, amino=False, limit=0.05, width=256, seq=1):
 	plt.plot(ac, color=DEFAULT_COLOR)
 
 	peaks = ac_peaks(ac, limit)
-	{print("%s	%1.3f" % (peak, value)) for peak, value in peaks.items()}
+	peaks.pop(0)  # First item is always 1
+
+	peaks = peaks.items() if linear else sort_values(peaks, reverse=True)
+	return ("%s	%1.3f" % (peak, value) for peak, value in peaks)
 
 
 @arg('--stats',  '-s', help='Show statistics')
