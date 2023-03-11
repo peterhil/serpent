@@ -19,7 +19,7 @@ from more_itertools import chunked
 from serpent import convert
 from serpent import dna
 from serpent.config import COUNT_LIMIT, DEFAULT_COLOR
-from serpent.digit import number_to_digits
+from serpent.digit import num_to_digits
 from serpent.encoding import BASE64
 from serpent.fasta import read
 from serpent.fun import map_array, sort_values, str_join
@@ -283,7 +283,7 @@ def analyse_repeats(decoded, length=4, limit=2, encode=False):
 	echo("Repeated codon sequences:")
 	if encode:
 		b64_codes = map_array(
-			lambda a: str_join(map(convert.num_to_base64.get, number_to_digits(a))),
+			lambda a: str_join(map(convert.num_to_base64.get, num_to_digits(a))),
 			repeats
 		)
 
@@ -291,13 +291,13 @@ def analyse_repeats(decoded, length=4, limit=2, encode=False):
 		{print(line) for line in lines}
 	else:
 		codes = map_array(
-			lambda a: pad_start(number_to_digits(a, 64), fill=0, n=length),
+			lambda a: pad_start(num_to_digits(a, 64), fill=0, n=length),
 			repeats
 		)
 		catg = map_array(
 			lambda a: str_join(map(
 				dna.num_to_base.get,
-				pad_start(number_to_digits(a, 4), fill=0, n=3))),
+				pad_start(num_to_digits(a, 4), fill=0, n=3))),
 			codes.flatten(),
 		)
 		catg = catg.reshape(int(len(catg) / length), length)
