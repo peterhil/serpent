@@ -27,7 +27,9 @@ def autowidth(n: Real, base: int=64, aspect: Real=phi) -> int:
 
 	Width will be at least once the base.
 	"""
-	unrounded_width = np.sqrt(n * aspect)
+	assert n < (2 ** 32), 'N must be less than 4294967296 (=65536 ** 2)'
+
+	unrounded_width = np.sqrt(n) * np.sqrt(aspect)
 	multiple = max(1, int(np.round(unrounded_width / base)))
 
 	return int(base * multiple)
