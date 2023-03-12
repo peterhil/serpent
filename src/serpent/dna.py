@@ -7,7 +7,7 @@ import re
 import numpy as np
 from more_itertools import grouper
 
-from serpent.convert.amino import amino_to_num
+from serpent.convert.amino import decode_aminos
 from serpent.convert.codon import codon_to_num, codons_array
 from serpent.convert.digits import digits_to_num
 from serpent.fasta import AMINO, BASE
@@ -15,13 +15,13 @@ from serpent.fun import map_array, str_join
 from serpent.settings import BASE_ORDER
 
 
-def decode(dna, amino=False):
+def decode(dna, amino=False, table=1):
 	"""Return codons or amino acids from DNA decoded into numbers 0..63."""
 	# TODO: Handle degenerate DNA data properly
 	# TODO: Check data against amino option and warn if used incorrectly?
 	dna = clean_non_dna(dna, amino)  # TODO Handle degenerate data better
 	if amino:
-		return map_array(amino_to_num, dna)
+		return decode_aminos(dna, table)
 	else:
 		codons = get_codons(dna)
 		return map_array(codon_to_num, codons)
