@@ -13,7 +13,7 @@ from pprint import pp
 import argh
 import matplotlib.pyplot as plt
 import numpy as np
-from argh.decorators import arg
+from argh.decorators import arg, wrap_errors
 from more_itertools import chunked
 
 from serpent import dna
@@ -22,7 +22,7 @@ from serpent.convert.base64 import base64_to_num, num_to_base64
 from serpent.convert.digits import num_to_digits
 from serpent.convert.nucleotide import num_to_nt
 from serpent.encoding import BASE64
-from serpent.fasta import read
+from serpent.fasta import read, ParseError
 from serpent.fun import map_array, sort_values, str_join
 from serpent.io import (
 	check_inputs,
@@ -45,6 +45,9 @@ from serpent.visual import (
 )
 
 
+wrapped_errors = [AssertionError, ParseError]
+
+
 @arg('--amino',  '-a', help='Amino acid input')
 @arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',  '-g', help='Degenerate data')
@@ -52,6 +55,7 @@ from serpent.visual import (
 @arg('--linear', '-n', help='Linear output (do not sort results)')
 @arg('--seq',    '-s', help='Sequence length', type=int)
 @arg('--width',  '-w', help='Autocorrelogram width', type=int)
+@wrap_errors(wrapped_errors)
 def ac(
 	filename,
 	limit=0.05, linear=False, width=256, seq=1,
@@ -124,6 +128,7 @@ def find(*inputs, seq=False):
 @arg('--amino', '-a', help='Amino acid input')
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen', '-g', help='Degenerate data')
+@wrap_errors(wrapped_errors)
 def decode(filename, amino=False, degen=False, table=1):
 	"""Explore DNA data with Serpent."""
 	data = read(filename, amino)
@@ -139,6 +144,7 @@ def decode(filename, amino=False, degen=False, table=1):
 @arg('--count', '-c', help='Print counts')
 @arg('--out',   '-o', help='Write out to file')
 @arg('--width', '-w', help='Line width', type=int)
+@wrap_errors(wrapped_errors)
 def encode(
 	filename,
 	count=False, out=False, width=64,
@@ -172,6 +178,7 @@ def encode(
 @arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L'))
 @arg('--out',   '-o', help='Write image to file')
 @arg('--width', '-w', help='Image width', type=int)
+@wrap_errors(wrapped_errors)
 def image(
 	filename,
 	width=None, mode="RGB", out=False,
@@ -198,6 +205,7 @@ def image(
 @arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',  '-g', help='Degenerate data')
 @arg('--length', '-l', help='Fourier transform length', type=int)
+@wrap_errors(wrapped_errors)
 def fft(
 	filename,
 	length=64,
@@ -224,6 +232,7 @@ bin_choices = [
 @arg('--cumulative', '-c', help='Cumulative distribution')
 @arg('--density', '-d', help='Normalise histogram into density')
 @arg('--length', '-l', help='Sequence length', type=int)
+@wrap_errors(wrapped_errors)
 def hist(
 	filename,
 	bins='base',
@@ -253,6 +262,7 @@ def hist(
 @arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',  '-g', help='Degenerate data')
 @arg('--length', '-l', help='Sequence length', type=int)
+@wrap_errors(wrapped_errors)
 def seq(filename, length=1, amino=False, degen=False, table=1):
 	"""Plot DNA sequence count statistics."""
 	data = read(filename, amino)
@@ -267,6 +277,7 @@ def seq(filename, length=1, amino=False, degen=False, table=1):
 @arg('--degen',   '-g', help='Degenerate data')
 @arg('--length',  '-l', help='Peptide length', type=int)
 @arg('--missing', '-m', help='Missing peptides')
+@wrap_errors(wrapped_errors)
 def pep(
 	filename,
 	length=2, missing=False,
@@ -354,6 +365,7 @@ def analyse_repeats(decoded, length=4, limit=2, encode=False):
 @arg('--encode', '-e', help='Encode output as base 64')
 @arg('--limit',  '-l', help='Limit to at least this many repeats', type=int)
 @arg('--seq',    '-s', help='Sequence length', type=int)
+@wrap_errors(wrapped_errors)
 def repeats(
 	filename,
 	seq=2, limit=2, encode=False,

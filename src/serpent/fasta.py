@@ -37,6 +37,10 @@ def get_description(string: str) -> str | None:
 	return matches.group(1).strip() if matches else None
 
 
+class ParseError(Exception):
+	pass
+
+
 class Token(NamedTuple):
 	"""Token of parsed FASTA data."""
 
@@ -85,8 +89,9 @@ def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[Token]:
 		elif kind == "SKIP":
 			continue
 		elif kind == "MISMATCH":
+			print(data)
 			err_msg = f"{value!r} unexpected on line {line} column {column}"
-			raise ValueError(err_msg)
+			raise ParseError(err_msg)
 		yield Token(kind, value, line, column)
 
 
