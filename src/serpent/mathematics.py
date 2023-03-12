@@ -9,6 +9,7 @@ import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
 LogBase = Union[int, float]
+Real = Union[int, float]
 Numeric = Union[int, float, complex]
 NumericSeq = Union[Sequence[Numeric], ArrayLike]
 
@@ -18,7 +19,7 @@ phi_large = 1 / phi
 phi_small = 1 - phi_large
 
 
-def autowidth(n, base=64, aspect=phi):
+def autowidth(n: Real, base: int=64, aspect: Real=phi) -> int:
 	"""Automatic image width rounded to a multiple of some base width.
 
 	Aspect ratio should be a positive float greater than 0, and
