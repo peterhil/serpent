@@ -30,6 +30,9 @@ genetic_code_inverse = OrderedDict([
 ])
 
 
+aa_tables = [*GENETIC_CODE.keys()]
+
+
 # TODO: Handle degenerate data
 degenerate_amino = OrderedDict({
 	"RAY": "B",  # D | N
