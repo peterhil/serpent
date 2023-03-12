@@ -15,6 +15,10 @@ from serpent.padding import pad_end
 from serpent.stats import count_sorted
 from serpent.typing import CodonData
 
+bin_choices = [
+	'base', 'auto', 'fd', 'doane', 'scott', 'stone', 'rice', 'sturges', 'sqrt',
+]
+
 
 def interactive() -> None:
 	"""Use interactive mode with pyplot."""

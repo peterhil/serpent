@@ -37,6 +37,7 @@ from serpent.printing import format_decoded, format_lines
 from serpent.settings import COUNT_LIMIT, DEFAULT_COLOR
 from serpent.stats import ac_peaks, autocorrelogram, count_sorted
 from serpent.visual import (
+	bin_choices,
 	dna_image,
 	interactive,
 	plot_fft,
@@ -217,11 +218,6 @@ def fft(
 
 	interactive()
 	plot_fft(decoded, n=length, color=DEFAULT_COLOR)
-
-
-bin_choices = [
-	'base', 'auto', 'fd', 'doane', 'scott', 'stone', 'rice', 'sturges', 'sqrt',
-]
 
 
 @arg('--amino', '-a', help='Amino acid input')
