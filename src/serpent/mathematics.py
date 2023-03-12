@@ -21,9 +21,15 @@ phi_small = 1 - phi_large
 def autowidth(n, base=64, aspect=phi):
 	"""Automatic image width rounded to a multiple of some base width.
 
-	Aspect ratio can be used to give landscape (phi) or portrait (phi-1) images.
+	Aspect ratio should be a positive float greater than 0, and
+	can be used to give landscape (>1) or portrait (<1) images.
+
+	Width will be at least once the base.
 	"""
-	return int(base * np.round(aspect * np.sqrt(n) / base))
+	unrounded_width = np.sqrt(n * aspect)
+	multiple = max(1, int(np.round(unrounded_width / base)))
+
+	return int(base * multiple)
 
 
 def logn(number: NumericSeq, base: LogBase=np.e) -> float:
