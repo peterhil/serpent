@@ -46,15 +46,20 @@ from serpent.visual import (
 
 
 @arg('--amino',  '-a', help='Amino acid input')
-@arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen',  '-g', help='Degenerate data')
 @arg('--limit',  '-l', help='Peak limit', type=float)
 @arg('--linear', '-n', help='Linear output (do not sort results)')
 @arg('--seq',    '-s', help='Sequence length', type=int)
 @arg('--width',  '-w', help='Autocorrelogram width', type=int)
-def ac(filename, amino=False, table=1, limit=0.05, linear=False, width=256, seq=1):
+def ac(
+	filename,
+	limit=0.05, linear=False, width=256, seq=1,
+	amino=False, degen=False, table=1,
+):
 	"""Plot autocorrelation of sequences."""
 	data = read(filename, amino)
-	decoded = dna.decode(data, amino, table)
+	decoded = dna.decode(data, amino, table, degen)
 
 	if seq > 1:
 		decoded = dna.codon_sequences(decoded, seq)
@@ -118,10 +123,11 @@ def find(*inputs, seq=False):
 
 @arg('--amino', '-a', help='Amino acid input')
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
-def decode(filename, amino=False, table=1):
+@arg('--degen', '-g', help='Degenerate data')
+def decode(filename, amino=False, degen=False, table=1):
 	"""Explore DNA data with Serpent."""
 	data = read(filename, amino)
-	decoded = dna.decode(data, amino, table)
+	decoded = dna.decode(data, amino, table, degen)
 
 	lines = format_decoded(decoded)
 	{print(line) for line in lines}
@@ -129,14 +135,19 @@ def decode(filename, amino=False, table=1):
 
 @arg('--amino', '-a', help='Amino acid input')
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen', '-g', help='Degenerate data')
 @arg('--count', '-c', help='Print counts')
 @arg('--out',   '-o', help='Write out to file')
 @arg('--width', '-w', help='Line width', type=int)
-def encode(filename, amino=False, table=1, count=False, out=False, width=64):
+def encode(
+	filename,
+	count=False, out=False, width=64,
+	amino=False, degen=False, table=1,
+):
 	"""Encode data into various formats."""
 	# TODO Read and decode data iteratively
 	data = read(filename, amino)
-	decoded = dna.decode(data, amino, table)
+	decoded = dna.decode(data, amino, table, degen)
 
 	encoded = (num_to_base64.get(c, " ") for c in decoded)
 
@@ -157,18 +168,23 @@ def encode(filename, amino=False, table=1, count=False, out=False, width=64):
 
 @arg('--amino', '-a', help='Amino acid input')
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen', '-g', help='Degenerate data')
 @arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L'))
 @arg('--out',   '-o', help='Write image to file')
 @arg('--width', '-w', help='Image width', type=int)
-def image(filename, amino=False, table=1, width=None, mode="RGB", out=False):
+def image(
+	filename,
+	width=None, mode="RGB", out=False,
+	amino=False, degen=False, table=1,
+):
 	"""Visualise FASTA data as images."""
 	data = read(filename, amino)
-	decoded = dna.decode(data, amino, table)
+	decoded = dna.decode(data, amino, table, degen)
 
 	if not width:
 		width = autowidth(len(decoded) / len(mode), aspect=phi-1, base=64)
 
-	img = dna_image(decoded, width=width, fill=63, mode=mode)
+	img = dna_image(decoded, width=width, fill=0, mode=mode)
 	img.show()
 
 	if out:
@@ -178,13 +194,18 @@ def image(filename, amino=False, table=1, width=None, mode="RGB", out=False):
 			img.save(filename + f".w{width}.{dna.BASE_ORDER}.png")
 
 
-@arg('--amino', '-a', help='Amino acid input')
-@arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--amino',  '-a', help='Amino acid input')
+@arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen',  '-g', help='Degenerate data')
 @arg('--length', '-l', help='Fourier transform length', type=int)
-def fft(filename, amino=False, table=1, length=64):
+def fft(
+	filename,
+	length=64,
+	amino=False, degen=False, table=1,
+):
 	"""Plot Fourier transform of the DNA data."""
 	data = read(filename, amino)
-	decoded = dna.decode(data, amino, table)
+	decoded = dna.decode(data, amino, table, degen)
 
 	interactive()
 	plot_fft(decoded, n=length, color=DEFAULT_COLOR)
@@ -197,6 +218,7 @@ bin_choices = [
 
 @arg('--amino', '-a', help='Amino acid input')
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen', '-g', help='Degenerate data')
 @arg('--bins',  '-b', help='Histogram bin sizing', choices=bin_choices)
 @arg('--num',   '-n', help='Number of bins (overrides bins option)', type=int)
 @arg('--cumulative', '-c', help='Cumulative distribution')
@@ -204,17 +226,16 @@ bin_choices = [
 @arg('--length', '-l', help='Sequence length', type=int)
 def hist(
 	filename,
-	amino=False,
-	table=1,
 	bins='base',
 	num=None,
 	length=1,
 	density=False,
 	cumulative=False,
+	amino=False, degen=False, table=1,
 ):
 	"""Plot DNA data histograms."""
 	data = read(filename, amino)
-	decoded = dna.decode(data, amino, table)
+	decoded = dna.decode(data, amino, table, degen)
 	seqs = dna.codon_sequences(decoded, length)
 
 	interactive()
@@ -230,11 +251,12 @@ def hist(
 
 @arg('--amino',  '-a', help='Amino acid input')
 @arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen',  '-g', help='Degenerate data')
 @arg('--length', '-l', help='Sequence length', type=int)
-def seq(filename, amino=False, table=1, length=1):
+def seq(filename, length=1, amino=False, degen=False, table=1):
 	"""Plot DNA sequence count statistics."""
 	data = read(filename, amino)
-	decoded = dna.decode(data, amino, table)
+	decoded = dna.decode(data, amino, table, degen)
 
 	interactive()
 	plot_sequence_counts(decoded, n=length, color=DEFAULT_COLOR)
@@ -242,12 +264,17 @@ def seq(filename, amino=False, table=1, length=1):
 
 @arg('--amino',   '-a', help='Amino acid input')
 @arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen',   '-g', help='Degenerate data')
 @arg('--length',  '-l', help='Peptide length', type=int)
 @arg('--missing', '-m', help='Missing peptides')
-def pep(filename, amino=False, table=1, length=2, missing=False):
+def pep(
+	filename,
+	length=2, missing=False,
+	amino=False, table=1, degen=False,
+):
 	"""Peptide statistics."""
 	data = read(filename, amino)
-	decoded = dna.decode(data, amino, table)
+	decoded = dna.decode(data, amino, table, degen)
 	dtype = f'U{length}'
 
 	# TODO Allow using amino acid codes?
@@ -321,15 +348,20 @@ def analyse_repeats(decoded, length=4, limit=2, encode=False):
 		{print(line) for line in lines}
 
 
-@arg('--amino',   '-a', help='Amino acid input')
-@arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
-@arg('--encode',  '-e', help='Encode output as base 64')
-@arg('--limit',   '-l', help='Limit to at least this many repeats', type=int)
-@arg('--seq',     '-s', help='Sequence length', type=int)
-def repeats(filename, amino=False, table=1, seq=2, limit=2, encode=False):
+@arg('--amino',  '-a', help='Amino acid input')
+@arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen',  '-g', help='Degenerate data')
+@arg('--encode', '-e', help='Encode output as base 64')
+@arg('--limit',  '-l', help='Limit to at least this many repeats', type=int)
+@arg('--seq',    '-s', help='Sequence length', type=int)
+def repeats(
+	filename,
+	seq=2, limit=2, encode=False,
+	amino=False, degen=False, table=1,
+):
 	"""Find repeated sequences."""
 	data = read(filename, amino)
-	decoded = dna.decode(data, amino, table)
+	decoded = dna.decode(data, amino, table, degen)
 
 	analyse_repeats(decoded, length=seq, limit=limit, encode=encode)
 
