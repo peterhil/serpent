@@ -10,7 +10,7 @@ from typing import NamedTuple
 DATA_TOKENS = [
 	"AMINO",
 	"BASE",
-	# "DEGENERATE",  # TODO Enable or handle
+	"DEGENERATE",
 ]
 
 # IUPAC encodings
@@ -27,6 +27,7 @@ BASE = "ACGTU"
 DEGENERATE = "WSMKRYBDHVNZ-"
 
 RE_DESCRIPTION = r"^[>;](?P<description>.*)\n?"
+RE_DEGENERATE = fr"[{DEGENERATE}]+?"
 
 
 def get_description(string: str) -> str | None:
@@ -60,7 +61,7 @@ def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[Token]:
 	token_specification = [
 		("DESCRIPTION", RE_DESCRIPTION),
 		("BASE", fr"[{BASE}]+"),
-		("DEGENERATE", fr"[{DEGENERATE}]+?"),
+		("DEGENERATE", RE_DEGENERATE),
 		("NEWLINE", r"\n"),  # Line endings
 		("SKIP", r"[ \t]+"),  # Skip over spaces and tabs
 		("MISMATCH", r"."),  # Any other character

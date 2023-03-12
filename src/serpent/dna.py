@@ -11,16 +11,16 @@ from serpent.convert.amino import decode_aminos
 from serpent.convert.codon import codon_to_num, codons_array
 from serpent.convert.degenerate import decode_degenerate
 from serpent.convert.digits import digits_to_num
-from serpent.fasta import AMINO, BASE
+from serpent.fasta import AMINO, BASE, DEGENERATE
 from serpent.fun import map_array, str_join
 from serpent.settings import BASE_ORDER
 
 
 def decode(dna, amino=False, table=1, degen=False):
 	"""Return codons or amino acids from DNA decoded into numbers 0..63."""
-	# TODO: Handle degenerate DNA data properly
+	# TODO: Handle degenerate amino acid data properly
 	# TODO: Check data against amino option and warn if used incorrectly?
-	dna = clean_non_dna(dna, amino)  # TODO Handle degenerate data better
+	dna = clean_non_dna(dna, amino, degen)
 	if amino:
 		return decode_aminos(dna, table)
 	else:
@@ -31,11 +31,13 @@ def decode(dna, amino=False, table=1, degen=False):
 			return map_array(codon_to_num, codons)
 
 
-def clean_non_dna(data, amino=False):
+def clean_non_dna(data, amino=False, degen=False):
 	"""Clean up non DNA or RNA data. Warns if there are residual characters."""
 	# TODO Convert RNA data into DNA, so everything can be handled in base 4 or
 	# base 64, and convert back if necessary wehen printing.
 	CODES = AMINO if amino else BASE
+	if degen and not amino:
+		CODES += DEGENERATE
 	cleaned = str_join(re.sub(fr"[^{CODES}]{6,}", "", data).split("\n"))
 	residual = str_join(re.findall(fr"[^\n{CODES}]", data))
 
