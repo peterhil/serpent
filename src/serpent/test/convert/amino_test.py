@@ -11,6 +11,6 @@ def assert_equal(actual, expected):
 def test_codon_to_amino():
 	for codon, expected in fixed_codon_to_amino.items():
 		assert_equal(
-			codon_to_amino[codon],
+			codon_to_amino(codon),
 			expected
 		)
