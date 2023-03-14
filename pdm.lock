@@ -2,6 +2,12 @@
 # It is not intended for manual editing.
 
 [[package]]
+name = "ansi"
+version = "0.3.6"
+requires_python = ">=3.6"
+summary = "ANSI cursor movement and graphics"
+
+[[package]]
 name = "appnope"
 version = "0.1.3"
 summary = "Disable App Nap on macOS >= 10.9"
@@ -539,9 +545,13 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "4.1"
-content_hash = "sha256:efcbf4ce79c160622895e37559eea1078f3938a09944e63efb0c18b7fdae50c8"
+content_hash = "sha256:da6de9c7078d7fa361a69849b77a1cb8536df7314a7efd3e91dac7e9072cf6f2"
 
 [metadata.files]
+"ansi 0.3.6" = [
+    {url = "https://files.pythonhosted.org/packages/19/d0/d6bc8e852dd8f7e29d9213820857eb69d057f6171cbefd4c7b26700b8bc5/ansi-0.3.6-py3-none-any.whl", hash = "sha256:a83f7e6e7a9a84f4cc2904e28e575516cf42cf862777649e57615d85ac76e11d"},
+    {url = "https://files.pythonhosted.org/packages/ec/ab/a779658c03d9d6d4e4b9e24e50708fc1d214424829407360bd5a1189b675/ansi-0.3.6.tar.gz", hash = "sha256:10545ce2508e470e9208d0cc200616032fdc81b849678826fb7c81c823fd48b1"},
+]
 "appnope 0.1.3" = [
     {url = "https://files.pythonhosted.org/packages/41/4a/381783f26df413dde4c70c734163d88ca0550a1361cb74a1c68f47550619/appnope-0.1.3-py2.py3-none-any.whl", hash = "sha256:265a455292d0bd8a72453494fa24df5a11eb18373a60c7c0430889f22548605e"},
     {url = "https://files.pythonhosted.org/packages/6a/cd/355842c0db33192ac0fc822e2dcae835669ef317fe56c795fb55fcddb26f/appnope-0.1.3.tar.gz", hash = "sha256:02bd91c4de869fbb1e1c50aafc4098827a7a54ab2f39d9dcba6c9547ed920e24"},
