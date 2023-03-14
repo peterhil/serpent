@@ -17,6 +17,7 @@ def convert(func: Callable, seq: Sequence):
 	"""Convert a sequence with a translation function to different format.
 
 	For example:
+	>>> from .amino import amino_to_codon
 	>>> convert(amino_to_codon, 'WPRPQIPP')
 	'TGGCCTCGTCCTCAAATTCCTCCT'
 	"""
