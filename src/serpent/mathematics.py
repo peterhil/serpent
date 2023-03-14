@@ -48,3 +48,20 @@ def magnitude(data: NumericSeq, base: LogBase=64) -> int:
 def normalise(seq: NumericSeq) -> NDArray[np.float64]:
 	"""Normalise data max to be 1."""
 	return np.asanyarray(seq, dtype=np.float64) / np.amax(seq)
+
+
+def rescale(seq: NumericSeq, old, new):
+	"""Rescale data from old to new range.
+
+	Examples
+	--------
+	>>> rescale(np.arange(4), 4, 256)
+	array([  0.,  64., 128., 192.])
+
+	>>> rescale(np.arange(-3, 4), 4, 12)
+	array([-9., -6., -3.,  0.,  3.,  6.,  9.])
+	"""
+	amax = np.amax(seq)
+	assert amax < old, f'Expected max {amax} to be less than {old}.'
+
+	return new * seq / old

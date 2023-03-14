@@ -10,7 +10,8 @@ from numpy.fft import fft
 from PIL import Image
 
 from serpent import dna
-from serpent.mathematics import magnitude, normalise
+from serpent.bitmap import height_for, to_uint8
+from serpent.mathematics import magnitude
 from serpent.padding import pad_end
 from serpent.stats import count_sorted
 from serpent.typing import CodonData
@@ -126,18 +127,18 @@ def dna_image(decoded: CodonData, width=64, fill=0, mode="RGB") -> Image.Image:
 	The codons are mapped quite directly to 64 ** 3 (= 262144)
 	RGB colours, so that: A=0, C=85, G=170, T/U=255
 	"""
+	# TODO decode data here, so gaps can be accomodated for requested width?
 	padded = np.array(pad_end(decoded, fill, n=3 * width))
-	norm = normalise(padded)
-	channels: int = len(mode)
 
-	rows: float = len(norm) / (channels * width)
-	height: int = int(np.ceil(rows))
+	channels: int = len(mode)
+	height = height_for(padded, width, channels)
+	uint8 = to_uint8(padded, 64, offset=1)  # 1, 5, 9, ..., 253
 
 	if channels > 1:
-		rgb = norm.reshape(height, width, channels)
+		rgb = uint8.reshape(height, width, channels)
 	else:
-		rgb = norm.reshape(height, width)
+		rgb = uint8.reshape(height, width)
 
-	img = Image.fromarray(np.uint8(rgb * 255), mode=mode)
+	img = Image.fromarray(rgb, mode=mode)
 
 	return img
