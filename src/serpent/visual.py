@@ -124,15 +124,27 @@ def plot_sequence_counts(decoded, *args, n=4, **kwargs):
 def dna_image(decoded: CodonData, width=64, fill=0, mode="RGB") -> Image.Image:
 	"""Show decoded DNA data as full colour image.
 
-	The codons are mapped quite directly to 64 ** 3 (= 262144)
-	RGB colours, so that: A=0, C=85, G=170, T/U=255
+	The codons are mapped to 64 ** 3 (=262144) RGB colours quite directly,
+	so that: G: 1, A: 85, C: 169, T (or U): 253.
+
+	Examples
+	--------
+	A (bluish) grey band of 4 colours from dark to light:
+
+	>>> codons = dna.decode('GGGGGAGGCAAGAAAAATCCGCCACCCTTATTCTTT')
+	>>> codons
+	array([ 0,  1,  2, 20, 21, 23, 40, 41, 42, 61, 62, 63])
+
+	>>> im = dna_image(codons, width=4)
+	>>> [*im.getdata()]
+	[(1, 5, 9), (81, 85, 93), (161, 165, 169), (245, 249, 253)]
 	"""
 	# TODO decode data here, so gaps can be accomodated for requested width?
 	padded = np.array(pad_end(decoded, fill, n=3 * width))
 
 	channels: int = len(mode)
 	height = height_for(padded, width, channels)
-	uint8 = to_uint8(padded, 64, offset=1)  # 1, 5, 9, ..., 253
+	uint8 = to_uint8(padded, 64, offset=1)  # 1, 5, 9, ..., 249, 253
 
 	if channels > 1:
 		rgb = uint8.reshape(height, width, channels)
