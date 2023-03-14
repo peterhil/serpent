@@ -10,7 +10,7 @@ from typing import NamedTuple
 DATA_TOKENS = [
 	"AMINO",
 	"BASE",
-	# "DEGENERATE",  # TODO Enable or handle
+	"DEGENERATE",
 ]
 
 # IUPAC encodings
@@ -27,6 +27,7 @@ BASE = "ACGTU"
 DEGENERATE = "WSMKRYBDHVNZ-"
 
 RE_DESCRIPTION = r"^[>;](?P<description>.*)\n?"
+RE_DEGENERATE = fr"[{DEGENERATE}]+?"
 
 
 def get_description(string: str) -> str | None:
@@ -34,6 +35,10 @@ def get_description(string: str) -> str | None:
 	matches = re_description.match(string)
 
 	return matches.group(1).strip() if matches else None
+
+
+class ParseError(Exception):
+	pass
 
 
 class Token(NamedTuple):
@@ -60,7 +65,7 @@ def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[Token]:
 	token_specification = [
 		("DESCRIPTION", RE_DESCRIPTION),
 		("BASE", fr"[{BASE}]+"),
-		("DEGENERATE", fr"[{DEGENERATE}]+?"),
+		("DEGENERATE", RE_DEGENERATE),
 		("NEWLINE", r"\n"),  # Line endings
 		("SKIP", r"[ \t]+"),  # Skip over spaces and tabs
 		("MISMATCH", r"."),  # Any other character
@@ -84,8 +89,9 @@ def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[Token]:
 		elif kind == "SKIP":
 			continue
 		elif kind == "MISMATCH":
+			print(data)
 			err_msg = f"{value!r} unexpected on line {line} column {column}"
-			raise ValueError(err_msg)
+			raise ParseError(err_msg)
 		yield Token(kind, value, line, column)
 
 

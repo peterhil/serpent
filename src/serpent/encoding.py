@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from collections import OrderedDict
 from collections.abc import Iterable
+
+from serpent.fun import str_join
 
 
 def char_range(start: str, end: str) -> Iterable[str]:
@@ -15,12 +16,9 @@ def char_range(start: str, end: str) -> Iterable[str]:
 # Base 64 alphabet variant.
 # This is the most readable of the different options,
 # so do not change easily.
-base64 = (
+BASE64 = str_join(
 	list(char_range("A", "Z")) +
 	list(char_range("a", "z")) +
 	list(char_range("0", "9")) +
 	["+", "."]
 )
-
-alphabet64 = dict(set(enumerate(base64)))
-alphabet64_inverse = OrderedDict([(v, k) for k, v in alphabet64.items()])

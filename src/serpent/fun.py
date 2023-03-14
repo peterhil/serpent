@@ -2,15 +2,35 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections import OrderedDict
+from collections.abc import Iterable, Mapping, Sequence
 
 import numpy as np
+
+
+def inverse_od(mapping: Mapping) -> OrderedDict:
+	"""Swap keys and values on an OrderedDict."""
+	return OrderedDict([(v, k) for k, v in mapping.items()])
 
 
 def map_array(function, arr, dtype=None):
 	"""Naive map on Numpy arrays."""
 	# TODO Use np.apply_along_axis or something faster than this
 	return np.array(list(map(function, arr)), dtype=dtype)
+
+
+def second(seq: Sequence):
+	"""Return second item of a sequence."""
+	return seq[1]
+
+
+
+def sort_values(items: Mapping | list[tuple], reverse=False):
+	"""Sort mapping items by values."""
+	if isinstance(items, Mapping):
+		items = items.items()
+
+	return sorted(items, key=second, reverse=reverse)
 
 
 def str_join(seq: Iterable, joiner='') -> str:

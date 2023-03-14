@@ -20,14 +20,14 @@ def get_padding(data: NDArray[T], fill: T, n: int=3) -> NDArray[T]:
 	return np.repeat([fill], pad_length)
 
 
-def pad_to_left(data: NDArray[T], fill: T, *, n: int=3) -> NDArray[T]:
+def pad_end(data: NDArray[T], fill: T, *, n: int=3) -> NDArray[T]:
 	"""Pad data with the fill characters on the end."""
 	padding = get_padding(data, fill, n)
 
 	return np.concatenate([data, padding])
 
 
-def pad_to_right(data: NDArray[T], fill: T, *, n: int=3) -> NDArray[T]:
+def pad_start(data: NDArray[T], fill: T, *, n: int=3) -> NDArray[T]:
 	"""Pad data with the fill character on the beginning."""
 	padding = get_padding(data, fill, n)
 

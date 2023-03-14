@@ -10,10 +10,15 @@ from numpy.fft import fft
 from PIL import Image
 
 from serpent import dna
-from serpent.mathematics import magnitude, normalise
-from serpent.padding import pad_to_left
+from serpent.bitmap import height_for, to_uint8
+from serpent.mathematics import magnitude
+from serpent.padding import pad_end
 from serpent.stats import count_sorted
 from serpent.typing import CodonData
+
+bin_choices = [
+	'base', 'auto', 'fd', 'doane', 'scott', 'stone', 'rice', 'sturges', 'sqrt',
+]
 
 
 def interactive() -> None:
@@ -119,21 +124,33 @@ def plot_sequence_counts(decoded, *args, n=4, **kwargs):
 def dna_image(decoded: CodonData, width=64, fill=0, mode="RGB") -> Image.Image:
 	"""Show decoded DNA data as full colour image.
 
-	The codons are mapped quite directly to 64 ** 3 (= 262144)
-	RGB colours, so that: A=0, C=85, G=170, T/U=255
-	"""
-	padded = np.array(pad_to_left(decoded, fill, n=3 * width))
-	norm = normalise(padded)
-	channels: int = len(mode)
+	The codons are mapped to 64 ** 3 (=262144) RGB colours quite directly,
+	so that: G: 1, A: 85, C: 169, T (or U): 253.
 
-	rows: float = len(norm) / (channels * width)
-	height: int = int(np.ceil(rows))
+	Examples
+	--------
+	A (bluish) grey band of 4 colours from dark to light:
+
+	>>> codons = dna.decode('GGGGGAGGCAAGAAAAATCCGCCACCCTTATTCTTT')
+	>>> codons
+	array([ 0,  1,  2, 20, 21, 23, 40, 41, 42, 61, 62, 63])
+
+	>>> im = dna_image(codons, width=4)
+	>>> [*im.getdata()]
+	[(1, 5, 9), (81, 85, 93), (161, 165, 169), (245, 249, 253)]
+	"""
+	# TODO decode data here, so gaps can be accomodated for requested width?
+	padded = np.array(pad_end(decoded, fill, n=3 * width))
+
+	channels: int = len(mode)
+	height = height_for(padded, width, channels)
+	uint8 = to_uint8(padded, 64, offset=1)  # 1, 5, 9, ..., 249, 253
 
 	if channels > 1:
-		rgb = norm.reshape(height, width, channels)
+		rgb = uint8.reshape(height, width, channels)
 	else:
-		rgb = norm.reshape(height, width)
+		rgb = uint8.reshape(height, width)
 
-	img = Image.fromarray(np.uint8(rgb * 255), mode=mode)
+	img = Image.fromarray(rgb, mode=mode)
 
 	return img
