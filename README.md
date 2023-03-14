@@ -22,6 +22,7 @@ bases, codons, amino acids and genome data.
 
 ### Analyse and plot FASTA data visually
 
+* `serpent ac`: print and plot autocorrelation on DNA and RNA sequences
 * `serpent fft`: plot FFTs on DNA and RNA sequences
 * `serpent hist`: plot histogram statistics
 * `serpent image`: visualise DNA and RNA data as images
