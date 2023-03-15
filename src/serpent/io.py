@@ -17,19 +17,29 @@ def err(message):
 	return stderr.write(f"{message}\n")
 
 
-def check_path(path: Path, recurse: bool=False) -> Iterator[Path]:
-	if not path.exists():
-		err(f"{argv[0]}: {path}: No such file or directory")
+def check_path(input: Path, recurse: bool=False) -> Iterator[Path]:
+	path = Path(input)
+
+	if input == '-':
+		yield '-'
+		return
+	elif not path.exists():
+		return err(f"{argv[0]}: {path}: No such file or directory")
+
 	if path.is_dir():
 		if recurse:
 			for file in sorted(path.iterdir()):
-				yield from check_path(Path(file), recurse)
+				yield from check_path(file, recurse)
 		else:
-			err(f"{argv[0]}: {path}: Is directory")
-	if path.is_file():
+			return err(f"{argv[0]}: {path}: Is directory")
+	elif path.is_file():
 		yield path
+	else:
+		return err(f'{path}: Is not a regular file')
 
 
-def check_inputs(inputs: list[str], recurse: bool=False):
+def check_paths(inputs: list[str], recurse: bool=False):
+	if len(inputs) == 0:
+		yield '-'
 	for input in inputs:
-		yield from check_path(Path(input), recurse)
+		yield from check_path(input, recurse)

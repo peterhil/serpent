@@ -31,7 +31,7 @@ from serpent.fasta import (
 )
 from serpent.fun import map_array, sort_values, str_join
 from serpent.io import (
-	check_inputs,
+	check_paths,
 	echo,
 	openhook,
 )
@@ -111,7 +111,8 @@ def cat(*inputs):
 	"""Concatenate and print FASTA sequences from files."""
 	# TODO Implement read_sequences with more_itertools.split_with and chain
 	# TODO Handle compressed files and archives
-	inputs = check_inputs(inputs)
+	inputs = check_paths(inputs)
+
 	with fileinput.input(inputs, mode='r', openhook=openhook) as fi:
 		for line in fi:
 			yield line.rstrip()
@@ -122,7 +123,7 @@ def find(*inputs, seq=False):
 	"""Find FASTA sequences from files and directories."""
 	# TODO Handle compressed files and archives
 	debug = False
-	inputs = check_inputs(inputs, recurse=True)
+	inputs = check_paths(inputs, recurse=True)
 
 	with fileinput.input(inputs, mode='r', openhook=openhook) as fi:
 		if seq:
