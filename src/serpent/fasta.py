@@ -36,6 +36,13 @@ RE_DESCRIPTION = r"^[>;](?P<description>.*)\n?"
 RE_DEGENERATE = fr"[{DEGENERATE}]+?"
 
 
+def auto_select_amino(filename: str, amino: bool) -> bool:
+	if (match := re.search(r'\.f([an])a$', str(filename).lower())):
+		amino = match.group(1) == 'a'
+		err(f'{filename}: Auto selected amino = {amino}')
+	return amino
+
+
 def get_description(string: str) -> str | None:
 	re_description = re.compile(RE_DESCRIPTION)
 	matches = re_description.match(string)
