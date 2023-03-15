@@ -13,7 +13,7 @@ from pprint import pp
 import argh
 import matplotlib.pyplot as plt
 import numpy as np
-from argh.decorators import arg, wrap_errors
+from argh.decorators import arg, aliases, wrap_errors
 from more_itertools import chunked
 
 from serpent import dna
@@ -48,6 +48,7 @@ from serpent.visual import (
 	plot_histogram_sized,
 	plot_sequence_counts,
 )
+from serpent.zigzag import zigzag_blocks, zigzag_text
 
 
 wrapped_errors = [AssertionError, ParseError]
@@ -130,6 +131,17 @@ def find(*inputs, seq=False):
 			yield from find_fasta_sequences(fi, debug)
 		else:
 			yield from find_fasta_files(fi, debug)
+
+
+@arg('--text', '-x', help='Page as text')
+@aliases('zz')
+@wrap_errors(wrapped_errors)
+def zigzag(*inputs, text=False):
+	"""Browse DNA data paged into variable line widths."""
+	if text:
+		zigzag_text(inputs)
+	else:
+		zigzag_blocks(inputs)
 
 
 @arg('--amino', '-a', help='Amino acid input')
@@ -403,6 +415,7 @@ def main():
 		pep,
 		repeats,
 		seq,
+		zigzag,
 	])
 	# parser.set_default_command(serpent)
 	return parser.dispatch()
