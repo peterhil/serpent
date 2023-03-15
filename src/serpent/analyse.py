@@ -22,13 +22,17 @@ from serpent.convert.base64 import base64_to_num, num_to_base64
 from serpent.convert.digits import num_to_digits
 from serpent.convert.nucleotide import num_to_nt
 from serpent.encoding import BASE64
-from serpent.fasta import read, ParseError
+from serpent.fasta import (
+	ParseError,
+	auto_select_amino,
+	find_fasta_files,
+	find_fasta_sequences,
+	read,
+)
 from serpent.fun import map_array, sort_values, str_join
 from serpent.io import (
 	check_inputs,
 	echo,
-	find_fasta_files,
-	find_fasta_sequences,
 	openhook,
 )
 from serpent.mathematics import autowidth, phi, phi_small
@@ -63,6 +67,7 @@ def ac(
 	amino=False, degen=False, table=1,
 ):
 	"""Plot autocorrelation of sequences."""
+	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
 
@@ -132,6 +137,7 @@ def find(*inputs, seq=False):
 @wrap_errors(wrapped_errors)
 def decode(filename, amino=False, degen=False, table=1):
 	"""Explore DNA data with Serpent."""
+	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
 
@@ -153,6 +159,7 @@ def encode(
 ):
 	"""Encode data into various formats."""
 	# TODO Read and decode data iteratively
+	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
 
@@ -186,6 +193,7 @@ def image(
 	amino=False, degen=False, table=1,
 ):
 	"""Visualise FASTA data as images."""
+	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
 
@@ -213,6 +221,7 @@ def fft(
 	amino=False, degen=False, table=1,
 ):
 	"""Plot Fourier transform of the DNA data."""
+	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
 
@@ -239,6 +248,7 @@ def hist(
 	amino=False, degen=False, table=1,
 ):
 	"""Plot DNA data histograms."""
+	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
 	seqs = dna.codon_sequences(decoded, length)
@@ -261,6 +271,7 @@ def hist(
 @wrap_errors(wrapped_errors)
 def seq(filename, length=1, amino=False, degen=False, table=1):
 	"""Plot DNA sequence count statistics."""
+	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
 
@@ -280,6 +291,7 @@ def pep(
 	amino=False, table=1, degen=False,
 ):
 	"""Peptide statistics."""
+	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
 	dtype = f'U{length}'
@@ -368,6 +380,7 @@ def repeats(
 	amino=False, degen=False, table=1,
 ):
 	"""Find repeated sequences."""
+	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
 
