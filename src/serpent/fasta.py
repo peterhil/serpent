@@ -4,8 +4,14 @@ from __future__ import annotations
 
 import re
 from collections.abc import Iterator
+from fileinput import FileInput
 from pathlib import Path
 from typing import NamedTuple
+
+from termcolor import colored
+
+from serpent.io import err
+from serpent.settings import DEFAULT_TERM_COLOR
 
 DATA_TOKENS = [
 	"AMINO",
@@ -35,6 +41,32 @@ def get_description(string: str) -> str | None:
 	matches = re_description.match(string)
 
 	return matches.group(1).strip() if matches else None
+
+
+def find_fasta_files(fi: FileInput, debug=False) -> Iterator[str]:
+	for line in fi:
+		filename = fi.filename()
+		if fi.isfirstline() and get_description(line):
+			yield filename
+		elif debug:
+			err(f"{filename}: Not FASTA!")
+		fi.nextfile()
+
+
+def find_fasta_sequences(fi: FileInput, debug=False) -> Iterator[str]:
+	"""Find FASTA files and print single and multiple sequences."""
+	for line in fi:
+		description = get_description(line)
+		newfile = fi.isfirstline()
+		if description:
+			if newfile:
+				filename = fi.filename()
+				yield colored(filename, DEFAULT_TERM_COLOR)
+			yield f">{description}"
+		elif newfile:
+			fi.nextfile()
+		if not description and debug:  # TODO Use with cat
+			yield line.rstrip()
 
 
 class ParseError(Exception):

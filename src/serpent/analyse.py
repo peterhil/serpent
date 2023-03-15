@@ -22,13 +22,16 @@ from serpent.convert.base64 import base64_to_num, num_to_base64
 from serpent.convert.digits import num_to_digits
 from serpent.convert.nucleotide import num_to_nt
 from serpent.encoding import BASE64
-from serpent.fasta import read, ParseError
+from serpent.fasta import (
+	ParseError,
+	find_fasta_files,
+	find_fasta_sequences,
+	read,
+)
 from serpent.fun import map_array, sort_values, str_join
 from serpent.io import (
 	check_inputs,
 	echo,
-	find_fasta_files,
-	find_fasta_sequences,
 	openhook,
 )
 from serpent.mathematics import autowidth, phi, phi_small
