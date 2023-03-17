@@ -19,8 +19,25 @@ HALF_BLOCK = '\u2580'
 class ZigzagState:
 	"""Dataclass for keeping track of the zigzag state."""
 
+	inputs: list[str]
 	dirty: bool = True
 	current: int = 0
+
+	@property
+	def current_input(self):
+		return self.inputs[self.current]
+
+	@property
+	def total(self):
+		return len(self.inputs) or 1
+
+	def next_input(self):
+		self.current = (self.current + 1) % self.total
+		self.dirty = True
+
+	def prev_input(self):
+		self.current = (self.current - 1) % self.total
+		self.dirty = True
 
 
 def rgb_at_xy(term, x, y, t):
@@ -52,8 +69,8 @@ def screen_page(term, render_fn, t):
 	return result
 
 
-def status(term, inputs, current, total):
-	left_txt = f'file ({current + 1} / {total}): {inputs[current]}'
+def status(term, state):
+	left_txt = f'file ({state.current + 1} / {state.total}): {state.current_input}'
 	right_txt = f'{term.number_of_colors} colors - ?: help'
 	return (
 		'\n' + term.normal +
@@ -65,11 +82,10 @@ def status(term, inputs, current, total):
 
 def zigzag_blocks(inputs):
 	"""Browse DNA data as text paged into variable line widths."""
-	inputs = [*check_paths(inputs)]
-	total = len(inputs) or 1
-
 	term = blessed.Terminal()
-	state = ZigzagState()
+	state = ZigzagState(
+		inputs = [*check_paths(inputs)]
+	)
 
 	with term.cbreak(), term.hidden_cursor(), term.fullscreen():
 		state.dirty = True
@@ -77,18 +93,16 @@ def zigzag_blocks(inputs):
 			if state.dirty:
 				outp = term.home
 				outp += screen_page(term, rgb_at_xy, state.current)
-				outp += status(term, inputs, state.current, total)
+				outp += status(term, state)
 				print(outp, end='')
 				sys.stdout.flush()
 				state.dirty = False
 
 			key = term.inkey(timeout=None)
 			if key == ' ':
-				state.current = (state.current + 1) % total
-				state.dirty = True
+				state.next_input()
 			elif key == 'b':
-				state.current = (state.current - 1) % total
-				state.dirty = True
+				state.prev_input()
 			elif key == 'q':
 				break
 
