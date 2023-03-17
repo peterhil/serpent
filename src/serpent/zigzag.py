@@ -4,6 +4,7 @@ import colorsys
 import fileinput
 import math
 import sys
+from dataclasses import dataclass
 
 import blessed
 import numpy as np
@@ -12,6 +13,14 @@ from serpent.io import check_paths
 from serpent.mathematics import rescale
 
 HALF_BLOCK = '\u2580'
+
+
+@dataclass
+class ZigzagState:
+	"""Dataclass for keeping track of the zigzag state."""
+
+	dirty: bool = True
+	current: int = 0
 
 
 def rgb_at_xy(term, x, y, t):
@@ -60,26 +69,26 @@ def zigzag_blocks(inputs):
 	total = len(inputs) or 1
 
 	term = blessed.Terminal()
-	current = 0
+	state = ZigzagState()
 
 	with term.cbreak(), term.hidden_cursor(), term.fullscreen():
-		dirty = True
+		state.dirty = True
 		while True:
-			if dirty:
+			if state.dirty:
 				outp = term.home
-				outp += screen_page(term, rgb_at_xy, current)
-				outp += status(term, inputs, current, total)
+				outp += screen_page(term, rgb_at_xy, state.current)
+				outp += status(term, inputs, state.current, total)
 				print(outp, end='')
 				sys.stdout.flush()
-				dirty = False
+				state.dirty = False
 
 			key = term.inkey(timeout=None)
 			if key == ' ':
-				current = (current + 1) % total
-				dirty = True
+				state.current = (state.current + 1) % total
+				state.dirty = True
 			elif key == 'b':
-				current = (current - 1) % total
-				dirty = True
+				state.current = (state.current - 1) % total
+				state.dirty = True
 			elif key == 'q':
 				break
 
