@@ -19,6 +19,7 @@ from more_itertools import chunked
 from serpent import dna
 from serpent.convert.amino import aa_tables
 from serpent.convert.base64 import base64_to_num, num_to_base64
+from serpent.convert.codon import num_to_codon
 from serpent.convert.digits import num_to_digits
 from serpent.convert.nucleotide import num_to_nt
 from serpent.encoding import BASE64
@@ -162,12 +163,13 @@ def decode(filename, amino=False, degen=False, table=1):
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen', '-g', help='Degenerate data')
 @arg('--count', '-c', help='Print counts')
+@arg('--fmt',   '-f', help='Output format', choices=['b', 'base64', 'c', 'codon'])
 @arg('--out',   '-o', help='Write out to file')
 @arg('--width', '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
 def encode(
 	filename,
-	count=False, out=False, width=64,
+	count=False, fmt='b64', out=False, width=64,
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into various formats."""
@@ -176,7 +178,7 @@ def encode(
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
 
-	encoded = (num_to_base64.get(c, " ") for c in decoded)
+	encoded = dna.encode(decoded, fmt)
 
 	if count:
 		counts = Counter(encoded)
@@ -184,9 +186,11 @@ def encode(
 
 	lines = (str_join(line) for line in chunked(encoded, width))
 	if out:
-		outfile = filename + ".ser64"
+		file_ext = dna.file_extension(fmt)
+		outfile = f'{filename}.{file_ext}'
 		with Path(outfile).open("w", encoding="UTF-8") as file:
 			file.write(str_join(lines, "\n"))
+			file.write("\n")  # Newline at the end
 			print(f"Wrote: {outfile}")
 		return None
 	else:

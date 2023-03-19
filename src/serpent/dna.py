@@ -3,17 +3,43 @@ from __future__ import annotations
 
 import itertools as itr
 import re
+from collections.abc import Sequence
 
 import numpy as np
 from more_itertools import grouper
 
 from serpent.convert.amino import decode_aminos
-from serpent.convert.codon import codon_to_num, codons_array
+from serpent.convert.base64 import num_to_base64
+from serpent.convert.codon import codon_to_num, codons_array, num_to_codon
 from serpent.convert.degenerate import decode_degenerate
 from serpent.convert.digits import digits_to_num
 from serpent.fasta import AMINO, BASE, DEGENERATE
 from serpent.fun import map_array, str_join
 from serpent.settings import BASE_ORDER
+
+
+def encode(decoded: Sequence[int], fmt: str = 'base64'):
+	"""Encode decoded data into base64 or codon format."""
+	if fmt in ['b', 'base64']:
+		encoded = (num_to_base64.get(num, " ") for num in decoded)
+	elif fmt in ['c', 'codon']:
+		encoded = (num_to_codon(num) for num in decoded)
+	else:
+		raise ValueError('Unknown format: ' + fmt)
+
+	return encoded
+
+
+def file_extension(fmt: str = 'base64'):
+	"""Get file extension for encoded data."""
+	if fmt in ['b', 'base64']:
+		extension = 'ser64'
+	elif fmt in ['c', 'codon']:
+		extension = 'codon.fasta'
+	else:
+		raise ValueError('Unknown format: ' + fmt)
+
+	return extension
 
 
 def decode(dna, amino=False, table=1, degen=False):
