@@ -46,7 +46,11 @@ def decode(dna, amino=False, table=1, degen=False):
 	"""Return codons or amino acids from DNA decoded into numbers 0..63."""
 	# TODO: Handle degenerate amino acid data properly
 	# TODO: Check data against amino option and warn if used incorrectly?
-	dna = clean_non_dna(dna, amino, degen)
+	[dna, residual] = clean_non_dna(dna, amino, degen)
+	if len(residual) > 0:
+		# TODO Use logger.warn with warnings.warn?
+		print("Residual characters:", residual)
+
 	if amino:
 		return decode_aminos(dna, table)
 	else:
@@ -67,11 +71,7 @@ def clean_non_dna(data, amino=False, degen=False):
 	cleaned = str_join(re.sub(fr"[^{CODES}]{6,}", "", data).split("\n"))
 	residual = str_join(re.findall(fr"[^\n{CODES}]", data))
 
-	if len(residual) > 0:
-		# TODO Use logger.warn with warnings.warn?
-		print("Residual characters:", residual)
-
-	return cleaned
+	return [cleaned, residual]
 
 
 def get_codons(data, fill="A"):
