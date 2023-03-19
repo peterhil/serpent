@@ -34,7 +34,7 @@ def decode(dna, amino=False, table=1, degen=False):
 def clean_non_dna(data, amino=False, degen=False):
 	"""Clean up non DNA or RNA data. Warns if there are residual characters."""
 	# TODO Convert RNA data into DNA, so everything can be handled in base 4 or
-	# base 64, and convert back if necessary wehen printing.
+	# base 64, and convert back when printing if necessary.
 	CODES = AMINO if amino else BASE
 	if degen and not amino:
 		CODES += DEGENERATE
