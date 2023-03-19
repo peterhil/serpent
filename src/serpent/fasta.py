@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from collections import OrderedDict
 from collections.abc import Iterable, Iterator
 from fileinput import FileInput
 from pathlib import Path
@@ -105,18 +106,19 @@ def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[Token]:
 	https://en.wikipedia.org/wiki/FASTA_format
 	https://docs.python.org/3/library/re.html#writing-a-tokenizer.
 	"""
-	token_specification = [
+	token_specification = OrderedDict([
 		("DESCRIPTION", RE_DESCRIPTION),
+		("AMINO", fr"[{AMINO}]+"),
 		("BASE", fr"[{BASE}]+"),
 		("DEGENERATE", RE_DEGENERATE),
 		("NEWLINE", r"\n"),  # Line endings
 		("SKIP", r"[ \t]+"),  # Skip over spaces and tabs
 		("MISMATCH", r"."),  # Any other character
-	]
-	if amino:
-		token_specification.insert(1, ("AMINO", fr"[{AMINO}]+"))
+	])
+	if not amino:
+		token_specification.pop('AMINO')
 
-	spec = "|".join("(?P<%s>%s)" % pair for pair in token_specification)
+	spec = "|".join((fr"(?P<{k}>{v})" for k, v in token_specification.items()))
 	# TODO Handle lowercase insertions better, see FASTA format
 	rec_token = re.compile(spec, flags=re.I)
 	# line: int = 1
