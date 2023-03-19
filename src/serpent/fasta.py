@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from fileinput import FileInput
 from pathlib import Path
 from typing import NamedTuple
@@ -84,9 +84,10 @@ class Token(NamedTuple):
 	"""Token of parsed FASTA data."""
 
 	type: str
-	value: str
 	line: int
 	column: int
+	data: str = ''
+	value: str = ''
 
 	@property
 	def is_data(self):
@@ -131,7 +132,10 @@ def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[Token]:
 			print(data)
 			err_msg = f"{value!r} unexpected on line {line} column {column}"
 			raise ParseError(err_msg)
-		yield Token(kind, value, line, column)
+		elif kind in DATA_TOKENS:
+			yield Token(kind, line, column, data=value)
+		else:
+			yield Token(kind, line, column, value=value)
 
 
 def read(filename: str, amino: bool = False) -> str:
@@ -161,3 +165,21 @@ def read(filename: str, amino: bool = False) -> str:
 		print(f"Warning: File has more than {max_count} FASTA sequences!")
 
 	return "\n".join(data)
+
+
+def read_tokens(filename: str, amino: bool = False) -> Iterable[Token]:
+	"""Read sequences from a FASTA file.
+
+	Amino:
+		false = input contains nucleotide bases
+		true  = input contains amino acids
+	"""
+	lineno = 0
+	with Path(filename).open(encoding="UTF-8") as file:
+		while (line := file.readline().rstrip()):
+			lineno += 1
+			for token in tokenize(line, amino, lineno):
+				if token.type == "DESCRIPTION" or token.is_data:
+					yield token
+				else:
+					print('Extra:', token)
