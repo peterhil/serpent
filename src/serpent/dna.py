@@ -43,7 +43,10 @@ def file_extension(fmt: str = 'base64'):
 
 
 def decode(dna, amino=False, table=1, degen=False):
-	"""Return codons or amino acids from DNA decoded into numbers 0..63."""
+	"""Return codons or amino acids from DNA decoded into numbers 0..63.
+
+	Warns if there are residual characters.
+	"""
 	# TODO: Handle degenerate amino acid data properly
 	# TODO: Check data against amino option and warn if used incorrectly?
 	[dna, residual] = clean_non_dna(dna, amino, degen)
@@ -62,7 +65,7 @@ def decode(dna, amino=False, table=1, degen=False):
 
 
 def clean_non_dna(data, amino=False, degen=False):
-	"""Clean up non DNA or RNA data. Warns if there are residual characters."""
+	"""Clean up non DNA or RNA data."""
 	# TODO Convert RNA data into DNA, so everything can be handled in base 4 or
 	# base 64, and convert back when printing if necessary.
 	CODES = AMINO if amino else BASE
