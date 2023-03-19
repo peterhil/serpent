@@ -160,7 +160,7 @@ def read(filename: str, amino: bool = False) -> str:
 				if description_count == max_count:
 					break
 				if token.is_data:
-					data.append(token.value)
+					data.append(token.data)
 
 	# TODO Create a TUI or add CLI option to select sequences or
 	# otherwise handle multiple sequences
