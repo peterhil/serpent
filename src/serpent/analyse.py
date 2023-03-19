@@ -151,7 +151,7 @@ def zigzag(*inputs, text=False):
 @arg('--degen', '-g', help='Degenerate data')
 @wrap_errors(wrapped_errors)
 def decode(filename, amino=False, degen=False, table=1):
-	"""Explore DNA data with Serpent."""
+	"""Decode DNA data into numbers."""
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
