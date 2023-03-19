@@ -2,11 +2,10 @@
 from __future__ import annotations
 
 import itertools as itr
-import re
 from collections.abc import Sequence
 
 import numpy as np
-from more_itertools import grouper
+from more_itertools import grouper, partition
 
 from serpent.convert.amino import decode_aminos
 from serpent.convert.base64 import num_to_base64
@@ -66,15 +65,16 @@ def decode(dna, amino=False, table=1, degen=False):
 
 def clean_non_dna(data, amino=False, degen=False):
 	"""Clean up non DNA or RNA data."""
+	# TODO Handle non-coding DNA marked with lowercase symbols.
 	# TODO Convert RNA data into DNA, so everything can be handled in base 4 or
 	# base 64, and convert back when printing if necessary.
 	CODES = AMINO if amino else BASE
 	if degen and not amino:
 		CODES += DEGENERATE
-	cleaned = str_join(re.sub(fr"[^{CODES}]{6,}", "", data).split("\n"))
-	residual = str_join(re.findall(fr"[^\n{CODES}]", data))
 
-	return [cleaned, residual]
+	[residual, cleaned] = partition(lambda c: c in CODES, data)
+
+	return [str_join([*cleaned]), str_join([*residual])]
 
 
 def get_codons(data, fill="A"):
