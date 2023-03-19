@@ -60,7 +60,7 @@ def find_fasta_files(fi: FileInput, debug=False) -> Iterator[str]:
 		fi.nextfile()
 
 
-def find_fasta_sequences(fi: FileInput, debug=False) -> Iterator[str]:
+def find_fasta_sequences(fi: FileInput, num=False, debug=False) -> Iterator[str]:
 	"""Find FASTA files and print single and multiple sequences."""
 	for line in fi:
 		description = get_description(line)
@@ -68,8 +68,11 @@ def find_fasta_sequences(fi: FileInput, debug=False) -> Iterator[str]:
 		if description:
 			if newfile:
 				filename = fi.filename()
-				yield colored(filename, DEFAULT_TERM_COLOR)
-			yield f">{description}"
+				yield colored(f'\t{filename}' if num else filename, DEFAULT_TERM_COLOR)
+			if num:
+				yield f"{fi.filelineno()}\t>{description}"
+			else:
+				yield f">{description}"
 		elif newfile:
 			fi.nextfile()
 		if not description and debug:  # TODO Use with cat

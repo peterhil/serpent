@@ -120,8 +120,9 @@ def cat(*inputs):
 			yield line.rstrip()
 
 
+@arg('--num', '-n', help='Print line numbers')
 @arg('--seq', '-s', help='Print sequences')
-def find(*inputs, seq=False):
+def find(*inputs, num=False, seq=False):
 	"""Find FASTA sequences from files and directories."""
 	# TODO Handle compressed files and archives
 	debug = False
@@ -129,7 +130,7 @@ def find(*inputs, seq=False):
 
 	with fileinput.input(inputs, mode='r', openhook=openhook) as fi:
 		if seq:
-			yield from find_fasta_sequences(fi, debug)
+			yield from find_fasta_sequences(fi, num, debug)
 		else:
 			yield from find_fasta_files(fi, debug)
 
