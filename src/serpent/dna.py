@@ -30,18 +30,6 @@ def encode(decoded: Iterable[int], fmt: str = 'base64') -> Iterable[str]:
 	return encoded
 
 
-def file_extension(fmt: str = 'base64'):
-	"""Get file extension for encoded data."""
-	if fmt in ['b', 'base64']:
-		extension = 'ser64'
-	elif fmt in ['c', 'codon']:
-		extension = 'codon.fasta'
-	else:
-		raise ValueError('Unknown format: ' + fmt)
-
-	return extension
-
-
 def decode(
 	dna: Iterable,
 	amino: bool=False,

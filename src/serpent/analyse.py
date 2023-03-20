@@ -35,6 +35,7 @@ from serpent.fun import map_array, sort_values, str_join
 from serpent.io import (
 	check_paths,
 	echo,
+	file_extension_for,
 	openhook,
 )
 from serpent.mathematics import autowidth, phi, phi_small
@@ -190,7 +191,7 @@ def encode(
 
 	lines = (str_join(line) for line in chunked(encoded, width))
 	if out:
-		file_ext = dna.file_extension(fmt)
+		file_ext = file_extension_for(fmt)
 		outfile = f'{filename}.{file_ext}'
 		with Path(outfile).open("w", encoding="UTF-8") as file:
 			file.write(str_join(lines, "\n"))

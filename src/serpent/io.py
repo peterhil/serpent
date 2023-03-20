@@ -43,3 +43,15 @@ def check_paths(inputs: Sequence[str], recurse: bool=False) -> Iterator[Path | s
 		yield '-'
 	for input in inputs:
 		yield from check_path(input, recurse)
+
+
+def file_extension_for(fmt: str = 'base64'):
+	"""Get file extension for encoded data format."""
+	if fmt in ['b', 'base64']:
+		extension = 'ser64'
+	elif fmt in ['c', 'codon']:
+		extension = 'codon.fasta'
+	else:
+		raise ValueError('Unknown format: ' + fmt)
+
+	return extension
