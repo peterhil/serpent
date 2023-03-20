@@ -74,6 +74,9 @@ def clean_non_dna(data, amino=False, degen=False):
 
 	[residual, cleaned] = partition(lambda c: c in CODES, data)
 
+	# Filter out whitespace etc.
+	residual = filter(lambda c: c in r'\n\r\t ', residual)
+
 	return [str_join([*cleaned]), str_join([*residual])]
 
 
