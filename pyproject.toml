@@ -81,6 +81,7 @@ warn_unreachable = true
 # You can disable imports or control per-module/file settings here
 [[tool.mypy.overrides]]
 module = [
+    "argh.*",
     "matplotlib.*",
 ]
 ignore_missing_imports = true
