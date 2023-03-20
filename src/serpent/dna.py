@@ -11,7 +11,7 @@ from numpy.typing import NDArray
 from serpent.convert.amino import decode_aminos
 from serpent.convert.base64 import num_to_base64
 from serpent.convert.codon import codon_to_num, codons_array, num_to_codon
-from serpent.convert.degenerate import decode_degenerate
+from serpent.convert.degenerate import degen_to_num
 from serpent.convert.digits import digits_to_num
 from serpent.fasta import AMINO, BASE, DEGENERATE
 from serpent.fun import str_join
@@ -59,7 +59,9 @@ def decode(dna, amino=False, table=1, degen=False):
 	else:
 		codons = get_codons_iter(dna)
 		if degen:
-			return decode_degenerate(codons)
+			# TODO Handle degenerate data as individual symbols in base 16 instead of codons
+			# and convert scale back with np.log2?
+			return map(degen_to_num, codons)
 		else:
 			return map(codon_to_num, codons)
 

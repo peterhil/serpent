@@ -7,7 +7,7 @@ from collections import OrderedDict
 
 import numpy as np
 
-from serpent.fun import inverse_od, map_array, second, str_join
+from serpent.fun import inverse_od, second, str_join
 from serpent.settings import BASE_ORDER
 
 
@@ -76,8 +76,3 @@ def num_to_degen(code: int) -> str:
 	"""Encode a number between (<4096) into a degenerate codon."""
 	assert code < DEGEN_MAX, 'Invalid degenerate codon number.'
 	return inv_degen_codons[code]
-
-
-def decode_degenerate(dna):
-	"""Decode degenerate DNA data."""
-	return map_array(degen_to_num, dna)
