@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from fileinput import hook_encoded
 from pathlib import Path
 from sys import argv, stderr, stdout
@@ -17,7 +17,7 @@ def err(message):
 	return stderr.write(f"{message}\n")
 
 
-def check_path(input: Path, recurse: bool=False) -> Iterator[Path]:
+def check_path(input: Path | str, recurse: bool=False) -> Iterator[Path | str]:
 	path = Path(input)
 
 	if input == '-':
@@ -38,7 +38,7 @@ def check_path(input: Path, recurse: bool=False) -> Iterator[Path]:
 		return err(f'{path}: Is not a regular file')
 
 
-def check_paths(inputs: list[str], recurse: bool=False):
+def check_paths(inputs: Sequence[str], recurse: bool=False) -> Iterator[Path | str]:
 	if len(inputs) == 0:
 		yield '-'
 	for input in inputs:

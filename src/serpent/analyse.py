@@ -116,9 +116,9 @@ def cat(*inputs):
 	"""Concatenate and print FASTA sequences from files."""
 	# TODO Implement read_sequences with more_itertools.split_with and chain
 	# TODO Handle compressed files and archives
-	inputs = check_paths(inputs)
+	paths = check_paths(inputs)
 
-	with fileinput.input(inputs, mode='r', openhook=openhook) as fi:
+	with fileinput.input(paths, mode='r', openhook=openhook) as fi:
 		for line in fi:
 			yield line.rstrip()
 
@@ -129,9 +129,9 @@ def find(*inputs, num=False, seq=False):
 	"""Find FASTA sequences from files and directories."""
 	# TODO Handle compressed files and archives
 	debug = False
-	inputs = check_paths(inputs, recurse=True)
+	paths = check_paths(inputs, recurse=True)
 
-	with fileinput.input(inputs, mode='r', openhook=openhook) as fi:
+	with fileinput.input(paths, mode='r', openhook=openhook) as fi:
 		if seq:
 			yield from find_fasta_sequences(fi, num, debug)
 		else:

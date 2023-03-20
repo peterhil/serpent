@@ -84,7 +84,7 @@ def zigzag_blocks(inputs):
 	"""Browse DNA data as text paged into variable line widths."""
 	term = blessed.Terminal()
 	state = ZigzagState(
-		inputs = [*check_paths(inputs)]
+		inputs = [*map(str, check_paths(inputs))]
 	)
 
 	with term.cbreak(), term.hidden_cursor(), term.fullscreen():

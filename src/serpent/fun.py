@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections import OrderedDict
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import ItemsView, Iterable, Mapping, Sequence
 
 import numpy as np
 
@@ -25,7 +25,7 @@ def second(seq: Sequence):
 
 
 
-def sort_values(items: Mapping | list[tuple], reverse=False):
+def sort_values(items: ItemsView, reverse=False):
 	"""Sort mapping items by values."""
 	if isinstance(items, Mapping):
 		items = items.items()
