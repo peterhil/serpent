@@ -25,8 +25,8 @@ def test_decode_degen():
 
 
 @pytest.mark.parametrize(('data', 'expected'), [
-	(BASE + DEGENERATE, [BASE, DEGENERATE]),
-	('ACGTUWYS', ['ACGTU', 'WYS']),
+	(BASE + DEGENERATE, (BASE, DEGENERATE)),
+	('ACGTUWYS', ('ACGTU', 'WYS')),
 ])
 def test_clean_non_dna_base(data, expected):
 	actual = dna.clean_non_dna(data, amino=False, degen=False)
@@ -34,7 +34,7 @@ def test_clean_non_dna_base(data, expected):
 
 
 @pytest.mark.parametrize(('data', 'expected'), [
-	(BASE + DEGENERATE + 'J?', [BASE + DEGENERATE, 'J?']),
+	(BASE + DEGENERATE + 'J?', (BASE + DEGENERATE, 'J?')),
 ])
 def test_clean_non_dna_base_degen(data, expected):
 	actual = dna.clean_non_dna(data, amino=False, degen=True)
@@ -42,8 +42,8 @@ def test_clean_non_dna_base_degen(data, expected):
 
 
 @pytest.mark.parametrize(('data', 'expected'), [
-	(AMINO + 'J?', [AMINO, 'J?']),
-	('WAGMIGTSLSLIIRTELGNPS', ['WAGMIGTSLSLIIRTELGNPS', '']),
+	(AMINO + 'J?', (AMINO, 'J?')),
+	('WAGMIGTSLSLIIRTELGNPS', ('WAGMIGTSLSLIIRTELGNPS', '')),
 ])
 def test_clean_non_dna_amino(data, expected):
 	actual = dna.clean_non_dna(data, amino=True, degen=False)

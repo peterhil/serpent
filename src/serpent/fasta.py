@@ -35,6 +35,7 @@ DEGENERATE = "WSMKRYBDHVNZ-"
 
 RE_DESCRIPTION = r"^[>;](?P<description>.*)\n?"
 RE_DEGENERATE = fr"[{DEGENERATE}]+?"
+RE_WHITESPACE = re.compile(r'\s')
 
 
 def auto_select_amino(filename: str, amino: bool) -> bool:

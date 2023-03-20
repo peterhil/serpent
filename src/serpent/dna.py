@@ -13,7 +13,7 @@ from serpent.convert.base64 import num_to_base64
 from serpent.convert.codon import codon_to_num, codons_array, num_to_codon
 from serpent.convert.degenerate import degen_to_num
 from serpent.convert.digits import digits_to_num
-from serpent.fasta import AMINO, BASE, DEGENERATE
+from serpent.fasta import AMINO, BASE, DEGENERATE, RE_WHITESPACE
 from serpent.fun import str_join
 from serpent.settings import BASE_ORDER
 
@@ -85,7 +85,9 @@ def decode_iter(
 			return map(codon_to_num, codons)
 
 
-def clean_non_dna(data, amino=False, degen=False):
+def clean_non_dna(
+	data: Iterable, amino: bool=False, degen: bool=False,
+) -> tuple[str, str]:
 	"""Clean up non DNA or RNA data."""
 	# TODO Handle non-coding DNA marked with lowercase symbols.
 	# TODO Convert RNA data into DNA, so everything can be handled in base 4 or
@@ -95,11 +97,10 @@ def clean_non_dna(data, amino=False, degen=False):
 		CODES += DEGENERATE
 
 	[residual, cleaned] = partition(lambda c: c in CODES, data)
+	# Filter out whitespace from residual
+	[residual, _] = partition(RE_WHITESPACE.match, residual)
 
-	# Filter out whitespace etc.
-	residual = filter(lambda c: c in r'\n\r\t ', residual)
-
-	return [str_join([*cleaned]), str_join([*residual])]
+	return (str_join([*cleaned]), str_join([*residual]))
 
 
 def get_codons(data, fill="A"):
