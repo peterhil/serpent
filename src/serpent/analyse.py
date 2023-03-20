@@ -73,6 +73,7 @@ def ac(
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
+	decoded = dna.decoded_array(decoded, degen)
 
 	if seq > 1:
 		decoded = dna.codon_sequences(decoded, seq)
@@ -158,6 +159,7 @@ def decode(filename, amino=False, degen=False, table=1):
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
+	decoded = dna.decoded_array(decoded, degen)
 
 	lines = format_decoded(decoded)
 	{print(line) for line in lines}
@@ -217,6 +219,7 @@ def image(
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
+	decoded = dna.decoded_array(decoded, degen)
 
 	if not width:
 		width = autowidth(len(decoded) / len(mode), aspect=phi-1, base=64)
@@ -245,6 +248,7 @@ def fft(
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
+	decoded = dna.decoded_array(decoded, degen)
 
 	interactive()
 	plot_fft(decoded, n=length, color=DEFAULT_COLOR)

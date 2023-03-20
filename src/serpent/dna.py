@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 import itertools as itr
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 
 import numpy as np
 from more_itertools import grouper, partition
+from numpy.typing import NDArray
 
 from serpent.convert.amino import decode_aminos
 from serpent.convert.base64 import num_to_base64
@@ -13,7 +14,7 @@ from serpent.convert.codon import codon_to_num, codons_array, num_to_codon
 from serpent.convert.degenerate import decode_degenerate
 from serpent.convert.digits import digits_to_num
 from serpent.fasta import AMINO, BASE, DEGENERATE
-from serpent.fun import map_array, str_join
+from serpent.fun import str_join
 from serpent.settings import BASE_ORDER
 
 
@@ -60,7 +61,15 @@ def decode(dna, amino=False, table=1, degen=False):
 		if degen:
 			return decode_degenerate(codons)
 		else:
-			return map_array(codon_to_num, codons)
+			return map(codon_to_num, codons)
+
+
+def decoded_array(decoded: Iterable, degen: bool=False) -> NDArray:
+	"""Return iterable decoded data as Numpy array."""
+	dtype = np.int32 if degen else np.int8
+	decoded = np.fromiter(decoded, dtype)
+
+	return decoded
 
 
 def clean_non_dna(data, amino=False, degen=False):
