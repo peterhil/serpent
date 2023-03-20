@@ -170,7 +170,7 @@ def decode(filename, amino=False, degen=False, table=1):
 @wrap_errors(wrapped_errors)
 def encode(
 	filename,
-	count=False, fmt='b64', out=False, width=64,
+	count=False, fmt='base64', out=False, width=64,
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into various formats."""
