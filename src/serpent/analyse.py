@@ -73,7 +73,6 @@ def ac(
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
-	decoded = dna.decoded_array(decoded, degen)
 
 	if seq > 1:
 		decoded = dna.codon_sequences(decoded, seq)
@@ -159,7 +158,6 @@ def decode(filename, amino=False, degen=False, table=1):
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
-	decoded = dna.decoded_array(decoded, degen)
 
 	lines = format_decoded(decoded)
 	{print(line) for line in lines}
@@ -182,7 +180,7 @@ def encode(
 	# TODO Read and decode data iteratively
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
-	decoded = dna.decode(data, amino, table, degen)
+	decoded = dna.decode_iter(data, amino, table, degen)
 
 	encoded = dna.encode(decoded, fmt)
 
@@ -219,7 +217,6 @@ def image(
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
-	decoded = dna.decoded_array(decoded, degen)
 
 	if not width:
 		width = autowidth(len(decoded) / len(mode), aspect=phi-1, base=64)
@@ -248,7 +245,6 @@ def fft(
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
-	decoded = dna.decoded_array(decoded, degen)
 
 	interactive()
 	plot_fft(decoded, n=length, color=DEFAULT_COLOR)
@@ -275,7 +271,7 @@ def hist(
 	"""Plot DNA data histograms."""
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
-	decoded = dna.decode(data, amino, table, degen)
+	decoded = dna.decode_iter(data, amino, table, degen)
 	seqs = dna.codon_sequences(decoded, length)
 
 	interactive()
@@ -298,7 +294,7 @@ def seq(filename, length=1, amino=False, degen=False, table=1):
 	"""Plot DNA sequence count statistics."""
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
-	decoded = dna.decode(data, amino, table, degen)
+	decoded = dna.decode_iter(data, amino, table, degen)
 
 	interactive()
 	plot_sequence_counts(decoded, n=length, color=DEFAULT_COLOR)
@@ -318,7 +314,7 @@ def pep(
 	"""Peptide statistics."""
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
-	decoded = dna.decode(data, amino, table, degen)
+	decoded = dna.decode_iter(data, amino, table, degen)
 	dtype = f'U{length}'
 
 	# TODO Allow using amino acid codes?
@@ -407,7 +403,7 @@ def repeats(
 	"""Find repeated sequences."""
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
-	decoded = dna.decode(data, amino, table, degen)
+	decoded = dna.decode_iter(data, amino, table, degen)
 
 	analyse_repeats(decoded, length=seq, limit=limit, encode=encode)
 

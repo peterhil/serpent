@@ -42,8 +42,29 @@ def file_extension(fmt: str = 'base64'):
 	return extension
 
 
-def decode(dna, amino=False, table=1, degen=False):
-	"""Return codons or amino acids from DNA decoded into numbers 0..63.
+def decode(dna, amino=False, table=1, degen=False) -> NDArray:
+	"""Decode codons or amino acids into array from DNA into numbers.
+
+	The scale of numbers is:
+	- degen = False: 0..63     (dtype=np.int8)
+	- degen = True:  0...4095  (dtype=np.int32)
+	"""
+	decoded = decode_iter(dna, amino, table, degen)
+	decoded = _decoded_array(decoded, degen)
+
+	return decoded
+
+
+def _decoded_array(decoded: Iterable, degen: bool=False) -> NDArray:
+	"""Return iterable decoded data as Numpy array."""
+	dtype = np.int32 if degen else np.int8
+	decoded = np.fromiter(decoded, dtype)
+
+	return decoded
+
+
+def decode_iter(dna, amino=False, table=1, degen=False):
+	"""Decode codons or amino acids iteratively from DNA into numbers 0..63.
 
 	Warns if there are residual characters.
 	"""
@@ -64,14 +85,6 @@ def decode(dna, amino=False, table=1, degen=False):
 			return map(degen_to_num, codons)
 		else:
 			return map(codon_to_num, codons)
-
-
-def decoded_array(decoded: Iterable, degen: bool=False) -> NDArray:
-	"""Return iterable decoded data as Numpy array."""
-	dtype = np.int32 if degen else np.int8
-	decoded = np.fromiter(decoded, dtype)
-
-	return decoded
 
 
 def clean_non_dna(data, amino=False, degen=False):
