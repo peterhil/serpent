@@ -133,7 +133,7 @@ def dna_image(decoded: CodonData, width=64, fill=0, mode="RGB") -> Image.Image:
 
 	>>> codons = dna.decode('GGGGGAGGCAAGAAAAATCCGCCACCCTTATTCTTT')
 	>>> codons
-	array([ 0,  1,  2, 20, 21, 23, 40, 41, 42, 61, 62, 63])
+	array([ 0,  1,  2, 20, 21, 23, 40, 41, 42, 61, 62, 63], dtype=int8)
 
 	>>> im = dna_image(codons, width=4)
 	>>> [*im.getdata()]
