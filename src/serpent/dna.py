@@ -56,7 +56,7 @@ def decode(dna, amino=False, table=1, degen=False):
 	if amino:
 		return decode_aminos(dna, table)
 	else:
-		codons = get_codons(dna)
+		codons = get_codons_iter(dna)
 		if degen:
 			return decode_degenerate(codons)
 		else:
@@ -79,10 +79,16 @@ def clean_non_dna(data, amino=False, degen=False):
 
 def get_codons(data, fill="A"):
 	"""Get codons from data as Numpy array."""
-	codons_list = list(grouper(data, 3, incomplete="fill", fillvalue=fill))
-	codons = map_array(str_join, codons_list, dtype="U3")
+	codons = np.fromiter(get_codons_iter(data, fill), dtype="U3")
 
 	return codons
+
+
+def get_codons_iter(data, fill="A"):
+	"""Get codons from data iteratively."""
+	codons = grouper(data, 3, incomplete="fill", fillvalue=fill)
+
+	return map(str_join, codons)
 
 
 def codon_sequences(decoded, n=4, fill=0):
