@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import itertools as itr
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Iterator
 
 import numpy as np
 from more_itertools import grouper, partition
@@ -18,7 +18,7 @@ from serpent.fun import str_join
 from serpent.settings import BASE_ORDER
 
 
-def encode(decoded: Sequence[int], fmt: str = 'base64'):
+def encode(decoded: Iterable[int], fmt: str = 'base64') -> Iterable[str]:
 	"""Encode decoded data into base64 or codon format."""
 	if fmt in ['b', 'base64']:
 		encoded = (num_to_base64.get(num, " ") for num in decoded)
@@ -42,7 +42,12 @@ def file_extension(fmt: str = 'base64'):
 	return extension
 
 
-def decode(dna, amino=False, table=1, degen=False) -> NDArray:
+def decode(
+	dna: Iterable,
+	amino: bool=False,
+	table: int=1,
+	degen: bool=False
+) -> NDArray:
 	"""Decode codons or amino acids into array from DNA into numbers.
 
 	The scale of numbers is:
@@ -50,9 +55,9 @@ def decode(dna, amino=False, table=1, degen=False) -> NDArray:
 	- degen = True:  0...4095  (dtype=np.int32)
 	"""
 	decoded = decode_iter(dna, amino, table, degen)
-	decoded = _decoded_array(decoded, degen)
+	array = _decoded_array(decoded, degen)
 
-	return decoded
+	return array
 
 
 def _decoded_array(decoded: Iterable, degen: bool=False) -> NDArray:
@@ -63,7 +68,12 @@ def _decoded_array(decoded: Iterable, degen: bool=False) -> NDArray:
 	return decoded
 
 
-def decode_iter(dna, amino=False, table=1, degen=False):
+def decode_iter(
+	dna: Iterable,
+	amino: bool=False,
+	table: int=1,
+	degen: bool=False
+) -> Iterator:
 	"""Decode codons or amino acids iteratively from DNA into numbers 0..63.
 
 	Warns if there are residual characters.
