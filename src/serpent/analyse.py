@@ -29,6 +29,7 @@ from serpent.fasta import (
 	find_fasta_files,
 	find_fasta_sequences,
 	read,
+	read_tokens,
 )
 from serpent.fun import map_array, sort_values, str_join
 from serpent.io import (
@@ -92,7 +93,9 @@ def ac(
 @arg('--width',  '-w', help='Codons per line')
 def codons(filename, width=20, stats=False):
 	"""Print codons and statistics."""
-	data = read(filename)
+	tokens = read_tokens(filename)
+	data = str_join(token.data for token in tokens)
+
 	codons = dna.get_codons(data)
 
 	if stats:
