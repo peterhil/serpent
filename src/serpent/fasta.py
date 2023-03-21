@@ -6,6 +6,7 @@ import re
 from collections import OrderedDict
 from collections.abc import Iterable, Iterator
 from fileinput import FileInput
+from os import PathLike
 from pathlib import Path
 from typing import NamedTuple
 
@@ -157,7 +158,7 @@ def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[Token]:
 			yield Token(kind, line, column, value=value)
 
 
-def read(filename: str, amino: bool = False) -> str:
+def read(filename: PathLike, amino: bool = False) -> str:
 	"""Read FASTA data.
 
 	Amino:
@@ -186,7 +187,7 @@ def read(filename: str, amino: bool = False) -> str:
 	return "\n".join(data)
 
 
-def read_tokens(filename: str, amino: bool = False) -> Iterable[Token]:
+def read_tokens(filename: PathLike, amino: bool = False) -> Iterable[Token]:
 	"""Parse data as tokens from a FASTA file.
 
 	Amino:
@@ -204,7 +205,7 @@ def read_tokens(filename: str, amino: bool = False) -> Iterable[Token]:
 					print('Extra:', token)
 
 
-def read_sequences(filename: Path | str, amino: bool=False) -> Iterable[list[Token]]:
+def read_sequences(filename: PathLike, amino: bool=False) -> Iterable[list[Token]]:
 	"""Read sequences from a FASTA file."""
 	tokens = read_tokens(filename, amino)
 	sequences = split_before(tokens, lambda token: token.is_description)
