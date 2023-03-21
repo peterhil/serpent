@@ -244,13 +244,16 @@ def image(
 	])
 
 	img = Image.fromarray(rgb, mode=mode)
-	img.show()
+
+	if amino and table != 1:
+		outfile = filename + f".w{width}.{dna.BASE_ORDER}.t{table}.png"
+	else:
+		outfile = filename + f".w{width}.{dna.BASE_ORDER}.png"
+
+	img.show(title=outfile)
 
 	if out:
-		if amino and table != 1:
-			img.save(filename + f".w{width}.{dna.BASE_ORDER}.t{table}.png")
-		else:
-			img.save(filename + f".w{width}.{dna.BASE_ORDER}.png")
+		img.save(outfile)
 
 
 @arg('--amino',  '-a', help='Amino acid input')
