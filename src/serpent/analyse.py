@@ -15,7 +15,7 @@ import argh
 import matplotlib.pyplot as plt
 import numpy as np
 from argh.decorators import arg, aliases, wrap_errors
-from more_itertools import chunked, partition, split_before
+from more_itertools import chunked, partition, split_before, take
 
 from serpent import dna
 from serpent.convert.amino import aa_tables
@@ -44,7 +44,7 @@ from serpent.io import (
 )
 from serpent.mathematics import autowidth, phi, phi_small
 from serpent.padding import pad_start
-from serpent.printing import format_decoded, format_lines
+from serpent.printing import format_counts, format_decoded, format_lines
 from serpent.settings import COUNT_LIMIT, DEFAULT_COLOR
 from serpent.stats import ac_peaks, autocorrelogram, count_sorted
 from serpent.visual import (
@@ -95,8 +95,9 @@ def ac(
 
 
 @arg('--stats',  '-s', help='Show statistics')
+@arg('--limit',  '-l', help='Limit codon stats to N most common')
 @arg('--width',  '-w', help='Codons per line')
-def codons(filename, width=20, stats=False):
+def codons(filename, width=20, stats=False, limit=COUNT_LIMIT):
 	"""Print codons and statistics."""
 	# Read FASTA sequences
 	# tokens = read_tokens(filename)
@@ -111,12 +112,12 @@ def codons(filename, width=20, stats=False):
 		codons = dna.get_codons(data)
 
 		if stats:
-			counts = Counter(codons)
 			unique = np.unique(codons)
-			print("Codons used:\n", unique)
-			print("Codons total:", len(codons), "unique:", len(unique))
+			print(f"Unique {len(unique)} codons used: (total: {len(codons)})")
+			yield from format_lines(unique, width)
 			print("Counts:")
-			pp(dict(counts.most_common()[:COUNT_LIMIT]))
+			counts = Counter(codons)
+			yield from format_counts(counts, limit)
 		else:
 			lines = format_lines(codons, width)
 			yield from lines
