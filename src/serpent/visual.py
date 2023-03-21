@@ -12,6 +12,8 @@ from PIL import Image
 
 from serpent import dna
 from serpent.bitmap import height_for, to_uint8
+from serpent.fasta import data_and_descriptions
+from serpent.fun import str_join
 from serpent.mathematics import magnitude
 from serpent.padding import pad_end
 from serpent.stats import count_sorted
@@ -166,5 +168,21 @@ def dna_image_data(
 		rgb = uint8.reshape(height, width, channels)
 	else:
 		rgb = uint8.reshape(height, width)
+
+	return rgb
+
+
+def dna_image_seq(
+	seq,
+	width=None, mode="RGB", fill=0,
+	*,
+	amino=False, degen=False, table=1,
+):
+	"""Get DNA data from a single sequence of tokens as full colour image data."""
+	[tokens, descriptions] = data_and_descriptions(seq)
+	# yield from (token.value for token in descriptions)
+	data = str_join(token.data for token in tokens)
+	decoded = dna.decode(data, amino, table, degen)
+	rgb = dna_image_data(decoded, width=width, fill=fill, mode=mode)
 
 	return rgb

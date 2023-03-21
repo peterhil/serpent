@@ -6,7 +6,9 @@ from __future__ import annotations
 
 import fileinput
 import itertools as itr
+import os
 import re
+from PIL import Image
 from collections import Counter
 from pathlib import Path
 from pprint import pp
@@ -50,6 +52,7 @@ from serpent.stats import ac_peaks, autocorrelogram, count_sorted
 from serpent.visual import (
 	bin_choices,
 	dna_image,
+	dna_image_seq,
 	interactive,
 	plot_fft,
 	plot_histogram_sized,
@@ -223,13 +226,24 @@ def image(
 ):
 	"""Visualise FASTA data as images."""
 	amino = auto_select_amino(filename, amino)
-	data = read(filename, amino)
-	decoded = dna.decode(data, amino, table, degen)
+	seqs = list(read_sequences(filename, amino))
 
 	if not width:
-		width = autowidth(len(decoded) / len(mode), aspect=phi-1, base=64)
+		# Set width from the total data size divided by sequence count
+		file_size = os.path.getsize(filename)
+		item_size = 1 if amino else 3
+		size = file_size / item_size
+		width = autowidth(size / len(mode), aspect=phi-1, base=64)
+		echo(f'Automatically set image width: {width} px')
 
-	img = dna_image(decoded, width=width, fill=0, mode=mode)
+	rgb = np.vstack([
+		dna_image_seq(
+			seq, width, mode, fill=0,
+			amino=amino, degen=degen, table=table)
+		for seq in seqs
+	])
+
+	img = Image.fromarray(rgb, mode=mode)
 	img.show()
 
 	if out:
