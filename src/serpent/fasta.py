@@ -16,6 +16,7 @@ from serpent.settings import DEFAULT_TERM_COLOR
 
 DATA_TOKENS = [
 	"AMINO",
+	"AMINO_DEGENERATE",
 	"BASE",
 	"DEGENERATE",
 ]
@@ -25,11 +26,15 @@ DATA_TOKENS = [
 # Amino acids:
 # https://en.wikipedia.org/wiki/Proteinogenic_amino_acid
 #
+# Degenerate amino acids notation (see third table: “Ambiguous amino acids”)
+# https://en.wikipedia.org/wiki/Amino_acid#Table_of_standard_amino_acid_abbreviations_and_properties
+#
 # DNA/RNA with degenarate data:
 # https://en.wikipedia.org/wiki/Nucleic_acid_sequence#Notation
 #
 # Note: Keep `-` at the end for regexp character ranges!
-AMINO = "ARNDCQEGHILKMFPSTWYVUOX*-"  # TODO Handle 'X*-' as degenerate?
+AMINO = "ARNDCQEGHILKMFPSTWYVUO"
+AMINO_DEGENERATE = "BJZX*-"
 BASE = "ACGTU"
 DEGENERATE = "WSMKRYBDHVNZ-"
 
@@ -110,6 +115,7 @@ def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[Token]:
 	token_specification = OrderedDict([
 		("DESCRIPTION", RE_DESCRIPTION),
 		("AMINO", fr"[{AMINO}]+"),
+		("AMINO_DEGENERATE", fr"[{AMINO_DEGENERATE}]+"),
 		("BASE", fr"[{BASE}]+"),
 		("DEGENERATE", RE_DEGENERATE),
 		("NEWLINE", r"\n"),  # Line endings
@@ -118,6 +124,7 @@ def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[Token]:
 	])
 	if not amino:
 		token_specification.pop('AMINO')
+		token_specification.pop('AMINO_DEGENERATE')
 
 	spec = "|".join((fr"(?P<{k}>{v})" for k, v in token_specification.items()))
 	# TODO Handle lowercase insertions better, see FASTA format

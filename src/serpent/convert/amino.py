@@ -39,6 +39,7 @@ degenerate_amino = OrderedDict({
 	"MUH": "J",  # L | I
 	"SAR": "Z",  # E | Q
 	"NNN": "X",  # Any
+	"TAY": "*",  # Termination (stop codon)
 	"ZZZ": "-",  # Gap of indeterminate length
 })
 
