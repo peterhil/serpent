@@ -9,6 +9,7 @@ from fileinput import FileInput
 from pathlib import Path
 from typing import NamedTuple
 
+from more_itertools import partition, split_before
 from termcolor import colored
 
 from serpent.io import err
@@ -104,6 +105,11 @@ class Token(NamedTuple):
 		"""True if the token contains sequence data."""
 		return self.type in DATA_TOKENS
 
+	@property
+	def is_description(self):
+		"""True if the token is a description."""
+		return self.type == 'DESCRIPTION'
+
 
 def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[Token]:
 	"""Read FASTA sequences iteratively.
@@ -181,7 +187,7 @@ def read(filename: str, amino: bool = False) -> str:
 
 
 def read_tokens(filename: str, amino: bool = False) -> Iterable[Token]:
-	"""Read sequences from a FASTA file.
+	"""Parse data as tokens from a FASTA file.
 
 	Amino:
 		false = input contains nucleotide bases
@@ -196,3 +202,16 @@ def read_tokens(filename: str, amino: bool = False) -> Iterable[Token]:
 					yield token
 				else:
 					print('Extra:', token)
+
+
+def read_sequences(filename: Path | str, amino: bool=False) -> Iterable[list[Token]]:
+	"""Read sequences from a FASTA file."""
+	tokens = read_tokens(filename, amino)
+	sequences = split_before(tokens, lambda token: token.is_description)
+
+	yield from sequences
+
+
+def data_and_descriptions(sequence):
+	"""Partition a sequence into data and description tokens."""
+	yield from partition(lambda t: t.is_description, sequence)

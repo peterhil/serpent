@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import fileinput
 import itertools as itr
+import re
 from collections import Counter
 from pathlib import Path
 from pprint import pp
@@ -14,7 +15,7 @@ import argh
 import matplotlib.pyplot as plt
 import numpy as np
 from argh.decorators import arg, aliases, wrap_errors
-from more_itertools import chunked
+from more_itertools import chunked, partition, split_before
 
 from serpent import dna
 from serpent.convert.amino import aa_tables
@@ -25,10 +26,13 @@ from serpent.convert.nucleotide import num_to_nt
 from serpent.encoding import BASE64
 from serpent.fasta import (
 	ParseError,
+	RE_DESCRIPTION,
 	auto_select_amino,
+	data_and_descriptions,
 	find_fasta_files,
 	find_fasta_sequences,
 	read,
+	read_sequences,
 	read_tokens,
 )
 from serpent.fun import map_array, sort_values, str_join
@@ -94,23 +98,28 @@ def ac(
 @arg('--width',  '-w', help='Codons per line')
 def codons(filename, width=20, stats=False):
 	"""Print codons and statistics."""
-	tokens = read_tokens(filename)
-	data = str_join(token.data for token in tokens)
+	# Read FASTA sequences
+	# tokens = read_tokens(filename)
+	# seqs = split_before(tokens, lambda token: token.is_description)
+	seqs = read_sequences(filename)
 
-	codons = dna.get_codons(data)
+	for seq in seqs:
+		[data_tokens, descriptions] = data_and_descriptions(seq)
 
-	if stats:
-		counts = Counter(codons)
-		print("Codons used:\n", np.unique(codons))
-		print("Codons total:", len(codons), "unique:", len(np.unique(codons)))
-		print("Counts:")
-		pp(dict(counts.most_common()[:COUNT_LIMIT]))
-	else:
-		print("Codons:")
-		lines = format_lines(codons, width)
-		{print(line) for line in lines}
+		yield from (token.value for token in descriptions)
+		data = str_join(token.data for token in data_tokens)
+		codons = dna.get_codons(data)
 
-	# return codons
+		if stats:
+			counts = Counter(codons)
+			unique = np.unique(codons)
+			print("Codons used:\n", unique)
+			print("Codons total:", len(codons), "unique:", len(unique))
+			print("Counts:")
+			pp(dict(counts.most_common()[:COUNT_LIMIT]))
+		else:
+			lines = format_lines(codons, width)
+			yield from lines
 
 
 def cat(*inputs):
