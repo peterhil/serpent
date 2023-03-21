@@ -7,6 +7,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy.fft import fft
+from numpy.typing import NDArray
 from PIL import Image
 
 from serpent import dna
@@ -121,8 +122,23 @@ def plot_sequence_counts(decoded, *args, n=4, **kwargs):
 	return [count, index]
 
 
-def dna_image(decoded: CodonData, width=64, fill=0, mode="RGB") -> Image.Image:
-	"""Show decoded DNA data as full colour image.
+def dna_image(
+	decoded: CodonData, width=64, fill=0, mode="RGB"
+) -> Image.Image:
+	"""Get decoded DNA data as full colour image.
+
+	See `dna_image_data` for details.
+	"""
+	rgb = dna_image_data(decoded, width=width, fill=fill, mode=mode)
+	img = Image.fromarray(rgb, mode=mode)
+
+	return img
+
+
+def dna_image_data(
+	decoded: CodonData, width=64, fill=0, mode="RGB"
+) -> NDArray[np.uint8]:
+	"""Convert decoded DNA data to full colour image.
 
 	The codons are mapped to 64 ** 3 (=262144) RGB colours quite directly,
 	so that: G: 1, A: 85, C: 169, T (or U): 253.
@@ -151,6 +167,4 @@ def dna_image(decoded: CodonData, width=64, fill=0, mode="RGB") -> Image.Image:
 	else:
 		rgb = uint8.reshape(height, width)
 
-	img = Image.fromarray(rgb, mode=mode)
-
-	return img
+	return rgb
