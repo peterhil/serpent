@@ -99,9 +99,6 @@ def ac(
 @arg('--width',  '-w', help='Codons per line')
 def codons(filename, width=20, stats=False, limit=COUNT_LIMIT):
 	"""Print codons and statistics."""
-	# Read FASTA sequences
-	# tokens = read_tokens(filename)
-	# seqs = split_before(tokens, lambda token: token.is_description)
 	seqs = read_sequences(filename)
 
 	for seq in seqs:
