@@ -125,20 +125,22 @@ def plot_sequence_counts(decoded, *args, n=4, **kwargs):
 
 
 def dna_image(
-	decoded: CodonData, width=64, fill=0, mode="RGB"
+	decoded: CodonData, width=64, fill=0, mode="RGB",
+	degen=False,
 ) -> Image.Image:
 	"""Get decoded DNA data as full colour image.
 
 	See `dna_image_data` for details.
 	"""
-	rgb = dna_image_data(decoded, width=width, fill=fill, mode=mode)
+	rgb = dna_image_data(decoded, width=width, fill=fill, mode=mode, degen=degen)
 	img = Image.fromarray(rgb, mode=mode)
 
 	return img
 
 
 def dna_image_data(
-	decoded: CodonData, width=64, fill=0, mode="RGB"
+	decoded: CodonData, width=64, fill=0, mode="RGB",
+	degen=False,
 ) -> NDArray[np.uint8]:
 	"""Convert decoded DNA data to full colour image.
 
@@ -162,7 +164,8 @@ def dna_image_data(
 
 	channels: int = len(mode)
 	height = height_for(padded, width, channels)
-	uint8 = to_uint8(padded, 64, offset=1)  # 1, 5, 9, ..., 249, 253
+	max_value = 4096 if degen else 64
+	uint8 = to_uint8(padded, max_value, offset=1)  # 1, 5, 9, ..., 249, 253
 
 	if channels > 1:
 		rgb = uint8.reshape(height, width, channels)
@@ -183,6 +186,6 @@ def dna_image_seq(
 	# yield from (token.value for token in descriptions)
 	data = str_join(token.data for token in tokens)
 	decoded = dna.decode(data, amino, table, degen)
-	rgb = dna_image_data(decoded, width=width, fill=fill, mode=mode)
+	rgb = dna_image_data(decoded, width=width, fill=fill, mode=mode, degen=degen)
 
 	return rgb
