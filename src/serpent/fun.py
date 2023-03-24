@@ -8,6 +8,11 @@ from collections.abc import ItemsView, Iterable, Mapping, Sequence
 import numpy as np
 
 
+def is_not_none(x):
+	"""Filter helper for when you ONLY want to filter out the None values."""
+	return x is not None
+
+
 def inverse_od(mapping: Mapping) -> OrderedDict:
 	"""Swap keys and values on an OrderedDict."""
 	return OrderedDict([(v, k) for k, v in mapping.items()])
