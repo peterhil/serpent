@@ -24,6 +24,23 @@ def spread(seq: Sequence, n: int, *, offset: int=0):
 	"""
 	hands = mitr.chunked(seq, n)
 	shuffled = [list(hand) for hand in mitr.unzip(hands)]
-	spread = np.roll(np.concatenate(shuffled), offset)
+	cut = np.roll(np.concatenate(shuffled), offset)
 
-	return spread
+	return cut
+
+
+def unspread(seq: Sequence, n: int, *, offset: int=0):
+	"""Unspread a sequence, see spread.
+
+	Example:
+	-------
+	>>> seq = np.array([15,  0,  4,  8, 12,  1,  5,  9, 13,  2,  6, 10, 14,  3,  7, 11])
+	>>> unspread(seq, n=4, offset=1)
+	array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15])
+	"""
+	uncut = np.roll(seq, -offset)
+	unshuffled = zip(*mitr.chunked(uncut, n))
+	piles = [list(pile) for pile in unshuffled]
+	deck = np.concatenate(piles)
+
+	return deck
