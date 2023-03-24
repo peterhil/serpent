@@ -53,6 +53,8 @@ def unspread(seq: Sequence, n: int, offset: int=0):
 	assert 1 <= n <= len(seq), 'Parameter N should be strictly between 1 and len(seq)'
 
 	uncut = np.roll(seq, -offset)
+	# FIXME: Oh, why is Python so hostile to functional programming?
+	# Fix this on a better day... and make it clean. (just compare to spread FFS!)
 	unshuffled = [*itr.zip_longest(*mitr.chunked(uncut, int(np.ceil(len(seq) / n))))]
 	piles = [list(filter(is_not_none, pile)) for pile in unshuffled]
 	deck = np.concatenate(piles)
