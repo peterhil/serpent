@@ -61,7 +61,7 @@ def rescale(seq: NumericSeq, old, new):
 	>>> rescale(np.arange(-3, 4), 4, 12)
 	array([-9., -6., -3.,  0.,  3.,  6.,  9.])
 	"""
-	amax = np.amax(seq)
+	amax = np.amax(seq, initial=0)
 	assert amax < old, f'Expected max {amax} to be less than {old}.'
 
 	return new * seq / old
