@@ -7,11 +7,46 @@ from collections import OrderedDict
 
 import numpy as np
 
+from serpent.combinatorics import unspread
 from serpent.fun import inverse_od, second, str_join
 from serpent.settings import BASE_ORDER
 
 
+def create_dnt(bases=BASE_ORDER):
+	# TODO Ignores base order, change non-generate bases to use powers of two
+	# (1, 2, 4, 8) and use them here
+	binomial_order = [
+		# 0 bases (1)
+		'Z', #: 0,  # Zero
+		# 1 base (4)
+		'G', #: G,
+		'A', #: A,
+		'C', #: C,
+		'T', #: T,
+		# 2 bases (6)
+		'R', #: G | A,  # puRine
+		'S', #: G | C,  # Strong
+		'K', #: G | T,  # Keto
+		'M', #: A | C,  # aMino
+		'W', #: A | T,  # Weak
+		'Y', #: C | T,  # pYrimidine
+		# 3 bases (4)
+		'V', #: G | A | C | 0,  # Not T
+		'D', #: G | A | 0 | T,  # Not C
+		'B', #: G | 0 | C | T,  # Not A
+		'H', #: 0 | A | C | T,  # Not G
+		# 4 bases (1)
+		'N', #: G | A | C | T,  # Any base
+	]
+	# Spread bases into positions 0, 4, 8, 12 (multiples of base length)
+	evenly_spread_bases = unspread(binomial_order, len(bases), 1)
+	mapping = OrderedDict([*enumerate(evenly_spread_bases)])
+
+	return mapping
+
+
 def create_inverse_dnt(bases=BASE_ORDER):
+	# TODO Does not match create_dnt currently, but kept as a reference
 	idnt = OrderedDict([(base, 2 ** n) for n, base in enumerate(bases)])
 	[G, A, C, T] = [idnt['G'], idnt['A'], idnt['C'], idnt['T']]
 
@@ -38,8 +73,8 @@ def create_inverse_dnt(bases=BASE_ORDER):
 
 # Bases
 
-inv_degenerate = create_inverse_dnt(BASE_ORDER)
-degenerate = inverse_od(inv_degenerate)
+degenerate = create_dnt(BASE_ORDER)
+inv_degenerate = inverse_od(degenerate)
 
 
 def num_to_dnt(num: int) -> str:
