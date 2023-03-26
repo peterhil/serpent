@@ -325,13 +325,14 @@ def seq(filename, length=1, amino=False, degen=False, table=1):
 @arg('--amino',   '-a', help='Amino acid input')
 @arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',   '-g', help='Degenerate data')
+@arg('--fmt',     '-f', help='Output format', choices=['b', 'base64', 'c', 'codon'])
 @arg('--count',   '-c', help='Print counts')
 @arg('--length',  '-l', help='Peptide length', type=int)
 @arg('--missing', '-m', help='Missing peptides')
 @wrap_errors(wrapped_errors)
 def pep(
 	filename,
-	length=2, count=False, missing=False,
+	length=2, count=False, missing=False, fmt='base64',
 	amino=False, table=1, degen=False,
 ):
 	"""Peptide statistics."""
@@ -341,7 +342,7 @@ def pep(
 	dtype = f'U{length}'
 
 	# TODO Allow using amino acid codes?
-	encoded = str_join([num_to_base64.get(c, " ") for c in decoded])
+	encoded = dna.encode(decoded, fmt=fmt)
 	peptides = (str_join(pep) for pep in chunked(encoded, length))
 
 	if count:
