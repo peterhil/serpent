@@ -380,48 +380,38 @@ def pep(
 		{print(line) for line in lines}
 
 
-def analyse_repeats(decoded, length=4, limit=2, encode=False):
+def analyse_repeats(decoded, length=4, limit=2, fmt='codon'):
 	"""Analyse codon sequence repeats."""
 	[index, count] = count_sorted(dna.codon_sequences(decoded, length))
 	repeats = index[count >= limit]
 
-	# TODO Move conversions to helper functions
 	echo("Repeated codon sequences:")
-	if encode:
-		digit_repeats = (num_to_digits(num, base=64) for num in repeats)
-		b64_codes = (str_join(dna.encode(d, 'base64')) for d in digit_repeats)
+	# TODO Move conversion to a helper function
+	b64 = (num_to_digits(num, base=64) for num in repeats)
+	encoded = (str_join(dna.encode(codon, fmt)) for codon in b64)
 
-		yield from format_lines(b64_codes, 32)
-	else:
-		codes = map_array(
-			lambda a: pad_start(num_to_digits(a, 64), fill=0, n=length),
-			repeats
-		)
-		catg = dna.encode(codes.flat, 'codon')
-		catg = grouper(catg, length, incomplete='strict')
-		catg = map_array(str_join, catg)
-
-		yield from format_lines(catg, 8)
+	width = 32 if fmt in ['b', 'base64'] else 8
+	yield from format_lines(encoded, width)
 
 
 @arg('--amino',  '-a', help='Amino acid input')
 @arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',  '-g', help='Degenerate data')
-@arg('--encode', '-e', help='Encode output as base 64')
+@arg('--fmt',    '-f', help='Output format', choices=['b', 'base64', 'c', 'codon'])
 @arg('--limit',  '-l', help='Limit to at least this many repeats', type=int)
 @arg('--seq',    '-s', help='Sequence length', type=int)
 @wrap_errors(wrapped_errors)
 def repeats(
 	filename,
-	seq=2, limit=2, encode=False,
+	seq=2, limit=2, fmt='codon',
 	amino=False, degen=False, table=1,
 ):
-	"""Find repeated sequences."""
+	"""Find repeated codon sequences."""
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode_iter(data, amino, table, degen)
 
-	yield from analyse_repeats(decoded, length=seq, limit=limit, encode=encode)
+	yield from analyse_repeats(decoded, length=seq, limit=limit, fmt=fmt)
 
 
 def main():
