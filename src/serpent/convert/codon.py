@@ -7,7 +7,6 @@ from collections import OrderedDict
 
 import numpy as np
 
-from serpent.convert.nucleotide import nt_to_num
 from serpent.fun import inverse_od, str_join
 from serpent.settings import BASE_ORDER
 
@@ -34,16 +33,6 @@ def codons_array(bases=BASE_ORDER):
 # TODO Maybe do all the base orders like with genetic code?
 codons_inverse = OrderedDict([*enumerate(codons_array(BASE_ORDER))])
 codons = inverse_od(codons_inverse)
-
-
-def decode_codon(codon: str) -> int:
-	"""Decode a codon string into a a number between 0 and 63."""
-	# TODO Remove if and when codon_to_num works
-	result = 0
-	for num, char in enumerate(reversed(codon)):
-		result += nt_to_num[char] << num * 2
-
-	return result
 
 
 def codon_to_num(codon: str) -> int:
