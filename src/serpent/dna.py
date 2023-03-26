@@ -1,6 +1,7 @@
 """DNA and codons data handling."""
 from __future__ import annotations
 
+import sys
 from collections.abc import Iterable, Iterator
 
 import numpy as np
@@ -14,6 +15,7 @@ from serpent.convert.degenerate import degen_to_num
 from serpent.convert.digits import digits_to_num
 from serpent.fasta import AMINO, BASE, DEGENERATE, RE_WHITESPACE
 from serpent.fun import str_join
+from serpent.io import err
 
 
 def encode(decoded: Iterable[int], fmt: str = 'base64') -> Iterable[str]:
@@ -68,8 +70,10 @@ def decode_iter(
 	# TODO: Check data against amino option and warn if used incorrectly?
 	[dna, residual] = clean_non_dna(dna, amino, degen)
 	if len(residual) > 0:
-		# TODO Use logger.warn with warnings.warn?
-		print("Residual characters:", residual)
+		err(f'Residual characters: {residual}')
+		if not degen:
+			err('Try again with the --degen / -g option.')
+			sys.exit(1)
 
 	if amino:
 		return decode_aminos(dna, table)
