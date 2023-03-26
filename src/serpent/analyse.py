@@ -325,12 +325,13 @@ def seq(filename, length=1, amino=False, degen=False, table=1):
 @arg('--amino',   '-a', help='Amino acid input')
 @arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',   '-g', help='Degenerate data')
+@arg('--count',   '-c', help='Print counts')
 @arg('--length',  '-l', help='Peptide length', type=int)
 @arg('--missing', '-m', help='Missing peptides')
 @wrap_errors(wrapped_errors)
 def pep(
 	filename,
-	length=2, missing=False,
+	length=2, count=False, missing=False,
 	amino=False, table=1, degen=False,
 ):
 	"""Peptide statistics."""
@@ -341,37 +342,31 @@ def pep(
 
 	# TODO Allow using amino acid codes?
 	encoded = str_join([num_to_base64.get(c, " ") for c in decoded])
+	peptides = (str_join(pep) for pep in chunked(encoded, length))
 
-	# TODO Use iterators only if Counter accepts them
-	peptide_list = list(chunked(encoded, length))
-	peptides = map_array(str_join, peptide_list, dtype=dtype)
-
-	if not missing:
-		print("Peptides:")
-		yield from format_lines(peptides, 32)
-
-		print()
-		print("Counts:")
+	if count:
 		counts = Counter(peptides)
-		# groups = itr.groupby(counts.most_common(), lambda x: x[1])
-		# {print(f"{count}:\t{list(item[0])}") for [count, items] in groups}
 
-		# TODO There must be batter way to use these iterators!
+		# TODO There must be a better way to use these iterators!
+		groups = itr.groupby(counts.most_common(), lambda x: x[1])
 		grouped = [
 			(c, [k for k, c in group])
-			for c, group in itr.groupby(counts.most_common(), lambda x: x[1])
+			for c, group in groups
 			if c > 1
 		]
 		for count, values in grouped:
 			yield f"-- {count} times --"
 			yield from format_lines(sorted(values), 32)
+		return None
 
-	if missing:
+	if not missing:
+		yield from format_lines(peptides, 32)
+	else:
 		print("Peptides not appearing:\n")
 		combos = np.fromiter(map(str_join, itr.product(BASE64, repeat=length)), dtype=dtype)
 		absent = combos[[combo not in peptides for combo in combos]]
 
-		yield from format_lines(absent, 64)
+		yield from format_lines(absent, 32)
 
 
 def analyse_repeats(decoded, length=4, limit=2, fmt='codon'):
