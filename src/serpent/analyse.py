@@ -47,7 +47,7 @@ from serpent.io import (
 from serpent.mathematics import autowidth, phi, phi_small
 from serpent.padding import pad_start
 from serpent.printing import format_counts, format_decoded, format_lines
-from serpent.settings import COUNT_LIMIT, DEFAULT_COLOR
+from serpent.settings import BASE_ORDER, COUNT_LIMIT, DEFAULT_COLOR
 from serpent.stats import ac_peaks, autocorrelogram, count_sorted
 from serpent.visual import (
 	bin_choices,
@@ -243,9 +243,9 @@ def image(
 	img = Image.fromarray(rgb, mode=mode)
 
 	if amino and table != 1:
-		outfile = filename + f".w{width}.{dna.BASE_ORDER}.t{table}.png"
+		outfile = filename + f".w{width}.{BASE_ORDER}.t{table}.png"
 	else:
-		outfile = filename + f".w{width}.{dna.BASE_ORDER}.png"
+		outfile = filename + f".w{width}.{BASE_ORDER}.png"
 
 	img.show(title=outfile)
 

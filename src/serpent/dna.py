@@ -1,7 +1,6 @@
 """DNA and codons data handling."""
 from __future__ import annotations
 
-import itertools as itr
 from collections.abc import Iterable, Iterator
 
 import numpy as np
@@ -10,12 +9,11 @@ from numpy.typing import NDArray
 
 from serpent.convert.amino import decode_aminos
 from serpent.convert.base64 import num_to_base64
-from serpent.convert.codon import codon_to_num, codons_array, num_to_codon
+from serpent.convert.codon import codon_to_num, num_to_codon
 from serpent.convert.degenerate import degen_to_num
 from serpent.convert.digits import digits_to_num
 from serpent.fasta import AMINO, BASE, DEGENERATE, RE_WHITESPACE
 from serpent.fun import str_join
-from serpent.settings import BASE_ORDER
 
 
 def encode(decoded: Iterable[int], fmt: str = 'base64') -> Iterable[str]:
@@ -129,13 +127,3 @@ def codon_sequences(decoded, n=4, fill=0):
 	numbers = np.apply_along_axis(digits_to_num, 1, sequences)
 
 	return numbers
-
-
-def oligopeptides(length, bases=BASE_ORDER):
-	"""Sequence of all oligopeptide combinations of requested length.
-
-	Wikipedia: https://en.wikipedia.org/wiki/Oligopeptide
-	"""
-	oligos = map(str_join, itr.product(codons_array(bases), repeat=length))
-
-	return np.fromiter(oligos, dtype=f'<U{3*length}')
