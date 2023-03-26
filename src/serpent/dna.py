@@ -11,8 +11,8 @@ from numpy.typing import NDArray
 from serpent.convert.amino import decode_aminos
 from serpent.convert.base64 import num_to_base64
 from serpent.convert.codon import codon_to_num, num_to_codon
-from serpent.convert.degenerate import degen_to_num
-from serpent.convert.digits import digits_to_num
+from serpent.convert.degenerate import dnt_to_num
+from serpent.convert.digits import change_base
 from serpent.fasta import AMINO, BASE, DEGENERATE, RE_WHITESPACE
 from serpent.fun import str_join
 from serpent.io import err
@@ -77,14 +77,15 @@ def decode_iter(
 
 	if amino:
 		return decode_aminos(dna, table)
+
+	if degen:
+		# Handle degenerate data as individual symbols in base 16
+		# and combine to degenerate codons
+		b16 = map(dnt_to_num, dna)
+		return change_base(b16, base=16, n=3)
 	else:
 		codons = get_codons_iter(dna)
-		if degen:
-			# TODO Handle degenerate data as individual symbols in base 16 instead of codons
-			# and convert scale back with np.log2?
-			return map(degen_to_num, codons)
-		else:
-			return map(codon_to_num, codons)
+		return map(codon_to_num, codons)
 
 
 def clean_non_dna(
@@ -127,7 +128,4 @@ def codon_sequences(decoded, n=4, fill=0):
 
 	Resulting data will have the range of 0..64**n.
 	"""
-	sequences = list(grouper(decoded, n, incomplete="fill", fillvalue=fill))
-	numbers = np.apply_along_axis(digits_to_num, 1, sequences)
-
-	return numbers
+	return change_base(decoded, base=64, n=n, fill=fill)

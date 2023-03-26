@@ -75,6 +75,8 @@ def create_inverse_dnt(bases=BASE_ORDER):
 
 degenerate = create_dnt(BASE_ORDER)
 inv_degenerate = inverse_od(degenerate)
+# inv_degenerate = create_inverse_dnt(BASE_ORDER)
+# degenerate = inverse_od(inv_degenerate)
 
 
 def num_to_dnt(num: int) -> str:
