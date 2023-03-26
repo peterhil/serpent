@@ -17,7 +17,7 @@ import argh
 import matplotlib.pyplot as plt
 import numpy as np
 from argh.decorators import arg, aliases, wrap_errors
-from more_itertools import chunked, partition, split_before, take
+from more_itertools import chunked, grouper, partition, split_before, take
 
 from serpent import dna
 from serpent.convert.amino import aa_tables
@@ -400,13 +400,8 @@ def analyse_repeats(decoded, length=4, limit=2, encode=False):
 			lambda a: pad_start(num_to_digits(a, 64), fill=0, n=length),
 			repeats
 		)
-		catg = map_array(
-			lambda a: str_join(map(
-				num_to_nt.get,
-				pad_start(num_to_digits(a, 4), fill=0, n=3))),
-			codes.flatten(),
-		)
-		catg = catg.reshape(int(len(catg) / length), length)
+		catg = dna.encode(codes.flat, 'codon')
+		catg = grouper(catg, length, incomplete='strict')
 		catg = map_array(str_join, catg)
 
 		lines = format_lines(catg, 8)
