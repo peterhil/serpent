@@ -391,8 +391,7 @@ def analyse_repeats(decoded, length=4, limit=2, encode=False):
 		digit_repeats = (num_to_digits(num, base=64) for num in repeats)
 		b64_codes = (str_join(dna.encode(d, 'base64')) for d in digit_repeats)
 
-		lines = format_lines(b64_codes, 32)
-		{print(line) for line in lines}
+		yield from format_lines(b64_codes, 32)
 	else:
 		codes = map_array(
 			lambda a: pad_start(num_to_digits(a, 64), fill=0, n=length),
@@ -402,8 +401,7 @@ def analyse_repeats(decoded, length=4, limit=2, encode=False):
 		catg = grouper(catg, length, incomplete='strict')
 		catg = map_array(str_join, catg)
 
-		lines = format_lines(catg, 8)
-		{print(line) for line in lines}
+		yield from format_lines(catg, 8)
 
 
 @arg('--amino',  '-a', help='Amino acid input')
@@ -423,7 +421,7 @@ def repeats(
 	data = read(filename, amino)
 	decoded = dna.decode_iter(data, amino, table, degen)
 
-	analyse_repeats(decoded, length=seq, limit=limit, encode=encode)
+	yield from analyse_repeats(decoded, length=seq, limit=limit, encode=encode)
 
 
 def main():
