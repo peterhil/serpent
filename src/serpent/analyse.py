@@ -388,10 +388,8 @@ def analyse_repeats(decoded, length=4, limit=2, encode=False):
 	# TODO Move conversions to helper functions
 	echo("Repeated codon sequences:")
 	if encode:
-		b64_codes = map_array(
-			lambda a: str_join(map(num_to_base64.get, num_to_digits(a))),
-			repeats
-		)
+		digit_repeats = (num_to_digits(num, base=64) for num in repeats)
+		b64_codes = (str_join(dna.encode(d, 'base64')) for d in digit_repeats)
 
 		lines = format_lines(b64_codes, 32)
 		{print(line) for line in lines}
