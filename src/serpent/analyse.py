@@ -376,7 +376,6 @@ def analyse_repeats(decoded, length=4, limit=2, fmt='codon'):
 	repeats = index[count >= limit]
 
 	echo("Repeated codon sequences:")
-	# TODO Move conversion to a helper function
 	b64 = (num_to_digits(num, base=64) for num in repeats)
 	encoded = (str_join(dna.encode(codon, fmt)) for codon in b64)
 

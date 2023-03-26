@@ -118,10 +118,12 @@ def get_codons_iter(data, fill="A"):
 
 
 def codon_sequences(decoded, n=4, fill=0):
-	"""Chunk data into length N sequences of codons.
+	"""Reinterpret codon data as oligopeptide sequences.
 
-	Count the occurences of different k-mers as numbers between 0..64**n.
-	Return index and counts.
+	Split the decoded codon data into sequences of length n and
+	intepret the sequences as base 64 numbers.
+
+	Resulting data will have the range of 0..64**n.
 	"""
 	sequences = list(grouper(decoded, n, incomplete="fill", fillvalue=fill))
 	numbers = np.apply_along_axis(digits_to_num, 1, sequences)
