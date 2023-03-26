@@ -119,8 +119,7 @@ def codons(filename, width=20, stats=False, limit=COUNT_LIMIT):
 			counts = Counter(codons)
 			yield from format_counts(counts, limit)
 		else:
-			lines = format_lines(codons, width)
-			yield from lines
+			yield from format_lines(codons, width)
 
 
 def cat(*inputs):
@@ -170,8 +169,7 @@ def decode(filename, amino=False, degen=False, table=1):
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
 
-	lines = format_decoded(decoded)
-	{print(line) for line in lines}
+	yield from format_decoded(decoded)
 
 
 @arg('--amino', '-a', help='Amino acid input')
@@ -207,9 +205,8 @@ def encode(
 			file.write(str_join(lines, "\n"))
 			file.write("\n")  # Newline at the end
 			print(f"Wrote: {outfile}")
-		return None
 	else:
-		return lines
+		yield from lines
 
 
 @arg('--amino', '-a', help='Amino acid input')
@@ -351,8 +348,7 @@ def pep(
 
 	if not missing:
 		print("Peptides:")
-		lines = format_lines(peptides, 32)
-		{print(line) for line in lines}
+		yield from format_lines(peptides, 32)
 
 		print()
 		print("Counts:")
@@ -367,17 +363,15 @@ def pep(
 			if c > 1
 		]
 		for count, values in grouped:
-			lines = format_lines(sorted(values), 32)
-			print(f"-- {count} times --")
-			{print(line) for line in lines}
+			yield f"-- {count} times --"
+			yield from format_lines(sorted(values), 32)
 
 	if missing:
 		print("Peptides not appearing:\n")
 		combos = np.fromiter(map(str_join, itr.product(BASE64, repeat=length)), dtype=dtype)
 		absent = combos[[combo not in peptides for combo in combos]]
 
-		lines = format_lines(absent, 64)
-		{print(line) for line in lines}
+		yield from format_lines(absent, 64)
 
 
 def analyse_repeats(decoded, length=4, limit=2, fmt='codon'):
