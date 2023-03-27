@@ -262,16 +262,20 @@ def image(
 @arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',  '-g', help='Degenerate data')
 @arg('--length', '-l', help='Fourier transform length', type=int)
+@arg('--seq',    '-s', help='Sequence length', type=int)
 @wrap_errors(wrapped_errors)
 def fft(
 	filename,
-	length=None,
+	length=None, seq=1,
 	amino=False, degen=False, table=1,
 ):
 	"""Plot Fourier transform of the DNA data."""
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
+
+	if seq > 1:
+		decoded = np.fromiter(dna.codon_sequences(decoded, n=seq), dtype=np.uint64)
 
 	plot_fft(decoded, n=length, color=DEFAULT_COLOR)
 	interactive()
