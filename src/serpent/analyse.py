@@ -300,7 +300,7 @@ def hist(
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode_iter(data, amino, table, degen)
-	seqs = dna.codon_sequences(decoded, length)
+	seqs = np.fromiter(dna.codon_sequences(decoded, length), dtype=np.uint64)
 
 	plot_histogram_sized(
 		seqs,

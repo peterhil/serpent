@@ -35,6 +35,12 @@ def plot_fft(decoded, *, n=64, norm='ortho', **kwargs):
 	fft_kwargs = kwargs.copy()
 	fft_kwargs.pop('color')
 
+	# TODO Check FFT docs and limit to positive frequencies fft(N)[1:np.round(N/2)]
+	# TODO Use rfft for real FFT?
+	# TODO Use power spectrum? = abs(fft) ** 2
+	# TODO label frequencies using fftffreq
+	# See FFT docs:
+	# https://numpy.org/doc/stable/reference/routines.fft.html#module-numpy.fft
 	spectra = np.abs(fft(decoded, n=n, norm=norm, **fft_kwargs))
 	plt.plot(spectra, **kwargs)
 
