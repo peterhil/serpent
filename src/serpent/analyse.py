@@ -43,6 +43,7 @@ from serpent.io import (
 	echo,
 	file_extension_for,
 	openhook,
+	wait_user,
 )
 from serpent.mathematics import autowidth, phi, phi_small
 from serpent.padding import pad_start
@@ -90,8 +91,9 @@ def ac(
 	ac = autocorrelogram(decoded, width)
 
 	if plot:
-		interactive()
 		plt.plot(ac, color=DEFAULT_COLOR)
+		interactive()
+		wait_user()
 	else:
 		peaks = ac_peaks(ac, limit)
 		peaks.pop(0)  # First item is always 1
@@ -271,8 +273,9 @@ def fft(
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
 
-	interactive()
 	plot_fft(decoded, n=length, color=DEFAULT_COLOR)
+	interactive()
+	wait_user()
 
 
 @arg('--amino', '-a', help='Amino acid input')
@@ -299,7 +302,6 @@ def hist(
 	decoded = dna.decode_iter(data, amino, table, degen)
 	seqs = dna.codon_sequences(decoded, length)
 
-	interactive()
 	plot_histogram_sized(
 		seqs,
 		size=num or bins,
@@ -308,6 +310,8 @@ def hist(
 		cumulative=cumulative,
 		density=density,
 	)
+	interactive()
+	wait_user()
 
 
 @arg('--amino',  '-a', help='Amino acid input')
@@ -321,8 +325,9 @@ def seq(filename, length=1, amino=False, degen=False, table=1):
 	data = read(filename, amino)
 	decoded = dna.decode_iter(data, amino, table, degen)
 
-	interactive()
 	plot_sequence_counts(decoded, n=length, color=DEFAULT_COLOR)
+	interactive()
+	wait_user()
 
 
 @arg('--amino',   '-a', help='Amino acid input')

@@ -26,7 +26,7 @@ bin_choices = [
 
 def interactive() -> None:
 	"""Use interactive mode with pyplot."""
-	plt.interactive(True)
+	plt.ion()
 	plt.show()
 
 

@@ -55,3 +55,11 @@ def file_extension_for(fmt: str = 'base64'):
 		raise ValueError('Unknown format: ' + fmt)
 
 	return extension
+
+
+def wait_user():
+	"""Wait for user to enter any key.
+
+	Useful for allowing the user time to explore the interactive plots.
+	"""
+	return input('Press ENTER when ready. ')
