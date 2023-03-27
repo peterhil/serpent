@@ -30,7 +30,7 @@ def interactive() -> None:
 	plt.show()
 
 
-def plot_fft(decoded, *, n=None, norm='backward', **kwargs):
+def plot_fft(decoded, *, n=None, norm='forward', **kwargs):
 	"""Plot FFT of the data."""
 	fft_kwargs = kwargs.copy()
 	fft_kwargs.pop('color')
