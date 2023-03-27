@@ -6,7 +6,7 @@ import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy.fft import fft
+from numpy import fft
 from numpy.typing import NDArray
 from PIL import Image
 
@@ -30,19 +30,27 @@ def interactive() -> None:
 	plt.show()
 
 
-def plot_fft(decoded, *, n=64, norm='ortho', **kwargs):
+def plot_fft(decoded, *, n=64, norm='backward', **kwargs):
 	"""Plot FFT of the data."""
 	fft_kwargs = kwargs.copy()
 	fft_kwargs.pop('color')
 
-	# TODO Check FFT docs and limit to positive frequencies fft(N)[1:np.round(N/2)]
-	# TODO Use rfft for real FFT?
-	# TODO Use power spectrum? = abs(fft) ** 2
-	# TODO label frequencies using fftffreq
 	# See FFT docs:
 	# https://numpy.org/doc/stable/reference/routines.fft.html#module-numpy.fft
-	spectra = np.abs(fft(decoded, n=n, norm=norm, **fft_kwargs))
-	plt.plot(spectra, **kwargs)
+	dft = fft.rfft(decoded, n=n, norm=norm, **fft_kwargs)
+	norm_freqs = fft.rfftfreq(n)  # Could use fftfreq(n, d=1/n) to directly get the freqs
+
+	# Limit to positive frequencies (0 is DC, n / 2 is the Nyquist frequency)
+	positive = slice(1, n // 2)
+	dft = dft[positive]
+	norm_freqs = norm_freqs[positive]
+
+	freqs = norm_freqs * n
+	# print('Frequencies:', freqs)
+
+	# TODO Use power spectrum? = abs(dft) ** 2
+	spectra = np.abs(dft)
+	plt.plot(freqs, spectra, **kwargs)
 
 	return spectra
 
