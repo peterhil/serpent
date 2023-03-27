@@ -6,7 +6,6 @@ import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy import fft
 from numpy.typing import NDArray
 from PIL import Image
 
@@ -28,33 +27,6 @@ def interactive() -> None:
 	"""Use interactive mode with pyplot."""
 	plt.ion()
 	plt.show()
-
-
-def plot_fft(decoded, *, n=None, norm='forward', **kwargs):
-	"""Plot FFT of the data."""
-	fft_kwargs = kwargs.copy()
-	fft_kwargs.pop('color')
-
-	n = n or len(decoded)
-
-	# See FFT docs:
-	# https://numpy.org/doc/stable/reference/routines.fft.html#module-numpy.fft
-	dft = fft.rfft(decoded, n=n, norm=norm, **fft_kwargs)
-	norm_freqs = fft.rfftfreq(n)  # Could use fftfreq(n, d=1/n) to directly get the freqs
-
-	# Limit to positive frequencies (0 is DC, n / 2 is the Nyquist frequency)
-	positive = slice(1, n // 2)
-	dft = dft[positive]
-	norm_freqs = norm_freqs[positive]
-
-	freqs = norm_freqs * n
-	# print('Frequencies:', freqs)
-
-	# TODO Use power spectrum? = abs(dft) ** 2
-	spectra = np.abs(dft)
-	plt.plot(freqs, spectra, **kwargs)
-
-	return spectra
 
 
 def plot_histogram(

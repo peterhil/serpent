@@ -25,6 +25,7 @@ from serpent.convert.base64 import base64_to_num, num_to_base64
 from serpent.convert.codon import num_to_codon
 from serpent.convert.digits import num_to_digits
 from serpent.convert.nucleotide import num_to_nt
+from serpent.dsp import fft_spectra
 from serpent.encoding import BASE64
 from serpent.fasta import (
 	ParseError,
@@ -55,7 +56,6 @@ from serpent.visual import (
 	dna_image,
 	dna_image_seq,
 	interactive,
-	plot_fft,
 	plot_histogram_sized,
 	plot_sequence_counts,
 )
@@ -277,7 +277,10 @@ def fft(
 	if seq > 1:
 		decoded = np.fromiter(dna.codon_sequences(decoded, n=seq), dtype=np.uint64)
 
-	plot_fft(decoded, n=length, color=DEFAULT_COLOR)
+	# TODO Make a spectrogram by windowing
+	[freqs, spectra] = fft_spectra(decoded, n=length)
+
+	plt.plot(freqs, spectra, color=DEFAULT_COLOR)
 	interactive()
 	wait_user()
 
