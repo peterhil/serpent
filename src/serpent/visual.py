@@ -30,10 +30,12 @@ def interactive() -> None:
 	plt.show()
 
 
-def plot_fft(decoded, *, n=64, norm='backward', **kwargs):
+def plot_fft(decoded, *, n=None, norm='backward', **kwargs):
 	"""Plot FFT of the data."""
 	fft_kwargs = kwargs.copy()
 	fft_kwargs.pop('color')
+
+	n = n or len(decoded)
 
 	# See FFT docs:
 	# https://numpy.org/doc/stable/reference/routines.fft.html#module-numpy.fft

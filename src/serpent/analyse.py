@@ -265,7 +265,7 @@ def image(
 @wrap_errors(wrapped_errors)
 def fft(
 	filename,
-	length=64,
+	length=None,
 	amino=False, degen=False, table=1,
 ):
 	"""Plot Fourier transform of the DNA data."""
