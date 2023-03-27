@@ -69,12 +69,14 @@ wrapped_errors = [AssertionError, ParseError]
 @arg('--degen',  '-g', help='Degenerate data')
 @arg('--limit',  '-l', help='Peak limit', type=float)
 @arg('--linear', '-n', help='Linear output (do not sort results)')
+@arg('--plot',   '-p', help='Plot data')
 @arg('--seq',    '-s', help='Sequence length', type=int)
 @arg('--width',  '-w', help='Autocorrelogram width', type=int)
 @wrap_errors(wrapped_errors)
 def ac(
 	filename,
 	limit=0.05, linear=False, width=256, seq=1,
+	plot=False,
 	amino=False, degen=False, table=1,
 ):
 	"""Plot autocorrelation of sequences."""
@@ -87,14 +89,15 @@ def ac(
 
 	ac = autocorrelogram(decoded, width)
 
-	interactive()
-	plt.plot(ac, color=DEFAULT_COLOR)
+	if plot:
+		interactive()
+		plt.plot(ac, color=DEFAULT_COLOR)
+	else:
+		peaks = ac_peaks(ac, limit)
+		peaks.pop(0)  # First item is always 1
+		peaks = peaks.items() if linear else sort_values(peaks, reverse=True)
 
-	peaks = ac_peaks(ac, limit)
-	peaks.pop(0)  # First item is always 1
-
-	peaks = peaks.items() if linear else sort_values(peaks, reverse=True)
-	return ("%s	%1.3f" % (peak, value) for peak, value in peaks)
+		yield from ("%s	%1.3f" % (peak, value) for peak, value in peaks)
 
 
 @arg('--stats',  '-s', help='Show statistics')
