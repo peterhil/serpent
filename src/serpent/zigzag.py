@@ -9,10 +9,9 @@ from dataclasses import dataclass
 import blessed
 import numpy as np
 
+from serpent.block_elements import HALF_BLOCK
 from serpent.io import check_paths
 from serpent.mathematics import rescale
-
-HALF_BLOCK = '\u2580'
 
 
 @dataclass

@@ -24,6 +24,7 @@ from serpent import ansi
 from serpent.convert.amino import aa_tables
 from serpent.convert.base64 import base64_to_num, num_to_base64
 from serpent.bitmap import num_to_pixel
+from serpent.block_elements import pixels_to_blocks
 from serpent.convert.codon import num_to_codon
 from serpent.convert.digits import num_to_digits
 from serpent.convert.nucleotide import num_to_nt
@@ -61,7 +62,7 @@ from serpent.visual import (
 	plot_histogram_sized,
 	plot_sequence_counts,
 )
-from serpent.zigzag import HALF_BLOCK, zigzag_blocks, zigzag_text
+from serpent.zigzag import zigzag_blocks, zigzag_text
 
 
 wrapped_errors = [AssertionError, ParseError]
@@ -229,7 +230,6 @@ def flow(
 	"""Encode data into Unicode block graphics."""
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
-	zero_pixel = (0, 0, 0)
 
 	for seq in seqs:
 		# TODO See dna_image_seq
@@ -240,19 +240,7 @@ def flow(
 		decoded = dna.decode(data, amino, table, degen)
 
 		pixels = num_to_pixel(decoded, degen)
-		rgb = grouper(pixels, 3, incomplete='fill', fillvalue=0)
-		lines = chunked(rgb, width * 2)  # double the line width
-
-		for line in lines:
-			top_and_bottom = chunked(line, width)  # split in half
-			columns = itr.zip_longest(*top_and_bottom, fillvalue=zero_pixel)
-
-			blocks = ''
-			for column in columns:
-				colours = ansi.rgb(*column)
-				blocks += colours + HALF_BLOCK
-
-			yield blocks + RESET
+		yield from pixels_to_blocks(pixels, width)
 
 
 @arg('--amino', '-a', help='Amino acid input')
