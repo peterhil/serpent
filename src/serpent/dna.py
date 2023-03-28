@@ -15,6 +15,7 @@ from serpent.convert.degenerate import dnt_to_num
 from serpent.convert.digits import change_base
 from serpent.fasta import (
 	AMINO,
+	AMINO_DEGENERATE,
 	BASE,
 	DEGENERATE,
 	RE_WHITESPACE,
@@ -118,8 +119,11 @@ def clean_non_dna(
 	# TODO Convert RNA data into DNA, so everything can be handled in base 4 or
 	# base 64, and convert back when printing if necessary.
 	CODES = AMINO if amino else BASE
-	if degen and not amino:
-		CODES += DEGENERATE
+	if degen:
+		if amino:
+			CODES += AMINO_DEGENERATE
+		else:
+			CODES += DEGENERATE
 
 	[residual, cleaned] = mit.partition(lambda c: c in CODES, data)
 	# Filter out whitespace from residual
