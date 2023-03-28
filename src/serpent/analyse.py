@@ -223,19 +223,25 @@ def encode(
 @arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L'))
 @wrap_errors(wrapped_errors)
 def flow(
-	filename,
+	*inputs,
 	width=64, mode='RGB',
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into Unicode block graphics."""
-	amino = auto_select_amino(filename, amino)
-	seqs = read_sequences(filename, amino)
+	paths = check_paths(inputs)
 
-	for seq in seqs:
-		decoded = dna.decode_seq(seq, amino, table, degen)
+	for filename in inputs:
+		if len(inputs) > 1:
+			print('file:', filename)
 
-		pixels = num_to_pixel(decoded, degen)
-		yield from pixels_to_blocks(pixels, width, mode=mode)
+		amino = auto_select_amino(filename, amino)
+		seqs = read_sequences(filename, amino)
+
+		for seq in seqs:
+			decoded = dna.decode_seq(seq, amino, table, degen)
+
+			pixels = num_to_pixel(decoded, degen)
+			yield from pixels_to_blocks(pixels, width, mode=mode)
 
 
 @arg('--amino', '-a', help='Amino acid input')
