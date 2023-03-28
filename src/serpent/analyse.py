@@ -220,10 +220,11 @@ def encode(
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen', '-g', help='Degenerate data')
 @arg('--width', '-w', help='Line width', type=int)
+@arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L'))
 @wrap_errors(wrapped_errors)
 def flow(
 	filename,
-	width=64,
+	width=64, mode='RGB',
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into Unicode block graphics."""
@@ -234,7 +235,7 @@ def flow(
 		decoded = dna.decode_seq(seq, amino, table, degen)
 
 		pixels = num_to_pixel(decoded, degen)
-		yield from pixels_to_blocks(pixels, width)
+		yield from pixels_to_blocks(pixels, width, mode=mode)
 
 
 @arg('--amino', '-a', help='Amino acid input')

@@ -39,3 +39,10 @@ def rgb(front=None, back=None):
 	bg = colour_code(*back, bg=True) if back else ''
 
 	return sgr(str_join([fg, bg], ';'))
+
+
+def grey(front=None, back=None):
+	fg = colour_code(*(front, front, front)) if front else ''
+	bg = colour_code(*(back, back, back), bg=True) if back else ''
+
+	return sgr(str_join([fg, bg], ';'))
