@@ -16,12 +16,14 @@ from pprint import pp
 import argh
 import matplotlib.pyplot as plt
 import numpy as np
+import blessed
 from argh.decorators import arg, aliases, wrap_errors
-from more_itertools import chunked, grouper, partition, split_before, take
+from more_itertools import chunked, divide, grouper, partition, split_before, take
 
 from serpent import dna
 from serpent.convert.amino import aa_tables
 from serpent.convert.base64 import base64_to_num, num_to_base64
+from serpent.bitmap import num_to_pixel
 from serpent.convert.codon import num_to_codon
 from serpent.convert.digits import num_to_digits
 from serpent.convert.nucleotide import num_to_nt
@@ -59,7 +61,7 @@ from serpent.visual import (
 	plot_histogram_sized,
 	plot_sequence_counts,
 )
-from serpent.zigzag import zigzag_blocks, zigzag_text
+from serpent.zigzag import HALF_BLOCK, zigzag_blocks, zigzag_text
 
 
 wrapped_errors = [AssertionError, ParseError]
@@ -212,6 +214,53 @@ def encode(
 			print(f"Wrote: {outfile}")
 	else:
 		yield from lines
+
+
+@arg('--amino', '-a', help='Amino acid input')
+@arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen', '-g', help='Degenerate data')
+@arg('--width', '-w', help='Line width', type=int)
+@wrap_errors(wrapped_errors)
+def ansi(
+	filename,
+	width=64,
+	amino=False, degen=False, table=1,
+):
+	"""Encode data into Unicode block graphics."""
+	amino = auto_select_amino(filename, amino)
+	seqs = read_sequences(filename, amino)
+	term = blessed.Terminal()
+
+	CSI = '\x1b['
+	RESET = CSI + '0m'
+
+	for seq in seqs:
+		# TODO See dna_image_seq
+		[tokens, descriptions] = data_and_descriptions(seq)
+		# yield from (token.value for token in descriptions)
+		data = str_join(token.data for token in tokens)
+
+		decoded = dna.decode(data, amino, table, degen)
+
+		pixels = num_to_pixel(decoded, degen)
+		rgb = grouper(pixels, 3, incomplete='fill', fillvalue=0)
+		lines = chunked(rgb, width * 2)  # double the line width
+
+		for line in lines:
+			[top, bottom] = divide(2, line)
+			columns = itr.zip_longest(top, bottom, fillvalue=(0, 0, 0))
+
+			blocks = ''
+			for column in columns:
+				[fg_color, bg_color] = column
+
+				# TODO Use ANSI codes more directly?
+				fg = term.color_rgb(*fg_color)
+				bg = term.on_color_rgb(*bg_color)
+
+				blocks += bg + fg + HALF_BLOCK
+
+			yield blocks + RESET
 
 
 @arg('--amino', '-a', help='Amino acid input')
@@ -422,6 +471,7 @@ def main():
 	parser = argh.ArghParser()
 	parser.add_commands([
 		ac,
+		ansi,
 		cat,
 		codons,
 		decode,
