@@ -30,7 +30,10 @@ def pixels_to_blocks(pixels: Sequence, width: int, *, mode: str='RGB') -> Iterat
 
 		blocks = ''
 		for column in columns:
-			colours = ansi.rgb(*column) if mode == 'RGB' else ansi.grey(*column)
+			# FIXME Fixes the last line problem, that is caused by zero pixel bg colours
+			# getting filtered out, probably because of the spread operators
+			values = (column[0], zero_pixel) if len(column) == 1 else column
+			colours = ansi.rgb(*values) if mode == 'RGB' else ansi.grey(*values)
 			blocks += colours + HALF_BLOCK
 
 		yield blocks + ansi.RESET
