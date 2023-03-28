@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from more_itertools import grouper
+import more_itertools as mit
 
 __all__ = [
 	'digits_to_num',
@@ -12,7 +12,7 @@ __all__ = [
 
 def change_base(decoded, base=64, n=3, fill=0):
 	"""Change numeric base of data n digits at a time."""
-	sequences = grouper(decoded, n, incomplete="fill", fillvalue=fill)
+	sequences = mit.grouper(decoded, n, incomplete="fill", fillvalue=fill)
 	numbers = (digits_to_num(d, base) for d in sequences)
 
 	return numbers

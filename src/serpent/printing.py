@@ -3,8 +3,8 @@ from __future__ import annotations
 from collections import Counter
 from collections.abc import Iterable
 
+import more_itertools as mit
 import numpy as np
-from more_itertools import chunked, take
 
 from serpent.fun import str_join
 from serpent.settings import COUNT_LIMIT
@@ -17,7 +17,7 @@ def format_lines(data, width=80, sep=' '):
 	lines = [
 		f"{i * width}:\t{fmt(chunk)}"
 		for i, chunk
-		in enumerate(chunked(data, width))
+		in enumerate(mit.chunked(data, width))
 	]
 
 	return lines
@@ -27,7 +27,7 @@ def format_counts(counts: Counter, limit=COUNT_LIMIT) -> Iterable[str]:
 	yield from (
 		f'{item}\t{count}'
 		for (item, count)
-		in take(limit, counts.most_common())
+		in mit.take(limit, counts.most_common())
 	)
 
 def format_decoded(decoded):

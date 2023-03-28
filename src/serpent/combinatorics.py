@@ -5,7 +5,7 @@ from __future__ import annotations
 import itertools as itr
 from collections.abc import Sequence
 
-import more_itertools as mitr
+import more_itertools as mit
 import numpy as np
 
 from serpent.fun import is_not_none
@@ -29,8 +29,8 @@ def spread(seq: Sequence, n: int, offset: int=0):
 		return seq
 	assert 1 <= n <= len(seq), 'Parameter N should be strictly between 1 and len(seq)'
 
-	hands = mitr.chunked(seq, n)
-	shuffled = [list(hand) for hand in mitr.unzip(hands)]
+	hands = mit.chunked(seq, n)
+	shuffled = [list(hand) for hand in mit.unzip(hands)]
 	cut = np.roll(np.concatenate(shuffled), offset)
 
 	return cut
@@ -55,7 +55,7 @@ def unspread(seq: Sequence, n: int, offset: int=0):
 	uncut = np.roll(seq, -offset)
 	# FIXME: Oh, why is Python so hostile to functional programming?
 	# Fix this on a better day... and make it clean. (just compare to spread FFS!)
-	unshuffled = [*itr.zip_longest(*mitr.chunked(uncut, int(np.ceil(len(seq) / n))))]
+	unshuffled = [*itr.zip_longest(*mit.chunked(uncut, int(np.ceil(len(seq) / n))))]
 	piles = [list(filter(is_not_none, pile)) for pile in unshuffled]
 	deck = np.concatenate(piles)
 

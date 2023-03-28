@@ -8,7 +8,7 @@ from __future__ import annotations
 import itertools as itr
 from collections.abc import Iterator, Sequence
 
-from more_itertools import chunked, grouper
+import more_itertools as mit
 
 from serpent import ansi
 
@@ -17,12 +17,12 @@ HALF_BLOCK = '\u2580'
 
 def pixels_to_blocks(pixels: Sequence, width: int) -> Iterator[str]:
 	"""Convert a sequence of RGB pixel values to Unicode block element graphics."""
-	rgb = grouper(pixels, 3, incomplete='fill', fillvalue=0)
-	lines = chunked(rgb, width * 2)  # double the line width
+	rgb = mit.grouper(pixels, 3, incomplete='fill', fillvalue=0)
+	lines = mit.chunked(rgb, width * 2)  # double the line width
 	zero_pixel = (0, 0, 0)
 
 	for line in lines:
-		top_and_bottom = chunked(line, width)  # split in half
+		top_and_bottom = mit.chunked(line, width)  # split in half
 		columns = itr.zip_longest(*top_and_bottom, fillvalue=zero_pixel)
 
 		blocks = ''

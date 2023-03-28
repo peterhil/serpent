@@ -15,9 +15,9 @@ from pprint import pp
 
 import argh
 import matplotlib.pyplot as plt
+import more_itertools as mit
 import numpy as np
 from argh.decorators import arg, aliases, wrap_errors
-from more_itertools import chunked, divide, grouper, partition, split_before, take
 
 from serpent import dna
 from serpent import ansi
@@ -132,7 +132,6 @@ def codons(filename, width=20, stats=False, limit=COUNT_LIMIT):
 
 def cat(*inputs):
 	"""Concatenate and print FASTA sequences from files."""
-	# TODO Implement read_sequences with more_itertools.split_with and chain
 	# TODO Handle compressed files and archives
 	paths = check_paths(inputs)
 
@@ -205,7 +204,7 @@ def encode(
 		counts = Counter(encoded)
 		return (f"{count}\t{codon}" for codon, count in counts.most_common())
 
-	lines = (str_join(line) for line in chunked(encoded, width))
+	lines = (str_join(line) for line in mit.chunked(encoded, width))
 	if out:
 		file_ext = file_extension_for(fmt)
 		outfile = f'{filename}.{file_ext}'
@@ -382,7 +381,7 @@ def pep(
 
 	# TODO Allow using amino acid codes?
 	encoded = dna.encode(decoded, fmt=fmt)
-	peptides = (str_join(pep) for pep in chunked(encoded, length))
+	peptides = (str_join(pep) for pep in mit.chunked(encoded, length))
 
 	if count:
 		counts = Counter(peptides)

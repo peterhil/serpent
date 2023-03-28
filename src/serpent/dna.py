@@ -4,8 +4,8 @@ from __future__ import annotations
 import sys
 from collections.abc import Iterable, Iterator, Sequence
 
+import more_itertools as mit
 import numpy as np
-from more_itertools import grouper, partition
 from numpy.typing import NDArray
 
 from serpent.convert.amino import decode_aminos
@@ -121,9 +121,9 @@ def clean_non_dna(
 	if degen and not amino:
 		CODES += DEGENERATE
 
-	[residual, cleaned] = partition(lambda c: c in CODES, data)
+	[residual, cleaned] = mit.partition(lambda c: c in CODES, data)
 	# Filter out whitespace from residual
-	[residual, _] = partition(RE_WHITESPACE.match, residual)
+	[residual, _] = mit.partition(RE_WHITESPACE.match, residual)
 
 	return (str_join([*cleaned]), str_join([*residual]))
 
@@ -137,7 +137,7 @@ def get_codons(data, fill="A"):
 
 def get_codons_iter(data, fill="A"):
 	"""Get codons from data iteratively."""
-	codons = grouper(data, 3, incomplete="fill", fillvalue=fill)
+	codons = mit.grouper(data, 3, incomplete="fill", fillvalue=fill)
 
 	return map(str_join, codons)
 

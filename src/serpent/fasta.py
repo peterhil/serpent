@@ -10,7 +10,7 @@ from os import PathLike
 from pathlib import Path
 from typing import NamedTuple
 
-from more_itertools import partition, split_before
+import more_itertools as mit
 from termcolor import colored
 
 from serpent.io import err
@@ -208,11 +208,11 @@ def read_tokens(filename: PathLike, amino: bool = False) -> Iterable[Token]:
 def read_sequences(filename: PathLike, amino: bool=False) -> Iterable[list[Token]]:
 	"""Read sequences from a FASTA file."""
 	tokens = read_tokens(filename, amino)
-	sequences = split_before(tokens, lambda token: token.is_description)
+	sequences = mit.split_before(tokens, lambda token: token.is_description)
 
 	yield from sequences
 
 
 def data_and_descriptions(sequence):
 	"""Partition a sequence into data and description tokens."""
-	yield from partition(lambda t: t.is_description, sequence)
+	yield from mit.partition(lambda t: t.is_description, sequence)
