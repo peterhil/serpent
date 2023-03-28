@@ -110,23 +110,29 @@ def plot_sequence_counts(decoded, *args, n=4, **kwargs):
 	return [count, index]
 
 
+# flake8: noqa: PLR0913
 def dna_image(
 	decoded: CodonData, width=64, fill=0, mode="RGB",
-	degen=False,
+	amino=False, degen=False,
 ) -> Image.Image:
 	"""Get decoded DNA data as full colour image.
 
 	See `dna_image_data` for details.
 	"""
-	rgb = dna_image_data(decoded, width=width, fill=fill, mode=mode, degen=degen)
+	rgb = dna_image_data(
+		decoded,
+		width=width, fill=fill, mode=mode,
+		amino=amino, degen=degen,
+	)
 	img = Image.fromarray(rgb, mode=mode)
 
 	return img
 
 
+# flake8: noqa: PLR0913
 def dna_image_data(
 	decoded: CodonData, width=64, fill=0, mode="RGB",
-	degen=False,
+	amino=False, degen=False,
 ) -> NDArray[np.uint8]:
 	"""Convert decoded DNA data to full colour image.
 
@@ -150,7 +156,7 @@ def dna_image_data(
 
 	channels: int = len(mode)
 	height = height_for(padded, width, channels)
-	uint8 = num_to_pixel(padded, degen)
+	uint8 = num_to_pixel(padded, amino, degen)
 
 	if channels > 1:
 		rgb = uint8.reshape(height, width, channels)
@@ -168,6 +174,10 @@ def dna_image_seq(
 ):
 	"""Get DNA data from a single sequence of tokens as full colour image data."""
 	decoded = dna.decode_seq(seq, amino, table, degen)
-	rgb = dna_image_data(decoded, width=width, fill=fill, mode=mode, degen=degen)
+	rgb = dna_image_data(
+		decoded,
+		width=width, fill=fill, mode=mode,
+		amino=amino, degen=degen,
+	)
 
 	return rgb

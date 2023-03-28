@@ -229,18 +229,20 @@ def flow(
 ):
 	"""Encode data into Unicode block graphics."""
 	paths = check_paths(inputs)
+	amino_opt = amino
 
 	for filename in inputs:
 		if len(inputs) > 1:
 			print('file:', filename)
 
+		amino = amino_opt
 		amino = auto_select_amino(filename, amino)
 		seqs = read_sequences(filename, amino)
 
 		for seq in seqs:
 			decoded = dna.decode_seq(seq, amino, table, degen)
 
-			pixels = num_to_pixel(decoded, degen)
+			pixels = num_to_pixel(decoded, amino, degen)
 			yield from pixels_to_blocks(pixels, width, mode=mode)
 
 

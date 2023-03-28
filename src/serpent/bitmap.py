@@ -24,7 +24,8 @@ def height_for(data, width, channels=1):
 	return height
 
 
-def num_to_pixel(decoded, degen=False):
+def num_to_pixel(decoded, amino=False, degen=False):
 	"""Convert decoded data into pixel values."""
-	max_value = 4096 if degen else 64
+	# TODO Check degen amino max_value
+	max_value = (22 if degen else 22) if amino else (4096 if degen else 64)
 	return to_uint8(decoded, max_value, offset=1)  # 1, 5, 9, ..., 249, 253
