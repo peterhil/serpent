@@ -20,6 +20,7 @@ from argh.decorators import arg, aliases, wrap_errors
 from more_itertools import chunked, divide, grouper, partition, split_before, take
 
 from serpent import dna
+from serpent import ansi
 from serpent.convert.amino import aa_tables
 from serpent.convert.base64 import base64_to_num, num_to_base64
 from serpent.bitmap import num_to_pixel
@@ -220,7 +221,7 @@ def encode(
 @arg('--degen', '-g', help='Degenerate data')
 @arg('--width', '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
-def ansi(
+def flow(
 	filename,
 	width=64,
 	amino=False, degen=False, table=1,
@@ -228,9 +229,7 @@ def ansi(
 	"""Encode data into Unicode block graphics."""
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
-
-	CSI = '\x1b['
-	RESET = CSI + '0m'
+	zero_pixel = (0, 0, 0)
 
 	for seq in seqs:
 		# TODO See dna_image_seq
@@ -246,24 +245,12 @@ def ansi(
 
 		for line in lines:
 			top_and_bottom = chunked(line, width)  # split in half
-			zero_pixel = (0, 0, 0)
 			columns = itr.zip_longest(*top_and_bottom, fillvalue=zero_pixel)
 
 			blocks = ''
 			for column in columns:
-				if len(column) == 2:
-					[fg_color, bg_color] = column
-				else:
-					fg_color = column[0]
-					bg_color = zero_pixel
-
-				# TODO Move conversions to ansi module
-				fg_rgb = '{};{};{}'.format(*fg_color)
-				bg_rgb = '{};{};{}'.format(*bg_color)
-				fg = f'{CSI}38;2;{ fg_rgb }m'
-				bg = f'{CSI}48;2;{ bg_rgb }m'
-
-				blocks += bg + fg + HALF_BLOCK
+				colours = ansi.rgb(*column)
+				blocks += colours + HALF_BLOCK
 
 			yield blocks + RESET
 
@@ -476,13 +463,13 @@ def main():
 	parser = argh.ArghParser()
 	parser.add_commands([
 		ac,
-		ansi,
 		cat,
 		codons,
 		decode,
 		encode,
 		fft,
 		find,
+		flow,
 		hist,
 		image,
 		pep,
