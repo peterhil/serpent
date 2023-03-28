@@ -228,7 +228,7 @@ def image(
 ):
 	"""Visualise FASTA data as images."""
 	amino = auto_select_amino(filename, amino)
-	seqs = list(read_sequences(filename, amino))
+	seqs = read_sequences(filename, amino)
 
 	if not width:
 		# Set width from the total data size divided by sequence count

@@ -10,7 +10,7 @@ from numpy.typing import NDArray
 from PIL import Image
 
 from serpent import dna
-from serpent.bitmap import height_for, to_uint8
+from serpent.bitmap import height_for, num_to_pixel
 from serpent.fasta import data_and_descriptions
 from serpent.fun import str_join
 from serpent.mathematics import magnitude
@@ -152,8 +152,7 @@ def dna_image_data(
 
 	channels: int = len(mode)
 	height = height_for(padded, width, channels)
-	max_value = 4096 if degen else 64
-	uint8 = to_uint8(padded, max_value, offset=1)  # 1, 5, 9, ..., 249, 253
+	uint8 = num_to_pixel(padded, degen)
 
 	if channels > 1:
 		rgb = uint8.reshape(height, width, channels)
