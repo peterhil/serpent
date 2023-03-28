@@ -48,7 +48,7 @@ from serpent.io import (
 	wait_user,
 )
 from serpent.mathematics import autowidth, phi, phi_small
-from serpent.padding import pad_start
+from serpent.padding import pad_end, pad_start
 from serpent.printing import format_counts, format_decoded, format_lines
 from serpent.settings import BASE_ORDER, COUNT_LIMIT, DEFAULT_COLOR
 from serpent.stats import ac_peaks, autocorrelogram, count_sorted
@@ -245,12 +245,17 @@ def ansi(
 		lines = chunked(rgb, width * 2)  # double the line width
 
 		for line in lines:
-			[top, bottom] = divide(2, line)
-			columns = itr.zip_longest(top, bottom, fillvalue=(0, 0, 0))
+			top_and_bottom = chunked(line, width)  # split in half
+			zero_pixel = (0, 0, 0)
+			columns = itr.zip_longest(*top_and_bottom, fillvalue=zero_pixel)
 
 			blocks = ''
 			for column in columns:
-				[fg_color, bg_color] = column
+				if len(column) == 2:
+					[fg_color, bg_color] = column
+				else:
+					fg_color = column[0]
+					bg_color = zero_pixel
 
 				# TODO Move conversions to ansi module
 				fg_rgb = '{};{};{}'.format(*fg_color)
