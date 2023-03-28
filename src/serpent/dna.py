@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import sys
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable, Iterator, Sequence
 
 import numpy as np
 from more_itertools import grouper, partition
@@ -13,7 +13,14 @@ from serpent.convert.base64 import num_to_base64
 from serpent.convert.codon import codon_to_num, num_to_codon
 from serpent.convert.degenerate import dnt_to_num
 from serpent.convert.digits import change_base
-from serpent.fasta import AMINO, BASE, DEGENERATE, RE_WHITESPACE
+from serpent.fasta import (
+	AMINO,
+	BASE,
+	DEGENERATE,
+	RE_WHITESPACE,
+	Token,
+	data_and_descriptions,
+)
 from serpent.fun import str_join
 from serpent.io import err
 
@@ -86,6 +93,21 @@ def decode_iter(
 	else:
 		codons = get_codons_iter(dna)
 		return map(codon_to_num, codons)
+
+
+def decode_seq(
+	seq: Sequence[Token],
+	amino: bool=False,
+	table: int=1,
+	degen: bool=False
+):
+	"""Decode FASTA token sequence."""
+	[tokens, descriptions] = data_and_descriptions(seq)
+	# yield from (token.value for token in descriptions)
+	data = str_join(token.data for token in tokens)
+	decoded = decode(data, amino, table, degen)
+
+	return decoded
 
 
 def clean_non_dna(

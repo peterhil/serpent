@@ -232,12 +232,7 @@ def flow(
 	seqs = read_sequences(filename, amino)
 
 	for seq in seqs:
-		# TODO See dna_image_seq
-		[tokens, descriptions] = data_and_descriptions(seq)
-		# yield from (token.value for token in descriptions)
-		data = str_join(token.data for token in tokens)
-
-		decoded = dna.decode(data, amino, table, degen)
+		decoded = dna.decode_seq(seq, amino, table, degen)
 
 		pixels = num_to_pixel(decoded, degen)
 		yield from pixels_to_blocks(pixels, width)
