@@ -16,7 +16,6 @@ from pprint import pp
 import argh
 import matplotlib.pyplot as plt
 import numpy as np
-import blessed
 from argh.decorators import arg, aliases, wrap_errors
 from more_itertools import chunked, divide, grouper, partition, split_before, take
 
@@ -229,7 +228,6 @@ def ansi(
 	"""Encode data into Unicode block graphics."""
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
-	term = blessed.Terminal()
 
 	CSI = '\x1b['
 	RESET = CSI + '0m'
@@ -254,9 +252,11 @@ def ansi(
 			for column in columns:
 				[fg_color, bg_color] = column
 
-				# TODO Use ANSI codes more directly?
-				fg = term.color_rgb(*fg_color)
-				bg = term.on_color_rgb(*bg_color)
+				# TODO Move conversions to ansi module
+				fg_rgb = '{};{};{}'.format(*fg_color)
+				bg_rgb = '{};{};{}'.format(*bg_color)
+				fg = f'{CSI}38;2;{ fg_rgb }m'
+				bg = f'{CSI}48;2;{ bg_rgb }m'
 
 				blocks += bg + fg + HALF_BLOCK
 
