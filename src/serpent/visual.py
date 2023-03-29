@@ -110,7 +110,7 @@ def plot_sequence_counts(decoded, *args, n=4, **kwargs):
 	return [count, index]
 
 
-# flake8: noqa: PLR0913
+# ruff: noqa: PLR0913
 def dna_image(
 	decoded: CodonData, width=64, fill=0, mode="RGB",
 	amino=False, degen=False,
@@ -129,7 +129,7 @@ def dna_image(
 	return img
 
 
-# flake8: noqa: PLR0913
+# ruff: noqa: PLR0913
 def dna_image_data(
 	decoded: CodonData, width=64, fill=0, mode="RGB",
 	amino=False, degen=False,

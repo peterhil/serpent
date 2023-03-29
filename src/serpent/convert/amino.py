@@ -49,7 +49,8 @@ degenerate_codon = inverse_od(degenerate_amino)
 def codon_to_amino(codon, table=1):
 	return degenerate_amino.get(codon) or genetic_code[table][codon]
 
-# ruff: noqa: F601 # multi-value-repeated-key-literal
+# ruff: noqa: F601
+# multi-value-repeated-key-literal
 # TODO: Use degenerate nucleotide codes
 def amino_to_codon(amino, table=1):
 	return degenerate_codon.get(amino) or genetic_code_inverse[table][amino]

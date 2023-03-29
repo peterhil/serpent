@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# flake8: noqa: PLR0913
+# ruff: noqa: PLR0913
 """Serpent analysis."""
 
 from __future__ import annotations
@@ -7,41 +7,33 @@ from __future__ import annotations
 import fileinput
 import itertools as itr
 import os
-import re
-from PIL import Image
 from collections import Counter
 from pathlib import Path
-from pprint import pp
 
 import argh
 import matplotlib.pyplot as plt
 import more_itertools as mit
 import numpy as np
-from argh.decorators import arg, aliases, wrap_errors
+from argh.decorators import aliases, arg, wrap_errors
+from PIL import Image
 
-from serpent import dna
-from serpent import ansi
-from serpent.convert.amino import aa_tables
-from serpent.convert.base64 import base64_to_num, num_to_base64
+from serpent import ansi, dna
 from serpent.bitmap import num_to_pixel
 from serpent.block_elements import pixels_to_blocks
-from serpent.convert.codon import num_to_codon
+from serpent.convert.amino import aa_tables
 from serpent.convert.digits import num_to_digits
-from serpent.convert.nucleotide import num_to_nt
 from serpent.dsp import fft_spectra
 from serpent.encoding import BASE64
 from serpent.fasta import (
 	ParseError,
-	RE_DESCRIPTION,
 	auto_select_amino,
 	data_and_descriptions,
 	find_fasta_files,
 	find_fasta_sequences,
 	read,
 	read_sequences,
-	read_tokens,
 )
-from serpent.fun import map_array, sort_values, str_join
+from serpent.fun import sort_values, str_join
 from serpent.io import (
 	check_paths,
 	echo,
@@ -49,21 +41,23 @@ from serpent.io import (
 	openhook,
 	wait_user,
 )
-from serpent.mathematics import autowidth, phi, phi_small
-from serpent.padding import pad_end, pad_start
+from serpent.mathematics import autowidth, phi
 from serpent.printing import format_counts, format_decoded, format_lines
-from serpent.settings import BASE_ORDER, FLOW_DESCRIPTION_COLOR, COUNT_LIMIT, DEFAULT_COLOR
+from serpent.settings import (
+	BASE_ORDER,
+	COUNT_LIMIT,
+	DEFAULT_COLOR,
+	FLOW_DESCRIPTION_COLOR,
+)
 from serpent.stats import ac_peaks, autocorrelogram, count_sorted
 from serpent.visual import (
 	bin_choices,
-	dna_image,
 	dna_image_seq,
 	interactive,
 	plot_histogram_sized,
 	plot_sequence_counts,
 )
 from serpent.zigzag import zigzag_blocks, zigzag_text
-
 
 wrapped_errors = [AssertionError, ParseError]
 
@@ -102,7 +96,7 @@ def ac(
 		peaks.pop(0)  # First item is always 1
 		peaks = peaks.items() if linear else sort_values(peaks, reverse=True)
 
-		yield from ("%s	%1.3f" % (peak, value) for peak, value in peaks)
+		yield from (f"{peak}	{value:1.3f}" for peak, value in peaks)
 
 
 @arg('--stats',  '-s', help='Show statistics')
@@ -232,7 +226,7 @@ def flow(
 	paths = check_paths(inputs)
 	amino_opt = amino
 
-	for filename in inputs:
+	for filename in paths:
 		if len(inputs) > 1:
 			print('file:', filename)
 
@@ -245,8 +239,8 @@ def flow(
 
 			if desc:
 				# TODO Add ansi.rgb_text and fix argument handling (needs back currently)
-				yield ansi.rgb(front=FLOW_DESCRIPTION_COLOR,
-							   back=(0, 0, 0)) + description + ansi.RESET
+				colour = ansi.rgb(front=FLOW_DESCRIPTION_COLOR, back=(0, 0, 0))
+				yield colour + description + ansi.RESET
 
 			pixels = num_to_pixel(decoded, amino, degen)
 			yield from pixels_to_blocks(pixels, width, mode=mode)
