@@ -173,7 +173,7 @@ def dna_image_seq(
 	amino=False, degen=False, table=1,
 ):
 	"""Get DNA data from a single sequence of tokens as full colour image data."""
-	decoded = dna.decode_seq(seq, amino, table, degen)
+	[decoded, _] = dna.decode_seq(seq, amino, table, degen)
 	rgb = dna_image_data(
 		decoded,
 		width=width, fill=fill, mode=mode,
