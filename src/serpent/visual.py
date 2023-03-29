@@ -152,28 +152,24 @@ def dna_image_data(
 	[(1, 5, 9), (81, 85, 93), (161, 165, 169), (245, 249, 253)]
 	"""
 	# TODO decode data here, so gaps can be accomodated for requested width?
+	channels: int = len(mode)
 
 	if mode == 'P':
 		fill = 255
 		padded = np.array(pad_end(decoded, fill, n=width))
 		uint8 = np.uint8(padded)
-		height = height_for(padded, width, 1)
-
-		rgb = uint8.reshape(height, width)
-
-		return rgb
 	else:
-		channels: int = len(mode)
 		padded = np.array(pad_end(decoded, fill, n=3 * width))
 		uint8 = num_to_pixel(padded, amino, degen)
-		height = height_for(padded, width, channels)
 
-		if channels > 1:
-			rgb = uint8.reshape(height, width, channels)
-		else:
-			rgb = uint8.reshape(height, width)
+	height = height_for(padded, width, channels)
 
-		return rgb
+	if channels > 1:
+		rgb = uint8.reshape(height, width, channels)
+	else:
+		rgb = uint8.reshape(height, width)
+
+	return rgb
 
 
 def dna_image_seq(
