@@ -52,7 +52,7 @@ from serpent.io import (
 from serpent.mathematics import autowidth, phi, phi_small
 from serpent.padding import pad_end, pad_start
 from serpent.printing import format_counts, format_decoded, format_lines
-from serpent.settings import BASE_ORDER, COUNT_LIMIT, DEFAULT_COLOR, DEFAULT_ANSI_COLOR
+from serpent.settings import BASE_ORDER, FLOW_DESCRIPTION_COLOR, COUNT_LIMIT, DEFAULT_COLOR
 from serpent.stats import ac_peaks, autocorrelogram, count_sorted
 from serpent.visual import (
 	bin_choices,
@@ -245,8 +245,8 @@ def flow(
 
 			if desc:
 				# TODO Add ansi.rgb_text and fix argument handling (needs back currently)
-				# TODO Move colour value to settings
-				yield ansi.rgb(front=(42, 42, 42), back=(0, 0, 0)) + description + ansi.RESET
+				yield ansi.rgb(front=FLOW_DESCRIPTION_COLOR,
+							   back=(0, 0, 0)) + description + ansi.RESET
 
 			pixels = num_to_pixel(decoded, amino, degen)
 			yield from pixels_to_blocks(pixels, width, mode=mode)
