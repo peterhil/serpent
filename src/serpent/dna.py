@@ -19,7 +19,7 @@ from serpent.fasta import (
 	BASE,
 	DEGENERATE,
 	RE_WHITESPACE,
-	Token,
+	FastaToken,
 	data_and_descriptions,
 )
 from serpent.fun import str_join
@@ -97,7 +97,7 @@ def decode_iter(
 
 
 def decode_seq(
-	seq: Sequence[Token],
+	seq: Sequence[FastaToken],
 	amino: bool=False,
 	table: int=1,
 	degen: bool=False

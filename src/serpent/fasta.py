@@ -92,7 +92,7 @@ class ParseError(Exception):
 	pass
 
 
-class Token(NamedTuple):
+class FastaToken(NamedTuple):
 	"""Token of parsed FASTA data."""
 
 	type: str
@@ -112,7 +112,7 @@ class Token(NamedTuple):
 		return self.type == 'DESCRIPTION'
 
 
-def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[Token]:
+def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[FastaToken]:
 	"""Read FASTA sequences iteratively.
 
 	See:
@@ -153,9 +153,9 @@ def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[Token]:
 			err_msg = f"{value!r} unexpected on line {line} column {column}"
 			raise ParseError(err_msg)
 		elif kind in DATA_TOKENS:
-			yield Token(kind, line, column, data=value)
+			yield FastaToken(kind, line, column, data=value)
 		else:
-			yield Token(kind, line, column, value=value)
+			yield FastaToken(kind, line, column, value=value)
 
 
 def read(filename: PathLike, amino: bool = False) -> str:
@@ -187,7 +187,7 @@ def read(filename: PathLike, amino: bool = False) -> str:
 	return "\n".join(data)
 
 
-def read_tokens(filename: PathLike, amino: bool = False) -> Iterable[Token]:
+def read_tokens(filename: PathLike, amino: bool = False) -> Iterable[FastaToken]:
 	"""Parse data as tokens from a FASTA file.
 
 	Amino:
@@ -205,7 +205,7 @@ def read_tokens(filename: PathLike, amino: bool = False) -> Iterable[Token]:
 					print('Extra:', token)
 
 
-def read_sequences(filename: PathLike, amino: bool=False) -> Iterable[list[Token]]:
+def read_sequences(filename: PathLike, amino: bool=False) -> Iterable[list[FastaToken]]:
 	"""Read sequences from a FASTA file."""
 	tokens = read_tokens(filename, amino)
 	sequences = mit.split_before(tokens, lambda token: token.is_description)
