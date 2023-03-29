@@ -20,22 +20,25 @@ class ZigzagState:
 
 	inputs: list[str]
 	dirty: bool = True
-	current: int = 0
+	file_no: int = 0
+	page_no: int = 0
 
 	@property
 	def current_input(self):
-		return self.inputs[self.current]
+		return self.inputs[self.file_no]
 
 	@property
 	def total(self):
 		return len(self.inputs) or 1
 
 	def next_input(self):
-		self.current = (self.current + 1) % self.total
+		self.file_no = (self.file_no + 1) % self.total
+		self.page_no = 0
 		self.dirty = True
 
 	def prev_input(self):
-		self.current = (self.current - 1) % self.total
+		self.file_no = (self.file_no - 1) % self.total
+		self.page_no = 0
 		self.dirty = True
 
 
@@ -69,7 +72,7 @@ def screen_page(term, render_fn, t):
 
 
 def status(term, state):
-	left_txt = f'file ({state.current + 1} / {state.total}): {state.current_input}'
+	left_txt = f'file ({state.file_no + 1} / {state.total}): {state.current_input}'
 	right_txt = f'{term.number_of_colors} colors - ?: help'
 	return (
 		'\n' + term.normal +
@@ -91,7 +94,7 @@ def zigzag_blocks(inputs):
 		while True:
 			if state.dirty:
 				outp = term.home
-				outp += screen_page(term, rgb_at_xy, state.current)
+				outp += screen_page(term, rgb_at_xy, state.file_no)
 				outp += status(term, state)
 				print(outp, end='')
 				sys.stdout.flush()
