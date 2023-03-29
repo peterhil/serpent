@@ -42,6 +42,7 @@ from serpent.io import (
 	wait_user,
 )
 from serpent.mathematics import autowidth, phi
+from serpent.palette import set_palette, spectrum_palette
 from serpent.printing import format_counts, format_decoded, format_lines
 from serpent.settings import (
 	BASE_ORDER,
@@ -249,7 +250,7 @@ def flow(
 @arg('--amino', '-a', help='Amino acid input')
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen', '-g', help='Degenerate data')
-@arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L'))
+@arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L', 'P'))
 @arg('--out',   '-o', help='Write image to file')
 @arg('--width', '-w', help='Image width', type=int)
 @wrap_errors(wrapped_errors)
@@ -278,6 +279,10 @@ def image(
 	])
 
 	img = Image.fromarray(rgb, mode=mode)
+
+	if mode == 'P':
+		num_colours = 22 if amino else 64
+		set_palette(img, spectrum_palette(num_colours, 0.75))
 
 	if amino and table != 1:
 		outfile = filename + f".w{width}.{BASE_ORDER}.t{table}.png"
