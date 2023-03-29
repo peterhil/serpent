@@ -104,11 +104,11 @@ def decode_seq(
 ):
 	"""Decode FASTA token sequence."""
 	[tokens, descriptions] = data_and_descriptions(seq)
-	# yield from (token.value for token in descriptions)
+	descriptions = str_join((token.value for token in descriptions), '\n')
 	data = str_join(token.data for token in tokens)
 	decoded = decode(data, amino, table, degen)
 
-	return decoded
+	return decoded, descriptions
 
 
 def clean_non_dna(

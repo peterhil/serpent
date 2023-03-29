@@ -79,11 +79,13 @@ aminos_inverse = inverse_od(aminos)
 
 def decode_aminos(
 	dna,
-	# table=1
+	table=1
 ):
 	"""Decode amino acid data.
 
 	Uses given nucleotide base order and genetic code translation table.
 	"""
+	# TODO Use tables?
+	table
 	# return map_array(lambda d: amino_to_num(d, table), dna)
 	return map_array(lambda a: aminos_inverse.get(a, 0), dna)

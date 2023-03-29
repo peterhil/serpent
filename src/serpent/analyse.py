@@ -52,7 +52,7 @@ from serpent.io import (
 from serpent.mathematics import autowidth, phi, phi_small
 from serpent.padding import pad_end, pad_start
 from serpent.printing import format_counts, format_decoded, format_lines
-from serpent.settings import BASE_ORDER, COUNT_LIMIT, DEFAULT_COLOR
+from serpent.settings import BASE_ORDER, COUNT_LIMIT, DEFAULT_COLOR, DEFAULT_ANSI_COLOR
 from serpent.stats import ac_peaks, autocorrelogram, count_sorted
 from serpent.visual import (
 	bin_choices,
@@ -219,12 +219,13 @@ def encode(
 @arg('--amino', '-a', help='Amino acid input')
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen', '-g', help='Degenerate data')
+@arg('--desc',  '-c', help='Output descriptions')
 @arg('--width', '-w', help='Line width', type=int)
 @arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L'))
 @wrap_errors(wrapped_errors)
 def flow(
 	*inputs,
-	width=64, mode='RGB',
+	desc=False, width=64, mode='RGB',
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into Unicode block graphics."""
@@ -240,7 +241,12 @@ def flow(
 		seqs = read_sequences(filename, amino)
 
 		for seq in seqs:
-			decoded = dna.decode_seq(seq, amino, table, degen)
+			[decoded, description] = dna.decode_seq(seq, amino, table, degen)
+
+			if desc:
+				# TODO Add ansi.rgb_text and fix argument handling (needs back currently)
+				# TODO Move colour value to settings
+				yield ansi.rgb(front=(42, 42, 42), back=(0, 0, 0)) + description + ansi.RESET
 
 			pixels = num_to_pixel(decoded, amino, degen)
 			yield from pixels_to_blocks(pixels, width, mode=mode)
