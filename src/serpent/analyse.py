@@ -60,6 +60,7 @@ from serpent.visual import (
 )
 from serpent.zigzag import zigzag_blocks, zigzag_text
 
+fmt_choices = ['a', 'amino', 'b', 'base64', 'c', 'codon']
 wrapped_errors = [AssertionError, ParseError]
 
 
@@ -178,7 +179,7 @@ def decode(filename, amino=False, degen=False, table=1):
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen', '-g', help='Degenerate data')
 @arg('--count', '-c', help='Print counts')
-@arg('--fmt',   '-f', help='Output format', choices=['b', 'base64', 'c', 'codon'])
+@arg('--fmt',   '-f', help='Output format', choices=fmt_choices)
 @arg('--out',   '-o', help='Write out to file')
 @arg('--width', '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
@@ -191,9 +192,12 @@ def encode(
 	# TODO Read and decode data iteratively
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
-	decoded = dna.decode_iter(data, amino, table, degen)
 
-	encoded = dna.encode(decoded, fmt)
+	if fmt in ['a', 'amino']:
+		encoded = dna.to_amino(data, amino, table, degen)
+	else:
+		decoded = dna.decode_iter(data, amino, table, degen)
+		encoded = dna.encode(decoded, fmt)
 
 	if count:
 		counts = Counter(encoded)

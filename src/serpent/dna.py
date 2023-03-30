@@ -8,7 +8,7 @@ import more_itertools as mit
 import numpy as np
 from numpy.typing import NDArray
 
-from serpent.convert.amino import decode_aminos
+from serpent.convert.amino import codon_to_amino, decode_aminos
 from serpent.convert.base64 import num_to_base64
 from serpent.convert.codon import codon_to_num, num_to_codon
 from serpent.convert.degenerate import dnt_to_num
@@ -36,6 +36,27 @@ def encode(decoded: Iterable[int], fmt: str = 'base64') -> Iterable[str]:
 		raise ValueError('Unknown format: ' + fmt)
 
 	return encoded
+
+
+def to_amino(
+	dna: Iterable,
+	amino: bool=False,
+	table: int=1,
+	degen: bool=False
+):
+	"""Encode data as amino acids."""
+	[cleaned, _] = clean_non_dna(dna, amino, degen)
+
+	if amino:
+		# Just clean the data
+		yield from cleaned
+	else:
+		# Convert from codons
+		if degen:
+			err_msg ="Can't map degenerate data into amino acids."
+			raise NotImplementedError(err_msg)
+		codons = get_codons_iter(cleaned)
+		yield from (codon_to_amino(c, table) for c in codons)
 
 
 def decode(
@@ -77,11 +98,6 @@ def decode_iter(
 	# TODO: Handle degenerate amino acid data properly
 	# TODO: Check data against amino option and warn if used incorrectly?
 	[dna, residual] = clean_non_dna(dna, amino, degen)
-	if len(residual) > 0:
-		err(f'Residual characters: {residual}')
-		if not degen:
-			err('Try again with the --degen / -g option.')
-			sys.exit(1)
 
 	if amino:
 		return decode_aminos(dna, table)
@@ -129,7 +145,16 @@ def clean_non_dna(
 	# Filter out whitespace from residual
 	[residual, _] = mit.partition(RE_WHITESPACE.match, residual)
 
-	return (str_join([*cleaned]), str_join([*residual]))
+	# TODO Peek into residual and return iterators
+	[cleaned, residual] = (str_join([*cleaned]), str_join([*residual]))
+
+	if len(residual) > 0:
+		err(f'Residual characters: {residual}')
+		if not degen:
+			err('Try again with the --degen / -g option.')
+			sys.exit(1)
+
+	return (cleaned, residual)
 
 
 def get_codons(data, fill="A"):
