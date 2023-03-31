@@ -393,15 +393,18 @@ def vectors(filename, amino=False, table=1, degen=False):
 	ax = plt.axes(projection='3d')
 	ax.set_title(filename)
 
-	for seq in seqs:
+	for index, seq in enumerate(seqs):
 		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
 
 		dirs = amino_path_3d(aminos)
+
+		# TODO Map descriptions and regions to different colours from text?
+		color = DEFAULT_COLOR if index == 0 else None
 		plot_directions(
 			ax,
 			dirs,
-			# color=DEFAULT_COLOR,  # TODO Map descriptions and regions to different colours
-			title=description,
+			color=color,
+			# title=description,
 		)
 
 	interactive()
