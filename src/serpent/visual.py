@@ -110,6 +110,35 @@ def plot_sequence_counts(decoded, *args, n=4, **kwargs):
 	return [count, index]
 
 
+def plot_path_3d(dirs, ax, **kwargs):
+	[y, x, z] = dirs[::, :3].T
+	lines = ax.plot3D(x, y, z, **kwargs)
+
+	return lines
+
+
+def plot_path_2d(dirs, ax, **kwargs):
+	[y, x, z] = dirs[::, :3].T
+	lines = ax.plot(x, y, **kwargs)
+
+	return lines
+
+
+def plot_directions(dirs, projection='3d', title='Serpent paths', **kwargs):
+	# fig = plt.figure()
+	ax = plt.axes(projection=projection)
+
+	if projection == '3d':
+		plot_path_3d(dirs, ax, **kwargs)
+	else:
+		plot_path_2d(dirs, ax, **kwargs)
+
+	if title:
+		ax.set_title(title)
+
+	return ax
+
+
 # ruff: noqa: PLR0913
 def dna_image(
 	decoded: CodonData, width=64, fill=0, mode="RGB",

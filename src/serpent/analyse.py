@@ -50,11 +50,13 @@ from serpent.settings import (
 	DEFAULT_COLOR,
 	FLOW_DESCRIPTION_COLOR,
 )
+from serpent.spatial import amino_path_3d
 from serpent.stats import ac_peaks, autocorrelogram, count_sorted
 from serpent.visual import (
 	bin_choices,
 	dna_image_seq,
 	interactive,
+	plot_directions,
 	plot_histogram_sized,
 	plot_sequence_counts,
 )
@@ -378,6 +380,25 @@ def seq(filename, length=1, amino=False, degen=False, table=1):
 	wait_user()
 
 
+@arg('--amino',  '-a', help='Amino acid input')
+@arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen',  '-g', help='Degenerate data')
+@aliases('vec')
+def vectors(filename, amino=False, table=1, degen=False):
+	"""Visualise amino acids in 3D vector space."""
+	amino = auto_select_amino(filename, amino)
+	seqs = read_sequences(filename, amino)
+
+	for seq in seqs:
+		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
+
+		dirs = amino_path_3d(aminos)
+		plot_directions(dirs, color=DEFAULT_COLOR, title=description)
+
+	interactive()
+	wait_user()
+
+
 @arg('--amino',   '-a', help='Amino acid input')
 @arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',   '-g', help='Degenerate data')
@@ -475,6 +496,7 @@ def main():
 		pep,
 		repeats,
 		seq,
+		vectors,
 		zigzag,
 	])
 	# parser.set_default_command(serpent)

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import sys
-from collections.abc import Iterable, Iterator, Sequence
+from collections.abc import Callable, Iterable, Iterator, Sequence
 
 import more_itertools as mit
 import numpy as np
@@ -116,13 +116,14 @@ def decode_seq(
 	seq: Sequence[FastaToken],
 	amino: bool=False,
 	table: int=1,
-	degen: bool=False
+	degen: bool=False,
+	decoder: Callable=decode,
 ):
 	"""Decode FASTA token sequence."""
 	[tokens, descriptions] = data_and_descriptions(seq)
 	descriptions = str_join((token.value for token in descriptions), '\n')
 	data = str_join(token.data for token in tokens)
-	decoded = decode(data, amino, table, degen)
+	decoded = decoder(data, amino, table, degen)
 
 	return decoded, descriptions
 
