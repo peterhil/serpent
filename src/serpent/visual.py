@@ -13,6 +13,7 @@ from serpent import dna
 from serpent.bitmap import height_for, num_to_pixel
 from serpent.mathematics import magnitude
 from serpent.padding import pad_end
+from serpent.spatial import amino_path_3d
 from serpent.stats import count_sorted
 from serpent.typing import CodonData
 
@@ -134,6 +135,16 @@ def plot_directions(ax, dirs, projection='3d', title=None, **kwargs):
 		ax.set_title(title)
 
 	return ax
+
+
+def plot_vectors(ax, aminos, color=None):
+	dirs = amino_path_3d(aminos)
+	plot_directions(
+		ax,
+		dirs,
+		color=color,
+		# title=description,
+	)
 
 
 # ruff: noqa: PLR0913

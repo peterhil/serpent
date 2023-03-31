@@ -50,15 +50,14 @@ from serpent.settings import (
 	DEFAULT_COLOR,
 	FLOW_DESCRIPTION_COLOR,
 )
-from serpent.spatial import amino_path_3d
 from serpent.stats import ac_peaks, autocorrelogram, count_sorted
 from serpent.visual import (
 	bin_choices,
 	dna_image_seq,
 	interactive,
-	plot_directions,
 	plot_histogram_sized,
 	plot_sequence_counts,
+	plot_vectors,
 )
 from serpent.zigzag import zigzag_blocks, zigzag_text
 
@@ -383,29 +382,36 @@ def seq(filename, length=1, amino=False, degen=False, table=1):
 @arg('--amino',  '-a', help='Amino acid input')
 @arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',  '-g', help='Degenerate data')
+@arg('--split',  '-s', help='Split by start and stop codons')
 @aliases('vec')
-def vectors(filename, amino=False, table=1, degen=False):
+def vectors(filename, split=False, amino=False, table=1, degen=False):
 	"""Visualise amino acids in 3D vector space."""
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
 
 	# fig = plt.figure()
 	ax = plt.axes(projection='3d')
-	ax.set_title(filename)
+
+	title = f'{filename} (peptides)' if split else filename
+	ax.set_title(title)
 
 	for index, seq in enumerate(seqs):
 		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
 
-		dirs = amino_path_3d(aminos)
-
-		# TODO Map descriptions and regions to different colours from text?
-		color = DEFAULT_COLOR if index == 0 else None
-		plot_directions(
-			ax,
-			dirs,
-			color=color,
-			# title=description,
-		)
+		if split:
+			# Split by start and stop codons
+			# TODO Get all start and stop codons from the genetic code tables!
+			aminos = mit.split_when(aminos, lambda a, b: (b in ['M'] or a in ['*']) and a != b)
+			for peptide in aminos:
+				# TODO Does it occur often that start and stop codons are next
+				# to each other, and what does it mean?
+				if len(peptide) == 0:
+					continue
+				plot_vectors(ax, peptide)
+		else:
+			# TODO Map descriptions and regions to different colours from text?
+			color = DEFAULT_COLOR if index == 0 and not split else None
+			plot_vectors(ax, aminos, color)
 
 	interactive()
 	wait_user()
