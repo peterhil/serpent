@@ -182,11 +182,12 @@ def decode(filename, amino=False, degen=False, table=1):
 @arg('--count', '-c', help='Print counts')
 @arg('--fmt',   '-f', help='Output format', choices=fmt_choices)
 @arg('--out',   '-o', help='Write out to file')
+@arg('--split', '-s', help='Split by start and stop codons')
 @arg('--width', '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
 def encode(
 	filename,
-	count=False, fmt='base64', out=False, width=64,
+	count=False, fmt='base64', out=False, split=False, width=64,
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into various formats."""
@@ -196,6 +197,9 @@ def encode(
 
 	if fmt in ['a', 'amino']:
 		encoded = dna.to_amino(data, amino, table, degen)
+
+		if split:
+			encoded = '\n'.join([str_join(region) for region in split_aminos(encoded)])
 	else:
 		decoded = dna.decode_iter(data, amino, table, degen)
 		encoded = dna.encode(decoded, fmt)
