@@ -20,7 +20,7 @@ from PIL import Image
 from serpent import ansi, dna
 from serpent.bitmap import num_to_pixel
 from serpent.block_elements import pixels_to_blocks
-from serpent.convert.amino import aa_tables
+from serpent.convert.amino import aa_tables, split_aminos
 from serpent.convert.digits import num_to_digits
 from serpent.dsp import fft_spectra
 from serpent.encoding import BASE64
@@ -399,12 +399,10 @@ def vectors(filename, split=False, amino=False, table=1, degen=False):
 		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
 
 		if split:
-			# Split by start and stop codons
-			# TODO Get all start and stop codons from the genetic code tables!
-			aminos = mit.split_when(aminos, lambda a, b: (b in ['M'] or a in ['*']) and a != b)
-			for peptide in aminos:
+			for peptide in split_aminos(aminos):
 				# TODO Does it occur often that start and stop codons are next
-				# to each other, and what does it mean?
+				# to each other, and what does it mean? (Stop not interpreted
+				# as stop, but amino acid?)
 				if len(peptide) == 0:
 					continue
 				plot_vectors(ax, peptide)
