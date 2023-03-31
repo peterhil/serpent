@@ -124,10 +124,7 @@ def plot_path_2d(dirs, ax, **kwargs):
 	return lines
 
 
-def plot_directions(dirs, projection='3d', title='Serpent paths', **kwargs):
-	# fig = plt.figure()
-	ax = plt.axes(projection=projection)
-
+def plot_directions(ax, dirs, projection='3d', title=None, **kwargs):
 	if projection == '3d':
 		plot_path_3d(dirs, ax, **kwargs)
 	else:

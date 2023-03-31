@@ -389,11 +389,20 @@ def vectors(filename, amino=False, table=1, degen=False):
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
 
+	# fig = plt.figure()
+	ax = plt.axes(projection='3d')
+	ax.set_title(filename)
+
 	for seq in seqs:
 		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
 
 		dirs = amino_path_3d(aminos)
-		plot_directions(dirs, color=DEFAULT_COLOR, title=description)
+		plot_directions(
+			ax,
+			dirs,
+			# color=DEFAULT_COLOR,  # TODO Map descriptions and regions to different colours
+			title=description,
+		)
 
 	interactive()
 	wait_user()
