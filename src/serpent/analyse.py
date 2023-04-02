@@ -199,7 +199,9 @@ def encode(
 		encoded = dna.to_amino(data, amino, table, degen)
 
 		if split:
-			encoded = '\n'.join([str_join(region) for region in split_aminos(encoded)])
+			encoded = (str_join(region) for region in split_aminos(encoded))
+			yield from encoded
+			return
 	else:
 		decoded = dna.decode_iter(data, amino, table, degen)
 		encoded = dna.encode(decoded, fmt)
