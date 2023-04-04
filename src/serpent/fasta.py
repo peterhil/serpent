@@ -40,7 +40,7 @@ AMINO_DEGENERATE = "BJZX*-"
 BASE = "ACGTU"
 DEGENERATE = "WSMKRYBDHVNZ-"
 
-RE_DESCRIPTION = r"^[>;](?P<description>.*)"
+RE_DESCRIPTION = r"^[>;@](?P<description>.*)"
 RE_DEGENERATE = fr"[{DEGENERATE}]+?"
 RE_WHITESPACE = re.compile(r'\s')
 
