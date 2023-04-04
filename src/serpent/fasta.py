@@ -40,7 +40,7 @@ AMINO_DEGENERATE = "BJZX*-"
 BASE = "ACGTU"
 DEGENERATE = "WSMKRYBDHVNZ-"
 
-RE_DESCRIPTION = r"^[>;](?P<description>.*)\n?"
+RE_DESCRIPTION = r"^[>;](?P<description>.*)"
 RE_DEGENERATE = fr"[{DEGENERATE}]+?"
 RE_WHITESPACE = re.compile(r'\s')
 
@@ -196,7 +196,7 @@ def read_tokens(filename: PathLike, amino: bool = False) -> Iterable[FastaToken]
 	"""
 	lineno = 0
 	with Path(filename).open(encoding="UTF-8") as file:
-		while (line := file.readline().rstrip()):
+		while (line := file.readline()):
 			lineno += 1
 			for token in tokenize(line, amino, lineno):
 				if token.type == "DESCRIPTION" or token.is_data:
