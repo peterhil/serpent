@@ -27,6 +27,16 @@ def spectrum_palette(n=64, sat=1.0, lightness=255, offset=0):
 	return ImagePalette('RGB', palette=arr_to_palette(colours))
 
 
+def spectrum_layers_palette(n=9, layers=3, start=0.5, *, sat=0.75, offset=0):
+	"""HSV Spectrum palette with three layers of lightness.
+
+	Suitable for PIL Image instance.
+	"""
+	lightness = np.linspace(start, 1, layers, endpoint=True) * 256 - 1
+	colours = np.concatenate([spectrum(n, sat, light, offset) for light in lightness])
+	return ImagePalette('RGB', palette=arr_to_palette(colours))
+
+
 def arr_to_palette(arr):
 	length = len(arr)
 	pad_length = min(768, 768 - 3 * length)
@@ -44,11 +54,13 @@ def set_palette(im: Image, palette: ImagePalette):
 
 if __name__ == '__main__':
 	# Test data
-	data = np.arange(256, dtype=np.uint8).reshape(16, 16)
-	colours = 256
+	data = np.arange(27, dtype=np.uint8).reshape(3, 9)
 
 	spectra = PIL.Image.fromarray(data, mode='P')
-	new_palette = spectrum_palette(colours, sat=0.75, offset=0/360)
+	# new_palette = spectrum_palette(256, sat=0.75, offset=0/360)
+	new_palette = spectrum_layers_palette(
+		n=9, layers=3, start=0.25, sat=0.75, offset=-10/360
+	)
 
 	set_palette(spectra, new_palette)
 
