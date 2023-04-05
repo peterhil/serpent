@@ -28,12 +28,15 @@ def spectrum_palette(n=64, sat=1.0, lightness=255, offset=0):
 
 
 def spectrum_layers_palette(n=9, layers=3, start=0.5, *, sat=0.75, offset=0):
-	"""HSV Spectrum palette with three layers of lightness.
+	"""Spectrum palette with layers of lightness.
 
 	Suitable for PIL Image instance.
 	"""
 	lightness = np.linspace(start, 1, layers, endpoint=True) * 256 - 1
-	colours = np.concatenate([spectrum(n, sat, light, offset) for light in lightness])
+	colours = np.concatenate([
+		spectrum(n, sat, light, offset)
+		for light in reversed(lightness)
+	])
 	return ImagePalette('RGB', palette=arr_to_palette(colours))
 
 

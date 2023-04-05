@@ -42,7 +42,7 @@ from serpent.io import (
 	wait_user,
 )
 from serpent.mathematics import autowidth, phi
-from serpent.palette import set_palette, spectrum_palette
+from serpent.palette import set_palette, spectrum_layers_palette
 from serpent.printing import format_counts, format_decoded, format_lines
 from serpent.settings import (
 	BASE_ORDER,
@@ -292,8 +292,21 @@ def image(
 	img = Image.fromarray(rgb, mode=mode)
 
 	if mode == 'P':
-		num_colours = 22 if amino else 64
-		set_palette(img, spectrum_palette(num_colours, 0.75))
+		# num_colours = 22 if amino else 64
+		# set_palette(img, spectrum_palette(num_colours, 0.75))
+		if amino:
+			# 27 colours
+			layers = 3
+			num_colours = 9
+			start = 0.25
+		else:
+			# 64 colours
+			layers = 4
+			num_colours = 16
+			start = 0.5
+		# TODO Rethink the mapping
+		palette = spectrum_layers_palette(num_colours, layers, start, offset=-10/360)
+		set_palette(img, palette)
 
 	if amino and table != 1:
 		outfile = filename + f".w{width}.{BASE_ORDER}.t{table}.png"
