@@ -7,8 +7,6 @@ import PIL
 from PIL.Image import Image
 from PIL.ImagePalette import ImagePalette
 
-from serpent.combinatorics import spread
-
 saturation = 1.0
 lightness = 255
 
@@ -46,12 +44,11 @@ def set_palette(im: Image, palette: ImagePalette):
 
 if __name__ == '__main__':
 	# Test data
-	a = np.arange(256 * 3)
-	data = (spread(a, 64) % 256).reshape(3 * 16, 16).astype(np.uint8)
+	data = np.arange(256, dtype=np.uint8).reshape(16, 16)
 	colours = 256
 
-	spectra = PIL.Image.fromarray(data.T, mode='P')
-	new_palette = spectrum_palette(colours, sat=0.75, offset=10/360)
+	spectra = PIL.Image.fromarray(data, mode='P')
+	new_palette = spectrum_palette(colours, sat=0.75, offset=0/360)
 
 	set_palette(spectra, new_palette)
 
