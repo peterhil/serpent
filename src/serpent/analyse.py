@@ -408,10 +408,8 @@ def vectors(filename, split=False, amino=False, table=1, degen=False):
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
 
-	# fig = plt.figure()
-	ax = plt.axes(projection='3d')
-
 	title = f'{filename} (peptides)' if split else filename
+	ax = plt.axes(projection='3d')
 	ax.set_title(title)
 
 	for index, seq in enumerate(seqs):
