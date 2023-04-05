@@ -142,14 +142,13 @@ def cat(*inputs):
 def find(*inputs, num=False, seq=False):
 	"""Find FASTA sequences from files and directories."""
 	# TODO Handle compressed files and archives
-	debug = False
 	paths = check_paths(inputs, recurse=True)
 
 	with fileinput.input(paths, mode='r', openhook=openhook) as fi:
 		if seq:
-			yield from find_fasta_sequences(fi, num, debug)
+			yield from find_fasta_sequences(fi, num)
 		else:
-			yield from find_fasta_files(fi, debug)
+			yield from find_fasta_files(fi)
 
 
 @arg('--text', '-x', help='Page as text')

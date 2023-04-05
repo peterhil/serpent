@@ -14,7 +14,7 @@ import more_itertools as mit
 from termcolor import colored
 
 from serpent.io import err
-from serpent.settings import DEFAULT_TERM_COLOR
+from serpent.settings import DEBUG, DEFAULT_TERM_COLOR
 
 DATA_TOKENS = [
 	"AMINO",
@@ -59,7 +59,7 @@ def get_description(string: str) -> str | None:
 	return matches.group(1).strip() if matches else None
 
 
-def find_fasta_files(fi: FileInput, debug=False) -> Iterator[str]:
+def find_fasta_files(fi: FileInput, debug=DEBUG) -> Iterator[str]:
 	for line in fi:
 		filename = fi.filename()
 		if fi.isfirstline() and get_description(line):
@@ -69,7 +69,7 @@ def find_fasta_files(fi: FileInput, debug=False) -> Iterator[str]:
 		fi.nextfile()
 
 
-def find_fasta_sequences(fi: FileInput, num=False, debug=False) -> Iterator[str]:
+def find_fasta_sequences(fi: FileInput, num=False, debug=DEBUG) -> Iterator[str]:
 	"""Find FASTA files and print single and multiple sequences."""
 	for line in fi:
 		description = get_description(line)
