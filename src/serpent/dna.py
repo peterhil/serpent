@@ -17,6 +17,7 @@ from serpent.fasta import (
 	AMINO,
 	AMINO_DEGENERATE,
 	BASE,
+	BASE_NONCODING,
 	DEGENERATE,
 	RE_WHITESPACE,
 	FastaToken,
@@ -135,7 +136,7 @@ def clean_non_dna(
 	# TODO Handle non-coding DNA marked with lowercase symbols.
 	# TODO Convert RNA data into DNA, so everything can be handled in base 4 or
 	# base 64, and convert back when printing if necessary.
-	CODES = AMINO if amino else BASE
+	CODES = AMINO if amino else BASE + BASE_NONCODING
 	if degen:
 		if amino:
 			CODES += AMINO_DEGENERATE

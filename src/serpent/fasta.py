@@ -20,6 +20,7 @@ DATA_TOKENS = [
 	"AMINO",
 	"AMINO_DEGENERATE",
 	"BASE",
+	"BASE_NONCODING",
 	"DEGENERATE",
 ]
 
@@ -38,6 +39,7 @@ DATA_TOKENS = [
 AMINO = "ARNDCQEGHILKMFPSTWYVUO"
 AMINO_DEGENERATE = "BJZX*-"
 BASE = "ACGTU"
+BASE_NONCODING = BASE.lower()
 DEGENERATE = "WSMKRYBDHVNZ-"
 
 RE_DESCRIPTION = r"^[>;@](?P<description>.*)"
@@ -124,6 +126,7 @@ def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[FastaToken]:
 		("AMINO", fr"[{AMINO}]+"),
 		("AMINO_DEGENERATE", fr"[{AMINO_DEGENERATE}]+"),
 		("BASE", fr"[{BASE}]+"),
+		("BASE_NONCODING", fr"[{BASE_NONCODING}]+"),
 		("DEGENERATE", RE_DEGENERATE),
 		("NEWLINE", r"\n"),  # Line endings
 		("SKIP", r"[ \t]+"),  # Skip over spaces and tabs
@@ -135,7 +138,7 @@ def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[FastaToken]:
 
 	spec = "|".join((fr"(?P<{k}>{v})" for k, v in token_specification.items()))
 	# TODO Handle lowercase insertions better, see FASTA format
-	rec_token = re.compile(spec, flags=re.I)
+	rec_token = re.compile(spec)
 	# line: int = 1
 	line_start: int = 0
 	for matches in rec_token.finditer(data):
@@ -153,7 +156,10 @@ def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[FastaToken]:
 			err_msg = f"{value!r} unexpected on line {line} column {column}"
 			raise ParseError(err_msg)
 		elif kind in DATA_TOKENS:
-			yield FastaToken(kind, line, column, data=value)
+			token = FastaToken(kind, line, column, data=value.upper())
+			if DEBUG:
+				print(token)
+			yield token
 		else:
 			yield FastaToken(kind, line, column, value=value)
 
