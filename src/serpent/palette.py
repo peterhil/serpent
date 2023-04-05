@@ -17,15 +17,15 @@ def hue(hue: float=0, sat: float=1.0, lightness: int=255) -> tuple[int, int, int
 	return hsv_to_rgb(hue, sat, lightness)
 
 
-def spectrum(n=64, sat=1.0, lightness=255):
+def spectrum(n=64, sat=1.0, lightness=255, offset=0):
 	"""Spectrum of n colours."""
-	hues = np.linspace(0, 1, n, endpoint=False)
+	hues = (np.linspace(0, 1, n, endpoint=False) + offset) % 1
 	return np.array([hue(v, sat, lightness) for v in hues], dtype=np.uint8)
 
 
-def spectrum_palette(n=64, sat=1.0, lightness=255):
+def spectrum_palette(n=64, sat=1.0, lightness=255, offset=0):
 	"""Spectrum palette suitable for PIL Image instance."""
-	colours = spectrum(n, sat, lightness)
+	colours = spectrum(n, sat, lightness, offset)
 	return ImagePalette('RGB', palette=arr_to_palette(colours))
 
 
@@ -48,9 +48,10 @@ if __name__ == '__main__':
 	# Test data
 	a = np.arange(256 * 3)
 	data = (spread(a, 64) % 256).reshape(3 * 16, 16).astype(np.uint8)
+	colours = 256
 
 	spectra = PIL.Image.fromarray(data.T, mode='P')
-	new_palette = spectrum_palette(256)
+	new_palette = spectrum_palette(colours, sat=0.75, offset=10/360)
 
 	set_palette(spectra, new_palette)
 
