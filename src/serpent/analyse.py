@@ -289,17 +289,20 @@ def image(
 	])
 
 	img = Image.fromarray(rgb, mode=mode)
+	outfile = filename + f".w{width}.{BASE_ORDER}"
 
 	if mode == 'P':
 		# num_colours = 22 if amino else 64
 		# set_palette(img, spectrum_palette(num_colours, 0.75))
 		if amino:
 			# 27 colours
+			outfile += '.Pa'
 			layers = 3
 			num_colours = 9
 			start = 0.25
 		else:
 			# 64 colours
+			outfile += '.Pn'
 			layers = 4
 			num_colours = 16
 			start = 0.5
@@ -308,14 +311,12 @@ def image(
 		set_palette(img, palette)
 
 	if amino and table != 1:
-		outfile = filename + f".w{width}.{BASE_ORDER}.t{table}.png"
-	else:
-		outfile = filename + f".w{width}.{BASE_ORDER}.png"
+		outfile += f".t{table}"
 
 	img.show(title=outfile)
 
 	if out:
-		img.save(outfile)
+		img.save(outfile + '.png')
 
 
 @arg('--amino',  '-a', help='Amino acid input')
