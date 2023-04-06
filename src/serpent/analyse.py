@@ -269,8 +269,10 @@ def flow(
 					width = (width // repeat) * repeat
 					lines = mit.chunked(data, width)
 				else:
-					blocks = pixels_to_blocks(pixels, width, mode=mode)
+					repeat = len(mode)
+					blocks = pixels_to_blocks(pixels, width // repeat, mode=mode, repeat=repeat)
 					data = get_data(seq)
+					width = (width // repeat) * repeat
 					lines = mit.chunked(data, width)
 
 				text = (ansi.dim_text(str_join(line)) for line in lines)
@@ -278,6 +280,7 @@ def flow(
 
 				yield from (str_join(lines, '\n') for lines in zipped)
 			else:
+				blocks = pixels_to_blocks(pixels, width, mode=mode)
 				yield from blocks
 
 
