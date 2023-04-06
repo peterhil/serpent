@@ -55,6 +55,24 @@ def set_palette(im: Image, palette: ImagePalette):
 	return im
 
 
+def apply_palette(img: Image, amino: bool=False) -> Image:
+	# num_colours = 22 if amino else 64
+	# set_palette(img, spectrum_palette(num_colours, 0.75))
+	if amino:
+		# 27 colours
+		layers = 3
+		num_colours = 9
+		start = 0.25
+	else:
+		# 64 colours
+		layers = 4
+		num_colours = 16
+		start = 0.5
+	# TODO Rethink the mapping
+	palette = spectrum_layers_palette(num_colours, layers, start, offset=-10/360)
+	return set_palette(img, palette)
+
+
 if __name__ == '__main__':
 	# Test data
 	data = np.arange(27, dtype=np.uint8).reshape(3, 9)
