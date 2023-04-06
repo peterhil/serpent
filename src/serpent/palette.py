@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from colorsys import hsv_to_rgb
 
 import numpy as np
@@ -7,13 +8,10 @@ import PIL
 from PIL.Image import Image
 from PIL.ImagePalette import ImagePalette
 
-saturation = 1.0
-lightness = 255
+Rgb = tuple[int, int, int]
 
 
-def hue(
-	hue: float=0, sat: float=1.0, lightness: int=255
-) -> tuple[int, int, int]:
+def hue(hue: float=0, sat: float=1.0, lightness: int=255) -> Rgb:
 	return hsv_to_rgb(hue, sat, lightness)
 
 
@@ -27,6 +25,7 @@ def spectrum(n=64, sat=1.0, lightness=255, offset=0):
 
 def spectrum_layers(n=9, layers=3, start=0.5, *, sat=0.75, offset=0):
 	"""Spectrum colours with layers of lightness."""
+	# TODO Rethink the amino acid to colour mapping?
 	lightness = np.linspace(start, 1, layers, endpoint=True) * 256 - 1
 	colours = np.concatenate([
 		spectrum(n, sat, light, offset)
@@ -34,23 +33,6 @@ def spectrum_layers(n=9, layers=3, start=0.5, *, sat=0.75, offset=0):
 	])
 
 	return colours
-
-
-def spectrum_palette(n=64, sat=1.0, lightness=255, offset=0):
-	"""Spectrum palette suitable for PIL Image instance."""
-	colours = spectrum(n, sat, lightness, offset)
-
-	return ImagePalette('RGB', palette=arr_to_palette(colours))
-
-
-def spectrum_layers_palette(n=9, layers=3, start=0.5, *, sat=0.75, offset=0):
-	"""Spectrum palette with layers of lightness.
-
-	Suitable for PIL Image instance.
-	"""
-	colours = spectrum_layers(n, layers, start, sat=sat, offset=offset)
-
-	return ImagePalette('RGB', palette=arr_to_palette(colours))
 
 
 def arr_to_palette(arr):
@@ -61,6 +43,11 @@ def arr_to_palette(arr):
 	return bytearray(arr.flat) + padding
 
 
+def colours_to_palette(colours: Sequence[Rgb]) -> ImagePalette:
+	"""Convert a sequence of RGB values into PIL ImagePalette."""
+	return ImagePalette('RGB', palette=arr_to_palette(colours))
+
+
 def set_palette(im: Image, palette: ImagePalette):
 	im.palette = palette
 	im.palette.dirty = True
@@ -68,9 +55,7 @@ def set_palette(im: Image, palette: ImagePalette):
 	return im
 
 
-def apply_palette(img: Image, amino: bool=False) -> Image:
-	# num_colours = 22 if amino else 64
-	# set_palette(img, spectrum_palette(num_colours, 0.75))
+def spectrum_layer_colours(amino: bool):
 	if amino:
 		# 27 colours
 		layers = 3
@@ -81,8 +66,14 @@ def apply_palette(img: Image, amino: bool=False) -> Image:
 		layers = 4
 		num_colours = 16
 		start = 0.5
-	# TODO Rethink the mapping
-	palette = spectrum_layers_palette(num_colours, layers, start, offset=-10/360)
+	colours = spectrum_layers(num_colours, layers, start, offset=-10/360)
+
+	return colours
+
+
+def apply_palette(img: Image, amino: bool=False) -> Image:
+	colours = spectrum_layer_colours(amino)
+	palette = colours_to_palette(colours)
 	return set_palette(img, palette)
 
 
@@ -91,11 +82,5 @@ if __name__ == '__main__':
 	data = np.arange(27, dtype=np.uint8).reshape(3, 9)
 
 	spectra = PIL.Image.fromarray(data, mode='P')
-	# new_palette = spectrum_palette(256, sat=0.75, offset=0/360)
-	new_palette = spectrum_layers_palette(
-		n=9, layers=3, start=0.25, sat=0.75, offset=-10/360
-	)
-
-	set_palette(spectra, new_palette)
-
+	spectra = apply_palette(spectra, amino=True)
 	spectra.show()
