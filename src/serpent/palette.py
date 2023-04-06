@@ -11,19 +11,35 @@ saturation = 1.0
 lightness = 255
 
 
-def hue(hue: float=0, sat: float=1.0, lightness: int=255) -> tuple[int, int, int]:
+def hue(
+	hue: float=0, sat: float=1.0, lightness: int=255
+) -> tuple[int, int, int]:
 	return hsv_to_rgb(hue, sat, lightness)
 
 
 def spectrum(n=64, sat=1.0, lightness=255, offset=0):
 	"""Spectrum of n colours."""
 	hues = (np.linspace(0, 1, n, endpoint=False) + offset) % 1
-	return np.array([hue(v, sat, lightness) for v in hues], dtype=np.uint8)
+	colours = np.array([hue(v, sat, lightness) for v in hues], dtype=np.uint8)
+
+	return colours
+
+
+def spectrum_layers(n=9, layers=3, start=0.5, *, sat=0.75, offset=0):
+	"""Spectrum colours with layers of lightness."""
+	lightness = np.linspace(start, 1, layers, endpoint=True) * 256 - 1
+	colours = np.concatenate([
+		spectrum(n, sat, light, offset)
+		for light in reversed(lightness)
+	])
+
+	return colours
 
 
 def spectrum_palette(n=64, sat=1.0, lightness=255, offset=0):
 	"""Spectrum palette suitable for PIL Image instance."""
 	colours = spectrum(n, sat, lightness, offset)
+
 	return ImagePalette('RGB', palette=arr_to_palette(colours))
 
 
@@ -32,11 +48,8 @@ def spectrum_layers_palette(n=9, layers=3, start=0.5, *, sat=0.75, offset=0):
 
 	Suitable for PIL Image instance.
 	"""
-	lightness = np.linspace(start, 1, layers, endpoint=True) * 256 - 1
-	colours = np.concatenate([
-		spectrum(n, sat, light, offset)
-		for light in reversed(lightness)
-	])
+	colours = spectrum_layers(n, layers, start, sat=sat, offset=offset)
+
 	return ImagePalette('RGB', palette=arr_to_palette(colours))
 
 
