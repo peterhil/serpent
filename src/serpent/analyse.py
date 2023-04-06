@@ -264,16 +264,14 @@ def flow(
 				if not amino:
 					# TODO Use three rows per codon?
 					repeat = 3 if fmt in ['b', 'base64'] else 9
-					blocks = pixels_to_blocks(pixels, width // repeat, mode=mode, repeat=repeat)
 					data = str_join(dna.encode(decoded, fmt=fmt))
-					width = (width // repeat) * repeat
-					lines = mit.chunked(data, width)
 				else:
 					repeat = len(mode)
-					blocks = pixels_to_blocks(pixels, width // repeat, mode=mode, repeat=repeat)
 					data = get_data(seq)
-					width = (width // repeat) * repeat
-					lines = mit.chunked(data, width)
+
+				blocks = pixels_to_blocks(pixels, width // repeat, mode=mode, repeat=repeat)
+				width = (width // repeat) * repeat
+				lines = mit.chunked(data, width)
 
 				text = (ansi.dim_text(str_join(line)) for line in lines)
 				zipped = itr.zip_longest(blocks, text, text, fillvalue='?')
