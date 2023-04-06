@@ -46,3 +46,9 @@ def grey(front=None, back=None):
 	bg = colour_code(*(back, back, back), bg=True) if back else ''
 
 	return sgr(str_join([fg, bg], ';'))
+
+
+def rgb_text(text, front=(255, 255, 255), back=(0, 0, 0)):
+	colour = rgb(front, back)
+
+	return colour + text + RESET

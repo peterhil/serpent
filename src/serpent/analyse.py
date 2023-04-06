@@ -251,9 +251,7 @@ def flow(
 			[decoded, description] = dna.decode_seq(seq, amino, table, degen)
 
 			if desc:
-				# TODO Add ansi.rgb_text and fix argument handling (needs back currently)
-				colour = ansi.rgb(front=FLOW_DESCRIPTION_COLOR, back=(0, 0, 0))
-				yield colour + description + ansi.RESET
+				yield ansi.rgb_text(description, front=FLOW_DESCRIPTION_COLOR)
 
 			if mode == 'P':
 				pixels = map(colour_map.get, decoded)
