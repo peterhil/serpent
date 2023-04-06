@@ -261,16 +261,17 @@ def flow(
 				pixels = num_to_pixel(decoded, amino, degen)
 
 			if verbose:
-				if not amino:
+				if amino:
+					repeat = len(mode)
+					data = get_data(seq)
+				else:
 					# TODO Use three rows per codon?
 					repeat = 3 if fmt in ['b', 'base64'] else 9
 					data = str_join(dna.encode(decoded, fmt=fmt))
-				else:
-					repeat = len(mode)
-					data = get_data(seq)
 
-				blocks = pixels_to_blocks(pixels, width // repeat, mode=mode, repeat=repeat)
-				width = (width // repeat) * repeat
+				columns = width // repeat
+				blocks = pixels_to_blocks(pixels, columns, mode=mode, repeat=repeat)
+				width = columns * repeat
 				lines = mit.chunked(data, width)
 
 				text = (ansi.dim_text(str_join(line)) for line in lines)
