@@ -221,16 +221,17 @@ def encode(
 		yield from lines
 
 
-@arg('--amino', '-a', help='Amino acid input')
-@arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
-@arg('--degen', '-g', help='Degenerate data')
-@arg('--desc',  '-c', help='Output descriptions')
-@arg('--width', '-w', help='Line width', type=int)
-@arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L', 'P'))
+@arg('--amino',   '-a', help='Amino acid input')
+@arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen',   '-g', help='Degenerate data')
+@arg('--desc',    '-c', help='Output descriptions')
+@arg('--mode',    '-m', help='Image mode', choices=('RGB', 'L', 'P'))
+@arg('--verbose', '-v', help='Verbose mode')
+@arg('--width',   '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
 def flow(
 	*inputs,
-	desc=False, width=64, mode='RGB',
+	width=64, mode='RGB', desc=False, verbose=False,
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into Unicode block graphics."""
@@ -243,9 +244,9 @@ def flow(
 
 		amino = amino_opt
 		amino = auto_select_amino(filename, amino)
-		seqs = read_sequences(filename, amino)
 		if mode == 'P':
 			colour_map = spectrum_layer_colour_map(amino)
+		seqs = read_sequences(filename, amino)
 
 		for seq in seqs:
 			[decoded, description] = dna.decode_seq(seq, amino, table, degen)
@@ -257,7 +258,15 @@ def flow(
 				pixels = map(colour_map.get, decoded)
 			else:
 				pixels = num_to_pixel(decoded, amino, degen)
+
 			yield from pixels_to_blocks(pixels, width, mode=mode)
+
+			if verbose:
+				# TODO Alternate rows with block graphics
+				# TODO Handle nucleotide data properly
+				# (use three rows per codon or use ser64 encoding?)
+				data = str_join(token.data for token in seq if token.data)
+				yield from (str_join(line) for line in mit.chunked(data, width))
 
 
 @arg('--amino', '-a', help='Amino acid input')
