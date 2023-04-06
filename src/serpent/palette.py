@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import OrderedDict
 from collections.abc import Sequence
 from colorsys import hsv_to_rgb
 
@@ -69,6 +70,13 @@ def spectrum_layer_colours(amino: bool):
 	colours = spectrum_layers(num_colours, layers, start, offset=-10/360)
 
 	return colours
+
+
+def spectrum_layer_colour_map(amino: bool):
+	colours = spectrum_layer_colours(amino)
+	colour_map = OrderedDict((i, tuple(c)) for i, c in enumerate(colours))
+
+	return colour_map
 
 
 def apply_palette(img: Image, amino: bool=False) -> Image:

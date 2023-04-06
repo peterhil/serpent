@@ -42,7 +42,7 @@ from serpent.io import (
 	wait_user,
 )
 from serpent.mathematics import autowidth_for
-from serpent.palette import apply_palette
+from serpent.palette import apply_palette, spectrum_layer_colour_map
 from serpent.printing import format_counts, format_decoded, format_lines
 from serpent.settings import (
 	BASE_ORDER,
@@ -226,7 +226,7 @@ def encode(
 @arg('--degen', '-g', help='Degenerate data')
 @arg('--desc',  '-c', help='Output descriptions')
 @arg('--width', '-w', help='Line width', type=int)
-@arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L'))
+@arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L', 'P'))
 @wrap_errors(wrapped_errors)
 def flow(
 	*inputs,
@@ -244,6 +244,8 @@ def flow(
 		amino = amino_opt
 		amino = auto_select_amino(filename, amino)
 		seqs = read_sequences(filename, amino)
+		if mode == 'P':
+			colour_map = spectrum_layer_colour_map(amino)
 
 		for seq in seqs:
 			[decoded, description] = dna.decode_seq(seq, amino, table, degen)
@@ -253,7 +255,10 @@ def flow(
 				colour = ansi.rgb(front=FLOW_DESCRIPTION_COLOR, back=(0, 0, 0))
 				yield colour + description + ansi.RESET
 
-			pixels = num_to_pixel(decoded, amino, degen)
+			if mode == 'P':
+				pixels = map(colour_map.get, decoded)
+			else:
+				pixels = num_to_pixel(decoded, amino, degen)
 			yield from pixels_to_blocks(pixels, width, mode=mode)
 
 

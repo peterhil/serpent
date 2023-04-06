@@ -12,6 +12,7 @@ import more_itertools as mit
 
 from serpent import ansi
 
+COLOUR_MODES = ['RGB', 'P']
 HALF_BLOCK = '\u2580'
 
 
@@ -22,7 +23,7 @@ def pixels_to_blocks(pixels: Sequence, width: int, *, mode: str='RGB') -> Iterat
 	else:
 		rgb = pixels
 	lines = mit.chunked(rgb, width * 2)  # double the line width
-	zero_pixel = (0, 0, 0) if mode == 'RGB' else 0
+	zero_pixel = (0, 0, 0) if mode in COLOUR_MODES else 0
 
 	for line in lines:
 		top_and_bottom = mit.chunked(line, width)  # split in half
@@ -33,7 +34,7 @@ def pixels_to_blocks(pixels: Sequence, width: int, *, mode: str='RGB') -> Iterat
 			# FIXME Fixes the last line problem, that is caused by zero pixel bg colours
 			# getting filtered out, probably because of the spread operators
 			values = (column[0], zero_pixel) if len(column) == 1 else column
-			colours = ansi.rgb(*values) if mode == 'RGB' else ansi.grey(*values)
+			colours = ansi.rgb(*values) if mode in COLOUR_MODES else ansi.grey(*values)
 			blocks += colours + HALF_BLOCK
 
 		yield blocks + ansi.RESET
