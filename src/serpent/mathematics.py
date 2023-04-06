@@ -36,6 +36,15 @@ def autowidth(n: Real, base: int=64, aspect: Real=phi) -> int:
 	return int(base * multiple)
 
 
+def autowidth_for(file_size: int, amino: bool, mode: str):
+	"""Get automatic width from the file size."""
+	item_size = 1 if amino else 3
+	size = file_size / (item_size * len(mode))
+	width = autowidth(size, aspect=phi-1, base=64)
+
+	return width
+
+
 def logn(number: NumericSeq, base: LogBase=np.e) -> float:
 	"""Logarithm of number on some base."""
 	return float(np.log2(number) / np.log2(base))

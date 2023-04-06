@@ -41,7 +41,7 @@ from serpent.io import (
 	openhook,
 	wait_user,
 )
-from serpent.mathematics import autowidth, phi
+from serpent.mathematics import autowidth_for
 from serpent.palette import apply_palette
 from serpent.printing import format_counts, format_decoded, format_lines
 from serpent.settings import (
@@ -274,11 +274,8 @@ def image(
 	seqs = read_sequences(filename, amino)
 
 	if not width:
-		# Set width from the total data size divided by sequence count
 		file_size = os.path.getsize(filename)
-		item_size = 1 if amino else 3
-		size = file_size / item_size
-		width = autowidth(size / len(mode), aspect=phi-1, base=64)
+		width = autowidth_for(file_size, amino, mode)
 		echo(f'Automatically set image width: {width} px')
 
 	rgb = np.vstack([
