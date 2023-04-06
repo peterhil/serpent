@@ -225,7 +225,7 @@ def encode(
 @arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',   '-g', help='Degenerate data')
 @arg('--desc',    '-c', help='Output descriptions')
-@arg('--fmt',     '-f', help='Output format', choices=['b', 'base64', 'c', 'codon'])
+@arg('--fmt',     '-f', help='Output format', choices=fmt_choices)
 @arg('--mode',    '-m', help='Image mode', choices=('RGB', 'L', 'P'))
 @arg('--verbose', '-v', help='Verbose mode')
 @arg('--width',   '-w', help='Line width', type=int)
@@ -261,12 +261,15 @@ def flow(
 				pixels = num_to_pixel(decoded, amino, degen)
 
 			if verbose:
-				if amino:
+				if fmt in ['a', 'amino']:
+					repeat = len(mode)
+					data = dna.to_amino(get_data(seq), amino, table, degen)
+				elif amino:
 					repeat = len(mode)
 					data = get_data(seq)
 				else:
 					# TODO Use three rows per codon?
-					repeat = 3 if fmt in ['b', 'base64'] else 9
+					repeat = 9 if fmt in ['c', 'codon'] else 3
 					data = str_join(dna.encode(decoded, fmt=fmt))
 
 				columns = width // repeat
