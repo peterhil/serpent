@@ -225,13 +225,14 @@ def encode(
 @arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',   '-g', help='Degenerate data')
 @arg('--desc',    '-c', help='Output descriptions')
+@arg('--fmt',     '-f', help='Output format', choices=['b', 'base64', 'c', 'codon'])
 @arg('--mode',    '-m', help='Image mode', choices=('RGB', 'L', 'P'))
 @arg('--verbose', '-v', help='Verbose mode')
 @arg('--width',   '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
 def flow(
 	*inputs,
-	width=64, mode='RGB', desc=False, verbose=False,
+	width=64, mode='RGB', fmt='base64', desc=False, verbose=False,
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into Unicode block graphics."""
@@ -252,22 +253,29 @@ def flow(
 			[decoded, description] = dna.decode_seq(seq, amino, table, degen)
 
 			if desc:
-				yield ansi.dim_text(description)
+				yield description if verbose else ansi.dim_text(description)
 
 			if mode == 'P':
 				pixels = map(colour_map.get, decoded)
 			else:
 				pixels = num_to_pixel(decoded, amino, degen)
 
-			blocks = pixels_to_blocks(pixels, width, mode=mode)
-
 			if verbose:
-				# TODO Handle nucleotide data properly
-				# (use three rows per codon or use ser64 encoding?)
-				data = get_data(seq)
-				lines = mit.chunked(data, width)
+				if not amino:
+					# TODO Use three rows per codon?
+					repeat = 3 if fmt in ['b', 'base64'] else 9
+					blocks = pixels_to_blocks(pixels, width // repeat, mode=mode, repeat=repeat)
+					data = str_join(dna.encode(decoded, fmt=fmt))
+					width = (width // repeat) * repeat
+					lines = mit.chunked(data, width)
+				else:
+					blocks = pixels_to_blocks(pixels, width, mode=mode)
+					data = get_data(seq)
+					lines = mit.chunked(data, width)
+
 				text = (ansi.dim_text(str_join(line)) for line in lines)
 				zipped = itr.zip_longest(blocks, text, text, fillvalue='?')
+
 				yield from (str_join(lines, '\n') for lines in zipped)
 			else:
 				yield from blocks

@@ -16,8 +16,10 @@ COLOUR_MODES = ['RGB', 'P']
 HALF_BLOCK = '\u2580'
 
 
-def pixels_to_blocks(pixels: Sequence, width: int, *, mode: str='RGB') -> Iterator[str]:
-	"""Convert a sequence of RGB pixel values to Unicode block element graphics."""
+def pixels_to_blocks(
+	pixels: Sequence, width: int, *, mode: str='RGB', repeat=1
+) -> Iterator[str]:
+	"""Convert a sequence of RGB pixels to Unicode block element graphics."""
 	if mode == 'RGB':
 		rgb = mit.grouper(pixels, 3, incomplete='fill', fillvalue=0)
 	else:
@@ -31,10 +33,11 @@ def pixels_to_blocks(pixels: Sequence, width: int, *, mode: str='RGB') -> Iterat
 
 		blocks = ''
 		for column in columns:
-			# FIXME Fixes the last line problem, that is caused by zero pixel bg colours
-			# getting filtered out, probably because of the spread operators
+			# FIXME Fixes the last line problem, that is caused by zero pixel
+			# bg colours getting filtered out, probably because of the spread
+			# operators
 			values = (column[0], zero_pixel) if len(column) == 1 else column
 			colours = ansi.rgb(*values) if mode in COLOUR_MODES else ansi.grey(*values)
-			blocks += colours + HALF_BLOCK
+			blocks += colours + HALF_BLOCK * repeat
 
 		yield blocks + ansi.RESET
