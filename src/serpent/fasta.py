@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from collections import OrderedDict
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable, Iterator, Sequence
 from fileinput import FileInput
 from os import PathLike
 from pathlib import Path
@@ -13,6 +13,7 @@ from typing import NamedTuple
 import more_itertools as mit
 from termcolor import colored
 
+from serpent.fun import str_join
 from serpent.io import err
 from serpent.settings import DEBUG, DEFAULT_TERM_COLOR
 
@@ -52,6 +53,12 @@ def auto_select_amino(filename: str, amino: bool) -> bool:
 		amino = match.group(1) == 'a'
 		err(f'{filename}: Auto selected amino = {amino}')
 	return amino
+
+
+def get_data(seq: Sequence[FastaToken]) -> str:
+	data = str_join(token.data for token in seq if token.data)
+
+	return data
 
 
 def get_description(string: str) -> str | None:

@@ -30,6 +30,7 @@ from serpent.fasta import (
 	data_and_descriptions,
 	find_fasta_files,
 	find_fasta_sequences,
+	get_data,
 	read,
 	read_sequences,
 )
@@ -48,7 +49,6 @@ from serpent.settings import (
 	BASE_ORDER,
 	COUNT_LIMIT,
 	DEFAULT_COLOR,
-	FLOW_DESCRIPTION_COLOR,
 )
 from serpent.stats import ac_peaks, autocorrelogram, count_sorted
 from serpent.visual import (
@@ -252,21 +252,26 @@ def flow(
 			[decoded, description] = dna.decode_seq(seq, amino, table, degen)
 
 			if desc:
-				yield ansi.rgb_text(description, front=FLOW_DESCRIPTION_COLOR)
+				yield ansi.dim_text(description)
 
 			if mode == 'P':
 				pixels = map(colour_map.get, decoded)
 			else:
 				pixels = num_to_pixel(decoded, amino, degen)
 
-			yield from pixels_to_blocks(pixels, width, mode=mode)
+			blocks = pixels_to_blocks(pixels, width, mode=mode)
 
 			if verbose:
 				# TODO Alternate rows with block graphics
 				# TODO Handle nucleotide data properly
 				# (use three rows per codon or use ser64 encoding?)
-				data = str_join(token.data for token in seq if token.data)
-				yield from (str_join(line) for line in mit.chunked(data, width))
+				data = get_data(seq)
+				lines = mit.chunked(data, width)
+				text = (ansi.dim_text(str_join(line)) for line in lines)
+				yield from blocks
+				yield from text
+			else:
+				yield from blocks
 
 
 @arg('--amino', '-a', help='Amino acid input')

@@ -6,6 +6,7 @@ https://en.wikipedia.org/wiki/ANSI_escape_code
 from __future__ import annotations
 
 from serpent.fun import str_join
+from serpent.settings import FLOW_DESCRIPTION_COLOR
 
 CSI = '\x1b['
 RESET = f'{CSI}0m'
@@ -46,6 +47,10 @@ def grey(front=None, back=None):
 	bg = colour_code(*(back, back, back), bg=True) if back else ''
 
 	return sgr(str_join([fg, bg], ';'))
+
+
+def dim_text(text):
+	return rgb_text(text, front=FLOW_DESCRIPTION_COLOR)
 
 
 def rgb_text(text, front=(255, 255, 255), back=(0, 0, 0)):
