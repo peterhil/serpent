@@ -262,14 +262,13 @@ def flow(
 			blocks = pixels_to_blocks(pixels, width, mode=mode)
 
 			if verbose:
-				# TODO Alternate rows with block graphics
 				# TODO Handle nucleotide data properly
 				# (use three rows per codon or use ser64 encoding?)
 				data = get_data(seq)
 				lines = mit.chunked(data, width)
 				text = (ansi.dim_text(str_join(line)) for line in lines)
-				yield from blocks
-				yield from text
+				zipped = itr.zip_longest(blocks, text, text, fillvalue='?')
+				yield from (str_join(lines, '\n') for lines in zipped)
 			else:
 				yield from blocks
 
