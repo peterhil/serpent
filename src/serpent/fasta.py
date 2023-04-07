@@ -120,6 +120,10 @@ class FastaToken(NamedTuple):
 		return self.type == 'DESCRIPTION'
 
 
+def re_token(group):
+	return fr"[{group}]+"
+
+
 def get_token_specification(amino: bool=False):
 	"""Get a regexp for parsing FASTA files.
 
@@ -127,13 +131,13 @@ def get_token_specification(amino: bool=False):
 	https://en.wikipedia.org/wiki/FASTA_format
 	"""
 	aminos = [
-		("AMINO", fr"[{AMINO}]+"),
-		("AMINO_DEGENERATE", fr"[{AMINO_DEGENERATE}]+"),
+		("AMINO", re_token(AMINO)),
+		("AMINO_DEGENERATE", re_token(AMINO_DEGENERATE)),
 	]
 	nucleotides = [
-		("BASE", fr"[{BASE}]+"),
-		("BASE_NONCODING", fr"[{BASE_NONCODING}]+"),
-		("DEGENERATE", fr"[{DEGENERATE}]+?"),
+		("BASE", re_token(BASE)),
+		("BASE_NONCODING", re_token(BASE_NONCODING)),
+		("DEGENERATE", re_token(DEGENERATE)),
 	]
 
 	token_specification = OrderedDict(aminos if amino else nucleotides)
