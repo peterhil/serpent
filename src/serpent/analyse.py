@@ -243,8 +243,7 @@ def flow(
 		if len(inputs) > 1:
 			print('file:', filename)
 
-		amino = amino_opt
-		amino = auto_select_amino(filename, amino)
+		amino = auto_select_amino(filename, amino_opt)
 		seqs = read_sequences(filename, amino)
 
 		for seq in seqs:
