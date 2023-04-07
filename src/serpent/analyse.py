@@ -18,7 +18,7 @@ from argh.decorators import aliases, arg, wrap_errors
 from PIL import Image
 
 from serpent import ansi, dna
-from serpent.bitmap import num_to_pixel
+from serpent.bitmap import decoded_to_pixels
 from serpent.block_elements import pixels_to_blocks
 from serpent.convert.amino import aa_tables, split_aminos
 from serpent.convert.digits import num_to_digits
@@ -43,7 +43,7 @@ from serpent.io import (
 	wait_user,
 )
 from serpent.mathematics import autowidth_for
-from serpent.palette import apply_palette, spectrum_layer_colour_map
+from serpent.palette import apply_palette
 from serpent.printing import format_counts, format_decoded, format_lines
 from serpent.settings import (
 	BASE_ORDER,
@@ -245,8 +245,6 @@ def flow(
 
 		amino = amino_opt
 		amino = auto_select_amino(filename, amino)
-		if mode == 'P':
-			colour_map = spectrum_layer_colour_map(amino)
 		seqs = read_sequences(filename, amino)
 
 		for seq in seqs:
@@ -255,10 +253,7 @@ def flow(
 			if desc:
 				yield description if verbose else ansi.dim_text(description)
 
-			if mode == 'P':
-				pixels = map(colour_map.get, decoded)
-			else:
-				pixels = num_to_pixel(decoded, amino, degen)
+			pixels = decoded_to_pixels(decoded, mode, amino, degen)
 
 			if verbose:
 				if fmt in ['a', 'amino']:

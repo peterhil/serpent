@@ -79,6 +79,10 @@ def spectrum_layer_colour_map(amino: bool):
 	return colour_map
 
 
+amino_colour_map = spectrum_layer_colour_map(amino=True)
+codon_colour_map = spectrum_layer_colour_map(amino=False)
+
+
 def apply_palette(img: Image, amino: bool=False) -> Image:
 	colours = spectrum_layer_colours(amino)
 	palette = colours_to_palette(colours)
