@@ -44,7 +44,6 @@ BASE_NONCODING = BASE.lower()
 DEGENERATE = "WSMKRYBDHVNZ-"
 
 RE_DESCRIPTION = r"^[>;@](?P<description>.*)"
-RE_DEGENERATE = fr"[{DEGENERATE}]+?"
 RE_WHITESPACE = re.compile(r'\s')
 
 
@@ -134,7 +133,7 @@ def get_token_specification(amino: bool=False):
 	nucleotides = [
 		("BASE", fr"[{BASE}]+"),
 		("BASE_NONCODING", fr"[{BASE_NONCODING}]+"),
-		("DEGENERATE", RE_DEGENERATE),
+		("DEGENERATE", fr"[{DEGENERATE}]+?"),
 	]
 
 	token_specification = OrderedDict(aminos if amino else nucleotides)
