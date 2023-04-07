@@ -127,26 +127,33 @@ def get_token_specification(amino: bool=False):
 	See:
 	https://en.wikipedia.org/wiki/FASTA_format
 	"""
-	token_specification = OrderedDict([
-		("DESCRIPTION", RE_DESCRIPTION),
+	aminos = [
 		("AMINO", fr"[{AMINO}]+"),
 		("AMINO_DEGENERATE", fr"[{AMINO_DEGENERATE}]+"),
+	]
+	nucleotides = [
 		("BASE", fr"[{BASE}]+"),
 		("BASE_NONCODING", fr"[{BASE_NONCODING}]+"),
 		("DEGENERATE", RE_DEGENERATE),
+	]
+
+	token_specification = OrderedDict(aminos if amino else nucleotides)
+	token_specification.update([
+		("DESCRIPTION", RE_DESCRIPTION),
 		("NEWLINE", r"\n"),  # Line endings
 		("SKIP", r"[ \t]+"),  # Skip over spaces and tabs
 		("MISMATCH", r"."),  # Any other character
 	])
-	if not amino:
-		token_specification.pop('AMINO')
-		token_specification.pop('AMINO_DEGENERATE')
-
 	spec = "|".join((
 		fr"(?P<{k}>{v})"
 		for k, v in token_specification.items()
 	))
+
 	return re.compile(spec)
+
+
+RE_AMINO = get_token_specification(amino=True)
+RE_NUCLEOTIDE = get_token_specification(amino=False)
 
 
 def tokenize(
@@ -158,7 +165,7 @@ def tokenize(
 	https://docs.python.org/3/library/re.html#writing-a-tokenizer
 	"""
 	# TODO Handle lowercase insertions better, see FASTA format
-	spec = get_token_specification(amino)
+	spec = RE_AMINO if amino else RE_NUCLEOTIDE
 	# line: int = 1
 	line_start: int = 0
 	for matches in spec.finditer(data):
