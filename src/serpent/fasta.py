@@ -43,7 +43,7 @@ BASE = "ACGTU"
 BASE_NONCODING = BASE.lower()
 DEGENERATE = "WSMKRYBDHVNZ-"
 
-RE_DESCRIPTION = r"^[>;@](?P<description>.*)"
+RE_DESCRIPTION = r"^[>;@].*"
 RE_WHITESPACE = re.compile(r'\s')
 
 
@@ -61,7 +61,7 @@ def get_data(seq: Sequence[FastaToken]) -> str:
 
 
 def get_description(string: str) -> str | None:
-	re_description = re.compile(RE_DESCRIPTION)
+	re_description = re.compile(fr"(?P<DESCRIPTION>{RE_DESCRIPTION})")
 	matches = re_description.match(string)
 
 	return matches.group(1).strip() if matches else None
@@ -87,9 +87,9 @@ def find_fasta_sequences(fi: FileInput, num=False, debug=DEBUG) -> Iterator[str]
 				filename = fi.filename()
 				yield colored(f'\t{filename}' if num else filename, DEFAULT_TERM_COLOR)
 			if num:
-				yield f"{fi.filelineno()}\t>{description}"
+				yield f"{fi.filelineno()}\t{description}"
 			else:
-				yield f">{description}"
+				yield description
 		elif newfile:
 			fi.nextfile()
 		if not description and debug:  # TODO Use with cat
