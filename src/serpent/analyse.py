@@ -113,7 +113,7 @@ def codons(filename, width=20, stats=False, limit=COUNT_LIMIT):
 		[tokens, descriptions] = data_and_descriptions(seq)
 
 		yield from (token.value for token in descriptions)
-		data = str_join(token.data for token in tokens)
+		data = get_data(tokens)
 		codons = dna.get_codons(data)
 
 		if stats:
