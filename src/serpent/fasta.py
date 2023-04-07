@@ -121,12 +121,11 @@ class FastaToken(NamedTuple):
 		return self.type == 'DESCRIPTION'
 
 
-def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[FastaToken]:
-	"""Read FASTA sequences iteratively.
+def get_token_specification(amino: bool=False):
+	"""Get a regexp for parsing FASTA files.
 
 	See:
 	https://en.wikipedia.org/wiki/FASTA_format
-	https://docs.python.org/3/library/re.html#writing-a-tokenizer.
 	"""
 	token_specification = OrderedDict([
 		("DESCRIPTION", RE_DESCRIPTION),
@@ -143,12 +142,26 @@ def tokenize(data: str, amino: bool=False, line: int=1) -> Iterator[FastaToken]:
 		token_specification.pop('AMINO')
 		token_specification.pop('AMINO_DEGENERATE')
 
-	spec = "|".join((fr"(?P<{k}>{v})" for k, v in token_specification.items()))
+	spec = "|".join((
+		fr"(?P<{k}>{v})"
+		for k, v in token_specification.items()
+	))
+	return re.compile(spec)
+
+
+def tokenize(
+	data: str, amino: bool=False, line: int=1
+) -> Iterator[FastaToken]:
+	"""Read FASTA sequences iteratively.
+
+	See:
+	https://docs.python.org/3/library/re.html#writing-a-tokenizer
+	"""
 	# TODO Handle lowercase insertions better, see FASTA format
-	rec_token = re.compile(spec)
+	spec = get_token_specification(amino)
 	# line: int = 1
 	line_start: int = 0
-	for matches in rec_token.finditer(data):
+	for matches in spec.finditer(data):
 		kind: str = matches.lastgroup or "MISMATCH"
 		value: str = matches.group()
 		column: int = matches.start() - line_start
