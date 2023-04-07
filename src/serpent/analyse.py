@@ -19,7 +19,7 @@ from PIL import Image
 
 from serpent import ansi, dna
 from serpent.bitmap import decoded_to_pixels
-from serpent.block_elements import pixels_to_blocks
+from serpent.block_elements import pixels_to_blocks, pixels_to_verbose_blocks
 from serpent.convert.amino import aa_tables, split_aminos
 from serpent.convert.digits import num_to_digits
 from serpent.dsp import fft_spectra
@@ -266,15 +266,10 @@ def flow(
 					repeat = 9 if fmt in ['c', 'codon'] else 3
 					data = str_join(dna.encode(decoded, fmt=fmt))
 
-				columns = width // repeat
-				blocks = pixels_to_blocks(pixels, columns, mode=mode, repeat=repeat)
-				width = columns * repeat
-				lines = mit.chunked(data, width)
-
-				text = (ansi.dim_text(str_join(line)) for line in lines)
-				zipped = itr.zip_longest(text, blocks, text, fillvalue='~')
-
-				yield from (str_join(lines, '\n') for lines in zipped)
+				blocks = pixels_to_verbose_blocks(
+					pixels, data, width, mode=mode, repeat=repeat
+				)
+				yield from blocks
 			else:
 				blocks = pixels_to_blocks(pixels, width, mode=mode)
 				yield from blocks
