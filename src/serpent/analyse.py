@@ -278,7 +278,7 @@ def flow(
 				lines = mit.chunked(data, width)
 
 				text = (ansi.dim_text(str_join(line)) for line in lines)
-				zipped = itr.zip_longest(blocks, text, text, fillvalue='?')
+				zipped = itr.zip_longest(text, blocks, text, fillvalue='~')
 
 				yield from (str_join(lines, '\n') for lines in zipped)
 			else:
