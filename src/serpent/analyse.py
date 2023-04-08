@@ -50,14 +50,15 @@ from serpent.settings import (
 	COUNT_LIMIT,
 	DEFAULT_COLOR,
 )
+from serpent.spatial import amino_path_3d
 from serpent.stats import ac_peaks, autocorrelogram, count_sorted
 from serpent.visual import (
 	bin_choices,
 	dna_image_seq,
 	interactive,
+	plot_directions,
 	plot_histogram_sized,
 	plot_sequence_counts,
-	plot_vectors,
 )
 from serpent.zigzag import zigzag_blocks, zigzag_text
 
@@ -408,6 +409,7 @@ def vectors(filename, split=False, amino=False, table=1, degen=False):
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
 
+	scale = 1
 	title = f'{filename} (peptides)' if split else filename
 	ax = plt.axes(projection='3d')
 	ax.set_title(title)
@@ -422,11 +424,15 @@ def vectors(filename, split=False, amino=False, table=1, degen=False):
 				# as stop, but amino acid?)
 				if len(peptide) == 0:
 					continue
-				plot_vectors(ax, peptide)
+				dirs = amino_path_3d(peptide)
+				scale = max(scale, np.amax(np.abs(dirs)))
+				plot_directions(ax, dirs)
 		else:
 			# TODO Map descriptions and regions to different colours from text?
 			color = DEFAULT_COLOR if index == 0 and not split else None
-			plot_vectors(ax, aminos, color)
+			dirs = amino_path_3d(aminos)
+			scale = max(scale, np.amax(np.abs(dirs)))
+			plot_directions(ax, dirs, color=color)
 
 	interactive()
 	wait_user()
