@@ -56,6 +56,7 @@ from serpent.visual import (
 	bin_choices,
 	dna_image_seq,
 	interactive,
+	plot_amino_labels,
 	plot_directions,
 	plot_histogram_sized,
 	plot_sequence_counts,
@@ -409,7 +410,7 @@ def vectors(filename, split=False, amino=False, table=1, degen=False):
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
 
-	scale = 1
+	scale = np.ones(3)
 	title = f'{filename} (peptides)' if split else filename
 	ax = plt.axes(projection='3d')
 	ax.set_title(title)
@@ -425,15 +426,19 @@ def vectors(filename, split=False, amino=False, table=1, degen=False):
 				if len(peptide) == 0:
 					continue
 				dirs = amino_path_3d(peptide)
-				scale = max(scale, np.amax(np.abs(dirs)))
+				maximum = np.amax(np.abs(dirs), axis=0)
+				scale = np.max([scale, maximum], axis=0)
 				plot_directions(ax, dirs)
 		else:
 			# TODO Map descriptions and regions to different colours from text?
 			color = DEFAULT_COLOR if index == 0 and not split else None
 			dirs = amino_path_3d(aminos)
-			scale = max(scale, np.amax(np.abs(dirs)))
+			maximum = np.amax(np.abs(dirs), axis=0)
+			scale = np.max([scale, maximum], axis=0)
 			plot_directions(ax, dirs, color=color)
 
+	plot_amino_labels(ax, scale)
+	plt.axis('equal')
 	interactive()
 	wait_user()
 

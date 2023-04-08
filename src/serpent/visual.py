@@ -11,6 +11,7 @@ from PIL import Image
 
 from serpent import dna
 from serpent.bitmap import height_for, num_to_pixel
+from serpent.mapping.amino_spiral_cube import amino_spiral
 from serpent.mathematics import magnitude
 from serpent.padding import pad_end
 from serpent.stats import count_sorted
@@ -134,6 +135,13 @@ def plot_directions(ax, dirs, projection='3d', title=None, **kwargs):
 		ax.set_title(title)
 
 	return ax
+
+
+def plot_amino_labels(ax, scale=1, color='black', size=10):
+	for symbol, coords in amino_spiral.items():
+		[y, x, z] = coords
+		xyz = np.array([x, y, z]) * scale
+		ax.text(*xyz, symbol, color=color, size=size)
 
 
 # ruff: noqa: PLR0913
