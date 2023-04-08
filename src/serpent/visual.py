@@ -28,6 +28,25 @@ def interactive() -> None:
 	plt.show()
 
 
+def plot_amino_labels(ax, scale=1, color='black', size=10):
+	for symbol, coords in amino_spiral.items():
+		[y, x, z] = coords
+		xyz = np.array([x, y, z]) * scale
+		ax.text(*xyz, symbol, color=color, size=size)
+
+
+def plot_directions(ax, dirs, projection='3d', title=None, **kwargs):
+	if projection == '3d':
+		plot_path_3d(dirs, ax, **kwargs)
+	else:
+		plot_path_2d(dirs, ax, **kwargs)
+
+	if title:
+		ax.set_title(title)
+
+	return ax
+
+
 def plot_histogram(
 	data,
 	*,
@@ -97,20 +116,6 @@ def plot_histogram_sized(data, *args, size='base', base=64, multi=1, **kwargs):
 	return [hist, bins]
 
 
-def plot_sequence_counts(decoded, *args, n=4, **kwargs):
-	"""Plot codon sequence counts of length N."""
-	numbers = dna.codon_sequences(decoded, n)
-	[index, count] = count_sorted(numbers)
-
-	size = 64**n
-	data = np.zeros(size, dtype=np.uint64)
-	data[index] = count
-
-	plt.plot(np.arange(size), data, *args, **kwargs)
-
-	return [count, index]
-
-
 def plot_path_3d(dirs, ax, **kwargs):
 	[y, x, z] = dirs[::, :3].T
 	lines = ax.plot3D(x, y, z, **kwargs)
@@ -125,23 +130,18 @@ def plot_path_2d(dirs, ax, **kwargs):
 	return lines
 
 
-def plot_directions(ax, dirs, projection='3d', title=None, **kwargs):
-	if projection == '3d':
-		plot_path_3d(dirs, ax, **kwargs)
-	else:
-		plot_path_2d(dirs, ax, **kwargs)
+def plot_sequence_counts(decoded, *args, n=4, **kwargs):
+	"""Plot codon sequence counts of length N."""
+	numbers = dna.codon_sequences(decoded, n)
+	[index, count] = count_sorted(numbers)
 
-	if title:
-		ax.set_title(title)
+	size = 64**n
+	data = np.zeros(size, dtype=np.uint64)
+	data[index] = count
 
-	return ax
+	plt.plot(np.arange(size), data, *args, **kwargs)
 
-
-def plot_amino_labels(ax, scale=1, color='black', size=10):
-	for symbol, coords in amino_spiral.items():
-		[y, x, z] = coords
-		xyz = np.array([x, y, z]) * scale
-		ax.text(*xyz, symbol, color=color, size=size)
+	return [count, index]
 
 
 # ruff: noqa: PLR0913
