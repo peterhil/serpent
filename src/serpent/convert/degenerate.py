@@ -12,7 +12,7 @@ from serpent.fun import inverse_od, second, str_join
 from serpent.settings import BASE_ORDER
 
 
-def create_binomial_dnt(bases=BASE_ORDER):
+def binomial_dnt(bases=BASE_ORDER):
 	# TODO Ignores base order, change non-generate bases to use powers of two
 	# (1, 2, 4, 8) and use them here
 	binomial_order = [
@@ -45,7 +45,7 @@ def create_binomial_dnt(bases=BASE_ORDER):
 	return mapping
 
 
-def create_inverse_exp_dnt(bases=BASE_ORDER):
+def inverse_exp_dnt(bases=BASE_ORDER):
 	# TODO Does not match create_dnt currently, but kept as a reference
 	idnt = OrderedDict([(base, 2 ** n) for n, base in enumerate(bases)])
 	[G, A, C, T] = [idnt['G'], idnt['A'], idnt['C'], idnt['T']]
@@ -71,12 +71,36 @@ def create_inverse_exp_dnt(bases=BASE_ORDER):
 	idnt = OrderedDict([*sorted(idnt.items(), key=second)])
 	return idnt
 
+
+def inverse_quaternary_dnt(bases=BASE_ORDER):
+	"""Degenerate nucleotide mapping in arbitrary quaternary base.
+
+	For GACT base order the mapping is simply:
+	00-03: 'GACT'
+	04-07: 'RWSY'
+	08-11: 'HBDV'
+	12-15: 'ZMKN'
+	"""
+	# TODO Enable larger bases?
+	idnt = inverse_od(OrderedDict(enumerate(bases[:4])))
+
+	for high, group in zip([4, 8, 12], ['RSWY', 'HBDV', 'ZMKN']):
+		idnt.update([
+			(sym, high + idnt.get(nt))
+			for sym, nt in zip(list(group), list('GACT'))
+		])
+	idnt = OrderedDict([*sorted(idnt.items(), key=second)])
+
+	return idnt
+
 # Bases
 
-degenerate = create_binomial_dnt(BASE_ORDER)
-inv_degenerate = inverse_od(degenerate)
-# inv_degenerate = create_inverse_exp_dnt(BASE_ORDER)
+# degenerate = binomial_dnt(BASE_ORDER)
+# inv_degenerate = inverse_od(degenerate)
+# inv_degenerate = inverse_exp_dnt(BASE_ORDER)
 # degenerate = inverse_od(inv_degenerate)
+inv_degenerate = inverse_quaternary_dnt(BASE_ORDER)
+degenerate = inverse_od(inv_degenerate)
 
 
 def num_to_dnt(num: int) -> str:
