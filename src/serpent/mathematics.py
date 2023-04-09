@@ -45,9 +45,9 @@ def autowidth_for(file_size: int, amino: bool, mode: str):
 	return width
 
 
-def logn(number: NumericSeq, base: LogBase=np.e) -> float:
+def logn(number: NumericSeq, base: LogBase=np.e) -> np.float64:
 	"""Logarithm of number on some base."""
-	return float(np.log2(number) / np.log2(base))
+	return np.log2(number) / np.log2(base)
 
 
 def magnitude(data: NumericSeq, base: LogBase=64) -> int:
