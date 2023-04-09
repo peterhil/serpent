@@ -4,11 +4,6 @@ from __future__ import annotations
 
 import more_itertools as mit
 
-__all__ = [
-	'digits_to_num',
-	'num_to_digits',
-]
-
 
 def change_base(decoded, base=64, n=3, fill=0):
 	"""Change numeric base of data n digits at a time."""
