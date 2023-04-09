@@ -31,7 +31,7 @@ from serpent.io import err
 def encode(decoded: Iterable[int], fmt: str = 'base64') -> Iterable[str]:
 	"""Encode decoded data into base64 or codon format."""
 	if fmt in ['b', 'base64']:
-		encoded = (num_to_base64.get(num, " ") for num in decoded)
+		encoded = (num_to_base64.get(num) for num in decoded)
 	elif fmt in ['c', 'codon']:
 		encoded = (num_to_codon(num) for num in decoded)
 	else:
