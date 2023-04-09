@@ -28,5 +28,5 @@ __all__ = [
 # C 01 1
 # T 11 3
 
-num_to_nt = OrderedDict([(2 ** num, base) for num, base in enumerate(BASE_ORDER)])
+num_to_nt = OrderedDict(enumerate(BASE_ORDER))
 nt_to_num = inverse_od(num_to_nt)
