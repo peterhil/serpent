@@ -28,16 +28,16 @@ def test_decode_degen():
 	(BASE + DEGENERATE, (BASE, DEGENERATE)),
 	('ACGTUWYS', ('ACGTU', 'WYS')),
 ])
-def test_clean_non_dna_base(data, expected):
-	actual = dna.clean_non_dna(data, amino=False, degen=False)
+def test_cleaned_and_residual_base(data, expected):
+	actual = tuple(map(str_join, dna.cleaned_and_residual(data, amino=False, degen=False)))
 	assert actual == expected
 
 
 @pytest.mark.parametrize(('data', 'expected'), [
 	(BASE + DEGENERATE + 'J?', (BASE + DEGENERATE, 'J?')),
 ])
-def test_clean_non_dna_base_degen(data, expected):
-	actual = dna.clean_non_dna(data, amino=False, degen=True)
+def test_cleaned_and_residual_base_degen(data, expected):
+	actual = tuple(map(str_join, dna.cleaned_and_residual(data, amino=False, degen=True)))
 	assert actual == expected
 
 
@@ -45,6 +45,6 @@ def test_clean_non_dna_base_degen(data, expected):
 	(AMINO + 'J?', (AMINO, 'J?')),
 	('WAGMIGTSLSLIIRTELGNPS', ('WAGMIGTSLSLIIRTELGNPS', '')),
 ])
-def test_clean_non_dna_amino(data, expected):
-	actual = dna.clean_non_dna(data, amino=True, degen=False)
+def test_cleaned_and_residual_amino(data, expected):
+	actual = tuple(map(str_join, dna.cleaned_and_residual(data, amino=True, degen=False)))
 	assert actual == expected

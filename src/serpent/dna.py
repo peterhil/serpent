@@ -130,10 +130,10 @@ def decode_seq(
 	return decoded, descriptions
 
 
-def clean_non_dna(
+def cleaned_and_residual(
 	data: Iterable, amino: bool=False, degen: bool=False,
-) -> tuple[str, str]:
-	"""Clean up non DNA or RNA data."""
+) -> tuple[Iterable[str], Iterable[str]]:
+	"""Get cleaned and residual data from DNA or protein sequence."""
 	# TODO Handle non-coding DNA marked with lowercase symbols.
 	# TODO Convert RNA data into DNA, so everything can be handled in base 4 or
 	# base 64, and convert back when printing if necessary.
@@ -144,12 +144,19 @@ def clean_non_dna(
 		else:
 			CODES += DEGENERATE
 
-	[residual, cleaned] = mit.partition(lambda c: c in CODES, data)
+	(residual, cleaned) = mit.partition(lambda c: c in CODES, data)
 	# Filter out whitespace from residual
-	[residual, _] = mit.partition(RE_WHITESPACE.match, residual)
+	(residual, _) = mit.partition(RE_WHITESPACE.match, residual)
 
+	return (cleaned, residual)
+
+
+def clean_non_dna(
+	data: Iterable, amino: bool=False, degen: bool=False,
+) -> tuple[str, str]:
+	"""Clean up non DNA or RNA data."""
 	# TODO Peek into residual and return iterators
-	[cleaned, residual] = (str_join([*cleaned]), str_join([*residual]))
+	(cleaned, residual) = tuple(map(str_join, cleaned_and_residual(data, amino, degen)))
 
 	if len(residual) > 0:
 		err(f'Residual characters: {residual}')
