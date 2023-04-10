@@ -30,10 +30,10 @@ def format_counts(counts: Counter, limit=COUNT_LIMIT) -> Iterable[str]:
 		in mit.take(limit, counts.most_common())
 	)
 
-def format_decoded(decoded):
+def format_decoded(decoded, degen=False):
 	uniq = len(np.unique(decoded))
 	print(f"Decoded ({len(decoded)}, unique: {uniq}):")
-	strings = map(str, iter(decoded))
+	strings = (f'{d: >4}' if degen else f'{d: >2}' for d in iter(decoded))
 	lines = format_lines(strings, 32)
 
 	return lines

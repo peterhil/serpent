@@ -175,7 +175,7 @@ def decode(filename, amino=False, degen=False, table=1):
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
 
-	yield from format_decoded(decoded)
+	yield from format_decoded(decoded, degen)
 
 
 @arg('--amino', '-a', help='Amino acid input')
