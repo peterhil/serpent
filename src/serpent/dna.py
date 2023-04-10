@@ -155,10 +155,9 @@ def clean_non_dna(
 	data: Iterable, amino: bool=False, degen: bool=False,
 ) -> tuple[str, str]:
 	"""Clean up non DNA or RNA data."""
-	# TODO Peek into residual and return iterators
-	(cleaned, residual) = tuple(map(str_join, cleaned_and_residual(data, amino, degen)))
+	(cleaned, residual) = map(mit.peekable, cleaned_and_residual(data, amino, degen))
 
-	if len(residual) > 0:
+	if residual.peek(''):
 		err(f'Residual characters: {residual}')
 		if not degen:
 			err('Try again with the --degen / -g option.')
