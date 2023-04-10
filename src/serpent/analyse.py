@@ -306,12 +306,14 @@ def image(
 		for seq in seqs
 	])
 
+	outfile = filename
 	img = Image.fromarray(rgb, mode=mode)
-	outfile = filename + f".w{width}.{BASE_ORDER}"
 
 	if mode == 'P':
 		outfile += '.Pa' if amino else '.Pn'
 		img = apply_palette(img, amino)
+
+	outfile += f".w{width}.{BASE_ORDER}"
 
 	if amino and table != 1:
 		outfile += f'.t{table}'
