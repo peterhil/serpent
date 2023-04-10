@@ -9,10 +9,6 @@ from serpent.fasta import AMINO, BASE, DEGENERATE
 from serpent.fun import str_join
 
 
-def grey(dna: str) -> str:
-	return str_join(np.array(list(dna)).repeat(3))
-
-
 def test_decode():
 	ac = dna.decode('GGGAAACCCTTTGTTATTCTTTTT')
 	ex = np.array([ 0, 21, 42, 63, 15, 31, 47, 63])
