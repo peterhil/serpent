@@ -158,7 +158,7 @@ def clean_non_dna(
 	(cleaned, residual) = map(mit.peekable, cleaned_and_residual(data, amino, degen))
 
 	if residual.peek(''):
-		err(f'Residual characters: {residual}')
+		err(f'Residual characters: {str_join([*residual])}')
 		if not degen:
 			err('Try again with the --degen / -g option.')
 			sys.exit(1)
