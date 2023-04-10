@@ -7,6 +7,7 @@ from __future__ import annotations
 import fileinput
 import itertools as itr
 import os
+import sys
 from collections import Counter
 from pathlib import Path
 
@@ -544,7 +545,10 @@ def main():
 		zigzag,
 	])
 	# parser.set_default_command(serpent)
-	return parser.dispatch()
+	try:
+		return parser.dispatch()
+	except (BrokenPipeError, OSError):
+		sys.exit(32)
 
 
 if __name__ == '__main__':
