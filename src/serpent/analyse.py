@@ -184,12 +184,12 @@ def decode(filename, amino=False, degen=False, table=1):
 @arg('--count', '-c', help='Print counts')
 @arg('--fmt',   '-f', help='Output format', choices=fmt_choices)
 @arg('--out',   '-o', help='Write out to file')
-@arg('--split', '-s', help='Split by start and stop codons')
+@arg('--split', '-s', help='Split by stop aNd/oR start codons', choices=('n', 'r'))
 @arg('--width', '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
 def encode(
 	filename,
-	count=False, fmt='base64', out=False, split=False, width=64,
+	count=False, fmt='base64', out=False, split='', width=64,
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into various formats."""
@@ -201,7 +201,7 @@ def encode(
 		encoded = dna.to_amino(data, amino, table, degen)
 
 		if split:
-			encoded = (str_join(region) for region in split_aminos(encoded))
+			encoded = (str_join(region) for region in split_aminos(encoded, split=split))
 			yield from encoded
 			return
 	else:
@@ -404,9 +404,9 @@ def seq(filename, length=1, amino=False, degen=False, table=1):
 @arg('--amino',  '-a', help='Amino acid input')
 @arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',  '-g', help='Degenerate data')
-@arg('--split',  '-s', help='Split by start and stop codons')
+@arg('--split',  '-s', help='Split by stop aNd/oR start codons', choices=('n', 'r'))
 @aliases('vec')
-def vectors(filename, split=False, amino=False, table=1, degen=False):
+def vectors(filename, split='', amino=False, table=1, degen=False):
 	"""Visualise amino acids in 3D vector space."""
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
@@ -420,7 +420,7 @@ def vectors(filename, split=False, amino=False, table=1, degen=False):
 		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
 
 		if split:
-			for peptide in split_aminos(aminos):
+			for peptide in split_aminos(aminos, split=split):
 				# TODO Does it occur often that start and stop codons are next
 				# to each other, and what does it mean? (Stop not interpreted
 				# as stop, but amino acid?)
