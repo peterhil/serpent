@@ -1,8 +1,8 @@
 """Statistical function."""
 from __future__ import annotations
 
-from collections import Counter, OrderedDict
-from collections.abc import Sequence
+from collections import Counter, OrderedDict, defaultdict
+from collections.abc import Callable, Iterable, Sequence
 
 import numpy as np
 
@@ -53,3 +53,31 @@ def entropy(data: Sequence[int], n=2, base=2):
 	propabilities = np.ones(len(data)) / n  # Equal propabilites
 
 	return -np.sum(logn(propabilities, base))
+
+
+def symbol_run_lengths(data: Iterable[str]):
+	"""Statistics of repeat lengths for each symbol of a sequence."""
+	last = OrderedDict()
+	stat = defaultdict(list)
+	max_length = 0
+
+	for index, sym in enumerate(data):
+		previous = last.get(sym, 0)
+		last[sym] = index
+		run = index - previous
+		max_length = max(run, max_length)
+		stat[sym].append(run)
+
+	return stat, max_length
+
+
+def quasar(data: Iterable[str], fn: Callable):
+	"""Map a callback function through symbol run lengths."""
+	stat, max_length = symbol_run_lengths(data)
+	result = OrderedDict(sorted([
+		(k, fn(np.array(s), max_length))
+		for k, s in stat.items()
+		if len(s)
+	]))
+
+	return result
