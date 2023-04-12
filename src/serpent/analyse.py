@@ -52,7 +52,7 @@ from serpent.settings import (
 	DEFAULT_COLOR,
 )
 from serpent.spatial import amino_path_3d
-from serpent.stats import ac_peaks, autocorrelogram, count_sorted, quasar_pixels
+from serpent.stats import ac_peaks, autocorrelogram, count_sorted, quasar_pulses
 from serpent.visual import (
 	bin_choices,
 	dna_image_seq,
@@ -341,16 +341,16 @@ def quasar(
 
 	for seq in seqs:
 		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
+		pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative)
+
+		# Print description and symbols
 		yield description
+		yield from format_quasar(pulses.keys())
 
-		pixels, height, scale = quasar_pixels(aminos, description, cumulative=cumulative)
+		for row in range(height):
+			yield from format_quasar([pulses[p].T[row] for p in pulses])
 
-		yield from format_quasar(pixels.keys())
-
-		for i in range(height):
-			yield from format_quasar([pixels[a].T[i] for a in pixels])
-
-		yield f'\tscale: {scale}'
+		yield f'scale: {scale}'
 
 
 @arg('--amino',  '-a', help='Amino acid input')

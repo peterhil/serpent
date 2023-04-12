@@ -87,18 +87,18 @@ def map_pulses(data: Iterable[str], fn: Callable):
 	return result
 
 
-def quasar_pixels(data, cumulative=False):
+def quasar_pulses(data, cumulative=False):
 	[stat, scale] = pulse_repetition_intervals(data)
 	height = np.amax(np.array([len(s) for s in stat.values()]))
 
-	def to_pixels(s):
+	def to_pulses(s):
 		rhythm = np.cumsum(s) if cumulative else s
-		return pad_end(np.uint8(rhythm), 0, n=height)
+		return pad_end(rhythm, 0, n=height)
 
-	pixels = OrderedDict([
-		(k, to_pixels(np.array(s)))
+	pulses = OrderedDict([
+		(k, to_pulses(np.array(s)))
 		for k, s in stat.items()
 		if len(s)
 	])
 
-	return pixels, height, scale
+	return pulses, height, scale
