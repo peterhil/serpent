@@ -62,4 +62,4 @@ def format_quasar(data):
 
 def format_quasar_pulses(pulses, height):
 	for row in range(height):
-		yield from format_quasar([pulses[p].T[row] for p in pulses])
+		yield from format_quasar([pulses[col][row] for col in pulses])
