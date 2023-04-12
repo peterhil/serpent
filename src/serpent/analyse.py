@@ -45,7 +45,13 @@ from serpent.io import (
 )
 from serpent.mathematics import autowidth_for
 from serpent.palette import apply_palette
-from serpent.printing import format_counts, format_decoded, format_lines, format_quasar
+from serpent.printing import (
+	format_counts,
+	format_decoded,
+	format_lines,
+	format_quasar,
+	format_quasar_pulses,
+)
 from serpent.settings import (
 	BASE_ORDER,
 	COUNT_LIMIT,
@@ -343,13 +349,9 @@ def quasar(
 		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
 		pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative)
 
-		# Print description and symbols
 		yield description
-		yield from format_quasar(pulses.keys())
-
-		for row in range(height):
-			yield from format_quasar([pulses[p].T[row] for p in pulses])
-
+		yield from format_quasar(pulses.keys())  # Print symbols
+		yield from format_quasar_pulses(pulses, height)
 		yield f'scale: {scale}'
 
 
