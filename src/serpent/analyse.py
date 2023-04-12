@@ -43,7 +43,7 @@ from serpent.io import (
 	openhook,
 	wait_user,
 )
-from serpent.mathematics import autowidth_for
+from serpent.mathematics import autowidth_for, logn, normalise
 from serpent.palette import apply_palette
 from serpent.printing import (
 	format_counts,
@@ -335,13 +335,12 @@ def image(
 @arg('--degen', '-g', help='Degenerate data')
 @arg('--cumulative', '-c', help='Cumulative')
 @wrap_errors(wrapped_errors)
-def quasar(
+def pulse(
 	filename,
 	cumulative=False,
 	amino=False, degen=False, table=1,
 ):
-	"""Visualise symbol repeats as image."""
-	# TODO Show data as image or flow
+	"""Pulse repetition intervals for symbol repeat lengths."""
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
 
@@ -352,6 +351,58 @@ def quasar(
 		yield description
 		yield from format_quasar(pulses.keys())  # Print symbols
 		yield from format_quasar_pulses(pulses, height)
+		yield f'scale: {scale}'
+
+
+@arg('--amino', '-a', help='Amino acid input')
+@arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen', '-g', help='Degenerate data')
+@arg('--mod',   '-m', help='Modulo of pattern data', type=int)
+@arg('--log',   '-l', help='Logarithmic result')
+@arg('--cumulative', '-c', help='Cumulative')
+@wrap_errors(wrapped_errors)
+def quasar(
+	filename,
+	cumulative=False, log=False, mod=0,
+	amino=False, degen=False, table=1,
+):
+	"""Visualise symbol repeats as image."""
+	# TODO Show data as block flow
+	amino = auto_select_amino(filename, amino)
+	seqs = read_sequences(filename, amino)
+	MOD_MAX = 255
+	RGB_MAX = 255
+
+	for seq in seqs:
+		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
+		pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative)
+
+		yield description
+		yield from format_quasar(pulses.keys())  # Print symbols
+
+		# yield from format_quasar_pulses(pulses, height)
+		# OR same data as Numpy array:
+		arr = np.vstack([*pulses.values()]).T
+
+		if mod != 0:
+			assert mod <= MOD_MAX, f'Modulo needs to be in the interval 1..{MOD_MAX}'
+
+			# Cumulative modulo (without log) produce a fascinating honeycomb
+			# like pattern! Try modulo values 64 and 256 for example.
+			rgb = arr % mod
+
+			# Enhance image
+			rgb = RGB_MAX * logn(rgb, base=mod) if log else rgb * (MOD_MAX - mod) + mod
+
+			img = Image.fromarray(rgb, mode='L')
+		else:  # Convert to uint8 pixels
+			# normalised = normalise(np.log2(arr)) if log else normalise(arr)
+			normalised = logn(arr, base=scale) if log else normalise(arr)
+			rgb = RGB_MAX * normalised
+
+			img = Image.fromarray(np.uint8(rgb), mode='L')
+
+		img.show()
 		yield f'scale: {scale}'
 
 
@@ -572,8 +623,9 @@ def main():
 		hist,
 		image,
 		pep,
-		repeats,
+		pulse,
 		quasar,
+		repeats,
 		seq,
 		vectors,
 		zigzag,
