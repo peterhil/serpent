@@ -7,6 +7,8 @@ from collections.abc import Callable, Iterable, Sequence
 import numpy as np
 
 from serpent.mathematics import logn
+from serpent.padding import pad_end
+from serpent.printing import format_quasar
 
 
 def autocorrelate(seq, index):
@@ -71,7 +73,7 @@ def symbol_run_lengths(data: Iterable[str]):
 	return stat, max_length
 
 
-def quasar(data: Iterable[str], fn: Callable):
+def map_runs(data: Iterable[str], fn: Callable):
 	"""Map a callback function through symbol run lengths."""
 	stat, max_length = symbol_run_lengths(data)
 	result = OrderedDict(sorted([
@@ -81,3 +83,26 @@ def quasar(data: Iterable[str], fn: Callable):
 	]))
 
 	return result
+
+
+def quasar_pixels(data, description, cumulative=False):
+	[stat, scale] = symbol_run_lengths(data)
+	height = np.amax(np.array([len(s) for s in stat.values()]))
+
+	def to_pixels(s):
+		rhythm = np.cumsum(s) if cumulative else s
+		return pad_end(np.uint8(rhythm), 0, n=height)
+
+	pixels = OrderedDict([
+		(k, to_pixels(np.array(s), scale))
+		for k, s in stat.items()
+		if len(s)
+	])
+
+	yield description
+	yield from format_quasar(pixels.keys())
+
+	for i in range(height):
+		yield from format_quasar([pixels[a].T[i] for a in pixels])
+
+	yield f'\tscale: {scale}'

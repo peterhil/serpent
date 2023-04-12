@@ -52,7 +52,7 @@ from serpent.settings import (
 	DEFAULT_COLOR,
 )
 from serpent.spatial import amino_path_3d
-from serpent.stats import ac_peaks, autocorrelogram, count_sorted
+from serpent.stats import ac_peaks, autocorrelogram, count_sorted, quasar_pixels
 from serpent.visual import (
 	bin_choices,
 	dna_image_seq,
@@ -324,6 +324,26 @@ def image(
 		img.save(f'{outfile}.png')
 
 
+@arg('--amino', '-a', help='Amino acid input')
+@arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen', '-g', help='Degenerate data')
+@arg('--cumulative', '-c', help='Cumulative')
+@wrap_errors(wrapped_errors)
+def quasar(
+	filename,
+	cumulative=False,
+	amino=False, degen=False, table=1,
+):
+	"""Visualise symbol repeats as image."""
+	# TODO Show data as image or flow
+	amino = auto_select_amino(filename, amino)
+	seqs = read_sequences(filename, amino)
+
+	for seq in seqs:
+		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
+		yield from quasar_pixels(aminos, description, cumulative=cumulative)
+
+
 @arg('--amino',  '-a', help='Amino acid input')
 @arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',  '-g', help='Degenerate data')
@@ -542,6 +562,7 @@ def main():
 		image,
 		pep,
 		repeats,
+		quasar,
 		seq,
 		vectors,
 		zigzag,
