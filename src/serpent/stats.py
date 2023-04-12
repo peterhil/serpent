@@ -57,8 +57,11 @@ def entropy(data: Sequence[int], n=2, base=2):
 	return -np.sum(logn(propabilities, base))
 
 
-def symbol_run_lengths(data: Iterable[str]):
-	"""Statistics of repeat lengths for each symbol of a sequence."""
+def pulse_repetition_intervals(data: Iterable[str]):
+	"""Pulse repetition intervals for each symbol of data.
+
+	See: https://en.wikipedia.org/wiki/Pulse_width
+	"""
 	last = OrderedDict()
 	stat = defaultdict(list)
 	max_length = 0
@@ -73,9 +76,9 @@ def symbol_run_lengths(data: Iterable[str]):
 	return stat, max_length
 
 
-def map_runs(data: Iterable[str], fn: Callable):
+def map_pulses(data: Iterable[str], fn: Callable):
 	"""Map a callback function through symbol run lengths."""
-	stat, max_length = symbol_run_lengths(data)
+	stat, max_length = pulse_repetition_intervals(data)
 	result = OrderedDict(sorted([
 		(k, fn(np.array(s), max_length))
 		for k, s in stat.items()
@@ -86,7 +89,7 @@ def map_runs(data: Iterable[str], fn: Callable):
 
 
 def quasar_pixels(data, description, cumulative=False):
-	[stat, scale] = symbol_run_lengths(data)
+	[stat, scale] = pulse_repetition_intervals(data)
 	height = np.amax(np.array([len(s) for s in stat.values()]))
 
 	def to_pixels(s):
