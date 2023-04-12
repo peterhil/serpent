@@ -45,7 +45,7 @@ from serpent.io import (
 )
 from serpent.mathematics import autowidth_for
 from serpent.palette import apply_palette
-from serpent.printing import format_counts, format_decoded, format_lines
+from serpent.printing import format_counts, format_decoded, format_lines, format_quasar
 from serpent.settings import (
 	BASE_ORDER,
 	COUNT_LIMIT,
@@ -341,7 +341,16 @@ def quasar(
 
 	for seq in seqs:
 		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
-		yield from quasar_pixels(aminos, description, cumulative=cumulative)
+		yield description
+
+		pixels, height, scale = quasar_pixels(aminos, description, cumulative=cumulative)
+
+		yield from format_quasar(pixels.keys())
+
+		for i in range(height):
+			yield from format_quasar([pixels[a].T[i] for a in pixels])
+
+		yield f'\tscale: {scale}'
 
 
 @arg('--amino',  '-a', help='Amino acid input')

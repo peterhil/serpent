@@ -8,7 +8,6 @@ import numpy as np
 
 from serpent.mathematics import logn
 from serpent.padding import pad_end
-from serpent.printing import format_quasar
 
 
 def autocorrelate(seq, index):
@@ -88,7 +87,7 @@ def map_pulses(data: Iterable[str], fn: Callable):
 	return result
 
 
-def quasar_pixels(data, description, cumulative=False):
+def quasar_pixels(data, cumulative=False):
 	[stat, scale] = pulse_repetition_intervals(data)
 	height = np.amax(np.array([len(s) for s in stat.values()]))
 
@@ -97,15 +96,9 @@ def quasar_pixels(data, description, cumulative=False):
 		return pad_end(np.uint8(rhythm), 0, n=height)
 
 	pixels = OrderedDict([
-		(k, to_pixels(np.array(s), scale))
+		(k, to_pixels(np.array(s)))
 		for k, s in stat.items()
 		if len(s)
 	])
 
-	yield description
-	yield from format_quasar(pixels.keys())
-
-	for i in range(height):
-		yield from format_quasar([pixels[a].T[i] for a in pixels])
-
-	yield f'\tscale: {scale}'
+	return pixels, height, scale
