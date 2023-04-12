@@ -360,10 +360,11 @@ def pulse(
 @arg('--mod',   '-m', help='Modulo of pattern data', type=int)
 @arg('--log',   '-l', help='Logarithmic result')
 @arg('--cumulative', '-c', help='Cumulative')
+@arg('--test',  help='Show test images (replace data with linear numbers)')
 @wrap_errors(wrapped_errors)
 def quasar(
 	filename,
-	cumulative=False, log=False, mod=0,
+	cumulative=False, log=False, mod=0, test=False,
 	amino=False, degen=False, table=1,
 ):
 	"""Visualise symbol repeats as image."""
@@ -383,6 +384,9 @@ def quasar(
 		# yield from format_quasar_pulses(pulses, height)
 		# OR same data as Numpy array:
 		arr = np.vstack([*pulses.values()]).T
+
+		if test:
+			arr = np.arange(np.product(arr.shape)).reshape(arr.shape)
 
 		if mod != 0:
 			assert mod <= MOD_MAX, f'Modulo needs to be in the interval 1..{MOD_MAX}'
