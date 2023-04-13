@@ -370,6 +370,8 @@ def quasar(
 ):
 	"""Visualise symbol repeats as image."""
 	# TODO Show data as block flow
+	# TODO Combine multiple sequences with vstack into single image
+	# TODO Show animated image of multiple sequences?
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
 	MOD_MAX = 255
