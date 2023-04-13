@@ -55,6 +55,7 @@ from serpent.printing import (
 from serpent.settings import (
 	BASE_ORDER,
 	COUNT_LIMIT,
+	DEBUG,
 	DEFAULT_COLOR,
 )
 from serpent.spatial import amino_path_3d
@@ -389,22 +390,19 @@ def quasar(
 			arr = np.arange(np.product(arr.shape)).reshape(arr.shape)
 
 		if mod != 0:
-			assert mod <= MOD_MAX, f'Modulo needs to be in the interval 1..{MOD_MAX}'
-
-			# Cumulative modulo (without log) produce a fascinating honeycomb
-			# like pattern! Try modulo values 64 and 256 for example.
+			assert mod <= MOD_MAX, f'Modulo needs to be between 1 and {MOD_MAX}'
 			rgb = arr % mod
 
 			# Enhance image
-			rgb = RGB_MAX * logn(rgb, base=mod) if log else rgb * (MOD_MAX - mod) + mod
-
-			img = Image.fromarray(rgb, mode='L')
+			rgb = RGB_MAX * logn(rgb + 1, base=mod) if log else rgb * np.floor(MOD_MAX / mod)
 		else:  # Convert to uint8 pixels
-			# normalised = normalise(np.log2(arr)) if log else normalise(arr)
-			normalised = logn(arr, base=scale) if log else normalise(arr)
+			# normalised = normalise(np.log2(arr + 1)) if log else normalise(arr)
+			normalised = logn(arr + 1, base=scale) if log else normalise(arr)
 			rgb = RGB_MAX * normalised
 
-			img = Image.fromarray(np.uint8(rgb), mode='L')
+		if DEBUG:
+			yield from np.uint8(rgb)
+		img = Image.fromarray(np.uint8(rgb), mode='L')
 
 		img.show()
 		yield f'scale: {scale}'
