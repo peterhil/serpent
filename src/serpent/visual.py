@@ -12,7 +12,7 @@ from PIL import Image
 from serpent import dna
 from serpent.bitmap import height_for, num_to_pixel
 from serpent.mapping.amino_spiral_cube import amino_spiral
-from serpent.mathematics import magnitude
+from serpent.mathematics import logn, magnitude, normalise
 from serpent.padding import pad_end
 from serpent.stats import count_sorted
 from serpent.typing import CodonData
@@ -221,3 +221,29 @@ def dna_image_seq(
 	)
 
 	return rgb
+
+
+def pulses_to_rgb(pulses, scale, mod=0, log=False, test=False) -> NDArray[np.uint8]:
+	"""Convert pulse repetition data to RGB values."""
+	MOD_MAX = 255
+	RGB_MAX = 255
+
+	# yield from format_quasar_pulses(pulses, height)
+	# OR same data as Numpy array:
+	arr = np.vstack([*pulses.values()]).T
+
+	if test:
+		arr = np.arange(np.product(arr.shape)).reshape(arr.shape)
+
+	if mod != 0:
+		assert mod <= MOD_MAX, f'Modulo needs to be between 1 and {MOD_MAX}'
+		rgb = arr % mod
+
+		# Enhance image
+		rgb = RGB_MAX * logn(rgb + 1, base=mod) if log else rgb * np.floor(MOD_MAX / mod)
+	else:  # Convert to uint8 pixels
+		# normalised = normalise(np.log2(arr + 1)) if log else normalise(arr)
+		normalised = logn(arr + 1, base=scale) if log else normalise(arr)
+		rgb = RGB_MAX * normalised
+
+	return np.uint8(rgb)

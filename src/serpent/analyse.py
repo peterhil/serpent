@@ -43,7 +43,7 @@ from serpent.io import (
 	openhook,
 	wait_user,
 )
-from serpent.mathematics import autowidth_for, logn, normalise
+from serpent.mathematics import autowidth_for
 from serpent.palette import apply_palette
 from serpent.printing import (
 	format_counts,
@@ -68,6 +68,7 @@ from serpent.visual import (
 	plot_directions,
 	plot_histogram_sized,
 	plot_sequence_counts,
+	pulses_to_rgb,
 )
 from serpent.zigzag import zigzag_blocks, zigzag_text
 
@@ -374,8 +375,6 @@ def quasar(
 	# TODO Show animated image of multiple sequences?
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
-	MOD_MAX = 255
-	RGB_MAX = 255
 
 	for seq in seqs:
 		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
@@ -384,29 +383,13 @@ def quasar(
 		yield description
 		yield from format_quasar(pulses.keys())  # Print symbols
 
-		# yield from format_quasar_pulses(pulses, height)
-		# OR same data as Numpy array:
-		arr = np.vstack([*pulses.values()]).T
-
-		if test:
-			arr = np.arange(np.product(arr.shape)).reshape(arr.shape)
-
-		if mod != 0:
-			assert mod <= MOD_MAX, f'Modulo needs to be between 1 and {MOD_MAX}'
-			rgb = arr % mod
-
-			# Enhance image
-			rgb = RGB_MAX * logn(rgb + 1, base=mod) if log else rgb * np.floor(MOD_MAX / mod)
-		else:  # Convert to uint8 pixels
-			# normalised = normalise(np.log2(arr + 1)) if log else normalise(arr)
-			normalised = logn(arr + 1, base=scale) if log else normalise(arr)
-			rgb = RGB_MAX * normalised
-
+		rgb = pulses_to_rgb(pulses, scale, mod=mod, log=log, test=test)
 		if DEBUG:
-			yield from np.uint8(rgb)
-		img = Image.fromarray(np.uint8(rgb), mode='L')
+			yield from rgb
 
+		img = Image.fromarray(rgb, mode='L')
 		img.show()
+
 		yield f'scale: {scale}'
 
 
