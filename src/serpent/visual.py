@@ -225,7 +225,6 @@ def dna_image_seq(
 
 def pulses_to_rgb(pulses, scale, mod=0, log=False, test=False) -> NDArray[np.uint8]:
 	"""Convert pulse repetition data to RGB values."""
-	MOD_MAX = 255
 	RGB_MAX = 255
 
 	# yield from format_quasar_pulses(pulses, height)
@@ -237,15 +236,16 @@ def pulses_to_rgb(pulses, scale, mod=0, log=False, test=False) -> NDArray[np.uin
 
 	if mod != 0:
 		if not log:
-			err_msg = f'Modulo needs to be between 1 and {MOD_MAX} when not using the log option'
-			assert mod <= MOD_MAX, err_msg
+			err_msg = f'Modulo needs to be between 1 and {RGB_MAX} when not using the log option'
+			assert mod <= RGB_MAX, err_msg
 		rgb = arr % mod
 
 		# Enhance image
-		rgb = RGB_MAX * logn(rgb + 1, base=mod) if log else rgb * np.floor(MOD_MAX / mod)
+		normalised = logn(rgb + 1, base=mod) if log else rgb * np.floor(RGB_MAX / mod)
 	else:  # Convert to uint8 pixels
 		# normalised = normalise(np.log2(arr + 1)) if log else normalise(arr)
 		normalised = logn(arr + 1, base=scale) if log else normalise(arr)
-		rgb = RGB_MAX * normalised
+
+	rgb = RGB_MAX * normalised
 
 	return np.uint8(rgb)
