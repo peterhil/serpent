@@ -17,6 +17,8 @@ from serpent.padding import pad_end
 from serpent.stats import count_sorted
 from serpent.typing import CodonData
 
+RGB_MAX = 255
+
 bin_choices = [
 	'base', 'auto', 'fd', 'doane', 'scott', 'stone', 'rice', 'sturges', 'sqrt',
 ]
@@ -189,7 +191,7 @@ def dna_image_data(
 	channels: int = len(mode)
 
 	if mode == 'P':
-		fill = 255
+		fill = RGB_MAX
 		padded = np.array(pad_end(decoded, fill, n=width))
 		uint8 = np.uint8(padded)
 	else:
@@ -225,8 +227,6 @@ def dna_image_seq(
 
 def pulses_to_rgb(pulses, scale, mod=0, log=False, test=False) -> NDArray[np.uint8]:
 	"""Convert pulse repetition data to RGB values."""
-	RGB_MAX = 255
-
 	# yield from format_quasar_pulses(pulses, height)
 	# OR same data as Numpy array:
 	arr = np.vstack([*pulses.values()]).T
@@ -247,5 +247,4 @@ def pulses_to_rgb(pulses, scale, mod=0, log=False, test=False) -> NDArray[np.uin
 		normalised = logn(arr + 1, base=scale) if log else normalise(arr)
 
 	rgb = RGB_MAX * normalised
-
 	return np.uint8(rgb)
