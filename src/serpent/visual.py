@@ -236,7 +236,9 @@ def pulses_to_rgb(pulses, scale, mod=0, log=False, test=False) -> NDArray[np.uin
 		arr = np.arange(np.product(arr.shape)).reshape(arr.shape)
 
 	if mod != 0:
-		assert mod <= MOD_MAX, f'Modulo needs to be between 1 and {MOD_MAX}'
+		if not log:
+			err_msg = f'Modulo needs to be between 1 and {MOD_MAX} when not using the log option'
+			assert mod <= MOD_MAX, err_msg
 		rgb = arr % mod
 
 		# Enhance image
