@@ -95,10 +95,10 @@ def quasar_pulses(data, cumulative=False):
 		rhythm = np.cumsum(s) if cumulative else s
 		return pad_end(rhythm, 0, n=height)
 
-	pulses = OrderedDict([
+	pulses = OrderedDict(sorted([
 		(k, to_pulses(np.array(s)))
 		for k, s in stat.items()
 		if len(s)
-	])
+	]))
 
 	return pulses, height, scale

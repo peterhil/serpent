@@ -14,7 +14,9 @@ from serpent.bitmap import height_for, num_to_pixel
 from serpent.mapping.amino_spiral_cube import amino_spiral
 from serpent.mathematics import logn, magnitude, normalise
 from serpent.padding import pad_end
-from serpent.stats import count_sorted
+from serpent.printing import format_quasar
+from serpent.settings import DEBUG
+from serpent.stats import count_sorted, quasar_pulses
 from serpent.typing import CodonData
 
 RGB_MAX = 255
@@ -221,6 +223,26 @@ def dna_image_seq(
 		width=width, fill=fill, mode=mode,
 		amino=amino, degen=degen,
 	)
+
+	return rgb
+
+
+def dna_quasar_seq(
+	seq,
+	amino=False, degen=False, table=1,
+	cumulative=False, log=False, mod=0, test=False,
+):
+	[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
+	pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative)
+
+	print(description)
+	print(format_quasar(pulses.keys())[0])  # Print symbols
+
+	rgb = pulses_to_rgb(pulses, scale, mod=mod, log=log, test=test)
+
+	if DEBUG:
+		print(rgb)
+	print(f'scale: {scale}')
 
 	return rgb
 

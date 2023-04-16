@@ -55,7 +55,6 @@ from serpent.printing import (
 from serpent.settings import (
 	BASE_ORDER,
 	COUNT_LIMIT,
-	DEBUG,
 	DEFAULT_COLOR,
 )
 from serpent.spatial import amino_path_3d
@@ -63,12 +62,12 @@ from serpent.stats import ac_peaks, autocorrelogram, count_sorted, quasar_pulses
 from serpent.visual import (
 	bin_choices,
 	dna_image_seq,
+	dna_quasar_seq,
 	interactive,
 	plot_amino_labels,
 	plot_directions,
 	plot_histogram_sized,
 	plot_sequence_counts,
-	pulses_to_rgb,
 )
 from serpent.zigzag import zigzag_blocks, zigzag_text
 
@@ -376,21 +375,13 @@ def quasar(
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
 
-	for seq in seqs:
-		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
-		pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative)
+	rgb = np.vstack([
+		dna_quasar_seq(seq, amino, degen, table, cumulative, log, mod, test)
+		for seq in seqs
+	])
 
-		yield description
-		yield from format_quasar(pulses.keys())  # Print symbols
-
-		rgb = pulses_to_rgb(pulses, scale, mod=mod, log=log, test=test)
-		if DEBUG:
-			yield from rgb
-
-		img = Image.fromarray(rgb, mode='L')
-		img.show()
-
-		yield f'scale: {scale}'
+	img = Image.fromarray(rgb, mode='L')
+	img.show()
 
 
 @arg('--amino',  '-a', help='Amino acid input')
