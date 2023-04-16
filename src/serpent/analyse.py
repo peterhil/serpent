@@ -21,7 +21,7 @@ from PIL import Image
 from serpent import ansi, dna
 from serpent.bitmap import decoded_to_pixels
 from serpent.block_elements import pixels_to_blocks, pixels_to_verbose_blocks
-from serpent.convert.amino import aa_tables, split_aminos
+from serpent.convert.amino import aa_tables, aminos_for_table, split_aminos
 from serpent.convert.digits import num_to_digits
 from serpent.dsp import fft_spectra
 from serpent.encoding import BASE64
@@ -344,10 +344,11 @@ def pulse(
 	"""Pulse repetition intervals for symbol repeat lengths."""
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
+	key = aminos_for_table(table)
 
 	for seq in seqs:
 		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
-		pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative)
+		pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative, key=key)
 
 		yield description
 		yield from format_quasar(pulses.keys())  # Print symbols
@@ -370,13 +371,13 @@ def quasar(
 ):
 	"""Visualise symbol repeats as image."""
 	# TODO Show data as block flow
-	# TODO Combine multiple sequences with vstack into single image
 	# TODO Show animated image of multiple sequences?
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
+	key = aminos_for_table(table)
 
 	rgb = np.vstack([
-		dna_quasar_seq(seq, amino, degen, table, cumulative, log, mod, test)
+		dna_quasar_seq(seq, amino, degen, table, cumulative, log, mod, test, key=key)
 		for seq in seqs
 	])
 

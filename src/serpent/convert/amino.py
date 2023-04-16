@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 import more_itertools as mit
 
-from serpent.fun import inverse_od, map_array
+from serpent.fun import inverse_od, map_array, str_join
 
 from .codon import CODONS_LEN, codon_to_num, codons_array, num_to_codon
 from .genetic_code import GENETIC_CODE
@@ -107,3 +107,11 @@ def split_aminos(aminos, start='M', stop='*', split='r'):
 	aminos = mit.split_when(aminos, start_or_stop)
 
 	return aminos
+
+
+def aminos_for_table(table: int=1):
+	return str_join(OrderedDict([
+		(amino, index)
+		for index, amino
+		in enumerate(reversed(GENETIC_CODE[table]))
+	]).keys())

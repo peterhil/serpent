@@ -230,10 +230,10 @@ def dna_image_seq(
 def dna_quasar_seq(
 	seq,
 	amino=False, degen=False, table=1,
-	cumulative=False, log=False, mod=0, test=False,
+	cumulative=False, log=False, mod=0, test=False, key=None
 ):
 	[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
-	pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative)
+	pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative, key=key)
 
 	print(description)
 	print(format_quasar(pulses.keys())[0])  # Print symbols
