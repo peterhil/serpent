@@ -37,7 +37,7 @@ DATA_TOKENS = [
 # https://en.wikipedia.org/wiki/Nucleic_acid_sequence#Notation
 #
 # Note: Keep `-` at the end for regexp character ranges!
-AMINO = "ARNDCQEGHILKMFPSTWYV*UO"
+AMINO = "GEDAVRSKNTMIQHPLW*CYFUO"
 AMINO_DEGENERATE = "BJZX-"
 BASE = "ACGTU"
 BASE_NONCODING = BASE.lower()
