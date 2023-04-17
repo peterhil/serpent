@@ -112,12 +112,17 @@ def ac(
 		yield from (f"{peak}	{value:1.3f}" for peak, value in peaks)
 
 
+@arg('--degen-only', '-G', help='Only degenerate')
 @arg('--stats',  '-s', help='Show statistics')
 @arg('--limit',  '-l', help='Limit codon stats to N most common')
 @arg('--width',  '-w', help='Codons per line')
-def codons(filename, width=20, stats=False, limit=COUNT_LIMIT):
+def codons(filename, degen_only=False, width=20, stats=False, limit=COUNT_LIMIT):
 	"""Print codons and statistics."""
 	seqs = read_sequences(filename)
+
+	def is_degenerate(codon: str) -> bool:
+		bases = set('ACGT')
+		return not (set(codon) < bases)
 
 	for seq in seqs:
 		[tokens, descriptions] = data_and_descriptions(seq)
@@ -125,8 +130,12 @@ def codons(filename, width=20, stats=False, limit=COUNT_LIMIT):
 		yield from (token.value for token in descriptions)
 		data = get_data(tokens)
 		codons = dna.get_codons(data)
+		if degen_only:
+			codons = filter(is_degenerate, codons)
 
 		if stats:
+			if degen_only:
+				codons = [*codons]
 			unique = np.unique(codons)
 			print(f"Unique {len(unique)} codons used: (total: {len(codons)})")
 			yield from format_lines(unique, width)
