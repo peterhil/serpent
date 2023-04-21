@@ -93,6 +93,7 @@ def inverse_quaternary_dnt(bases=BASE_ORDER):
 
 	return idnt
 
+
 # Bases
 
 # degenerate = binomial_dnt(BASE_ORDER)
@@ -118,6 +119,11 @@ def degenerate_codons():
 	degenerates = map(str_join, itr.product(symbols, repeat=3))
 
 	return np.array([*degenerates], dtype='U3')
+
+
+def is_degenerate(codon: str, bases: str=BASE_ORDER) -> bool:
+	return not (set(codon) < set(bases))
+
 
 # Codons
 

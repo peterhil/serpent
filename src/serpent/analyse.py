@@ -22,6 +22,7 @@ from serpent import ansi, dna
 from serpent.bitmap import decoded_to_pixels
 from serpent.block_elements import pixels_to_blocks, pixels_to_verbose_blocks
 from serpent.convert.amino import aa_tables, aminos_for_table, split_aminos
+from serpent.convert.degenerate import is_degenerate
 from serpent.convert.digits import num_to_digits
 from serpent.dsp import fft_spectra
 from serpent.encoding import BASE64
@@ -119,10 +120,6 @@ def ac(
 def codons(filename, degen_only=False, width=20, stats=False, limit=COUNT_LIMIT):
 	"""Print codons and statistics."""
 	seqs = read_sequences(filename)
-
-	def is_degenerate(codon: str) -> bool:
-		bases = set('ACGT')
-		return not (set(codon) < bases)
 
 	for seq in seqs:
 		[tokens, descriptions] = data_and_descriptions(seq)
