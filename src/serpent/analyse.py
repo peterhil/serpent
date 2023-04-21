@@ -131,14 +131,15 @@ def codons(filename, degen_only=False, width=20, stats=False, limit=COUNT_LIMIT)
 			codons = filter(is_degenerate, codons)
 
 		if stats:
-			if degen_only:
-				codons = [*codons]
-			unique = np.unique(codons)
-			print(f"Unique {len(unique)} codons used: (total: {len(codons)})")
-			yield from format_lines(unique, width)
-			print("Counts:")
 			counts = Counter(codons)
+			print("Counts:")
 			yield from format_counts(counts, limit)
+
+			unique = counts.keys()  # np.unique(codons)
+			yield from format_lines(unique, width)
+
+			total = np.sum([*counts.values()])
+			print(f"Unique codons: {len(counts)} (total: {total})")
 		else:
 			yield from format_lines(codons, width)
 
