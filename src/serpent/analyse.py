@@ -122,12 +122,12 @@ def codons(filename, degen_only=False, width=20, stats=False, limit=COUNT_LIMIT)
 	seqs = read_sequences(filename)
 
 	for seq in seqs:
-		[tokens, descriptions] = data_and_descriptions(seq)
+		(data, descriptions) = data_and_descriptions(seq)
 
-		yield from (token.value for token in descriptions)
-		data = get_data(tokens)
-		codons = dna.get_codons(data)
+		yield from descriptions
+		codons = dna.get_codons_iter(data)
 		if degen_only:
+			# TODO Print descriptions only when there is data by using mit.peekable
 			codons = filter(is_degenerate, codons)
 
 		if stats:
@@ -264,10 +264,13 @@ def flow(
 		seqs = read_sequences(filename, amino)
 
 		for seq in seqs:
-			[decoded, description] = dna.decode_seq(seq, amino, table, degen)
+			[decoded, descriptions] = dna.decode_seq(seq, amino, table, degen)
 
 			if desc:
-				yield description if verbose else ansi.dim_text(description)
+				yield from (
+					description if verbose else ansi.dim_text(description)
+					for description in descriptions
+				)
 
 			pixels = decoded_to_pixels(decoded, mode, amino, degen)
 
@@ -354,10 +357,10 @@ def pulse(
 	key = aminos_for_table(table)
 
 	for seq in seqs:
-		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
+		[aminos, descriptions] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
 		pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative, key=key)
 
-		yield description
+		yield from descriptions
 		yield from format_quasar(pulses.keys())  # Print symbols
 		yield from format_quasar_pulses(pulses, height)
 		yield f'scale: {scale}'
@@ -487,7 +490,7 @@ def vectors(filename, split='', amino=False, table=1, degen=False):
 	ax.set_title(title)
 
 	for index, seq in enumerate(seqs):
-		[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
+		[aminos, _] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
 
 		if split:
 			for peptide in split_aminos(aminos, split=split):

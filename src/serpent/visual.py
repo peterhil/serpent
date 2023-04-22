@@ -11,6 +11,7 @@ from PIL import Image
 
 from serpent import dna
 from serpent.bitmap import height_for, num_to_pixel
+from serpent.fun import str_join
 from serpent.mapping.amino_spiral_cube import amino_spiral
 from serpent.mathematics import logn, magnitude, normalise
 from serpent.padding import pad_end
@@ -232,10 +233,10 @@ def dna_quasar_seq(
 	amino=False, degen=False, table=1,
 	cumulative=False, log=False, mod=0, test=False, key=None
 ):
-	[aminos, description] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
+	[aminos, descriptions] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
 	pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative, key=key)
 
-	print(description)
+	print(str_join(descriptions, '\n'))
 	print(format_quasar(pulses.keys())[0])  # Print symbols
 
 	rgb = pulses_to_rgb(pulses, scale, mod=mod, log=log, test=test)

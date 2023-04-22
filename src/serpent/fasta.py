@@ -250,5 +250,11 @@ def read_sequences(filename: PathLike, amino: bool=False) -> Iterable[list[Fasta
 
 
 def data_and_descriptions(sequence):
-	"""Partition a sequence into data and description tokens."""
-	yield from mit.partition(lambda t: t.is_description, sequence)
+	"""Partition a sequence into data and descriptions."""
+	[tokens, descriptions] = mit.partition(lambda t: t.is_description, sequence)
+
+	descriptions = (desc.value for desc in descriptions)
+	# FIXME Read data iteratively by removing str_join (which breaks things)
+	data = str_join(token.data for token in tokens if token.data)
+
+	return data, descriptions
