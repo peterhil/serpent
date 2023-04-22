@@ -96,12 +96,12 @@ def inverse_quaternary_dnt(bases=BASE_ORDER):
 
 # Bases
 
-# degenerate = binomial_dnt(BASE_ORDER)
-# inv_degenerate = inverse_od(degenerate)
+degenerate = binomial_dnt(BASE_ORDER)
+inv_degenerate = inverse_od(degenerate)
 # inv_degenerate = inverse_exp_dnt(BASE_ORDER)
 # degenerate = inverse_od(inv_degenerate)
-inv_degenerate = inverse_quaternary_dnt(BASE_ORDER)
-degenerate = inverse_od(inv_degenerate)
+# inv_degenerate = inverse_quaternary_dnt(BASE_ORDER)
+# degenerate = inverse_od(inv_degenerate)
 
 
 def num_to_dnt(num: int) -> str:
