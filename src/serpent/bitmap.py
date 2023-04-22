@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import colorsys
 from collections.abc import Iterable
 
 import numpy as np
@@ -53,3 +54,28 @@ def decoded_to_pixels(
 		pixels = num_to_pixel(decoded, amino, degen)
 
 	return pixels
+
+
+def yiq_test_image(size: int=8, ymax: float=0.75, imax: float=0.75, qmax: float=0.75):
+	"""YIQ colour space is used in the NTSC video format.
+
+	It has Luminance (Y) and chrominance (range: -1...1) channels
+	with orange-purple (I) and purple-green (Q) axes.
+
+	Ranges:
+	Y: 0...1
+    I and Q channels: -1...1
+
+	See: https://en.wikipedia.org/wiki/YIQ
+	"""
+	luma = np.ones((size, size)) * ymax
+	i = np.linspace(-1, 1, size)  # blue-orange (I)
+	q = np.linspace(-1, 1, size)  # green-purple (Q)
+
+	iv, qv = np.meshgrid(i * imax, q * qmax)
+	yiq = np.stack([luma, iv, qv], axis=-1)
+
+	rgb = np.uint8(np.apply_along_axis(lambda c: colorsys.yiq_to_rgb(*c), -1, yiq) * 255)
+	# im = Image.fromarray(rgb)
+	# im.show()
+	return rgb
