@@ -41,6 +41,7 @@ from serpent.io import (
 	check_paths,
 	echo,
 	file_extension_for,
+	image_name_for,
 	openhook,
 	wait_user,
 )
@@ -54,7 +55,6 @@ from serpent.printing import (
 	format_quasar_pulses,
 )
 from serpent.settings import (
-	BASE_ORDER,
 	COUNT_LIMIT,
 	DEFAULT_COLOR,
 )
@@ -323,22 +323,15 @@ def image(
 		for seq in seqs
 	])
 
-	outfile = filename
 	img = Image.fromarray(rgb, mode=mode)
 
 	if mode == 'P':
-		outfile += '.Pa' if amino else '.Pn'
 		img = apply_palette(img, amino)
 
-	outfile += f".w{width}.{BASE_ORDER}"
-
-	if amino and table != 1:
-		outfile += f'.t{table}'
-
+	outfile = image_name_for(filename, width, mode, amino=amino, table=table)
 	img.show(title=outfile)
-
 	if out:
-		img.save(f'{outfile}.png')
+		img.save(outfile)
 
 
 @arg('--amino', '-a', help='Amino acid input')

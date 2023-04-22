@@ -5,6 +5,8 @@ from fileinput import hook_encoded
 from pathlib import Path
 from sys import argv, stderr, stdout
 
+from serpent.settings import BASE_ORDER
+
 # TODO Check out hook_compressed and zzzip
 openhook = hook_encoded("utf-8", "surrogateescape")
 
@@ -55,6 +57,23 @@ def file_extension_for(fmt: str = 'base64'):
 		raise ValueError('Unknown format: ' + fmt)
 
 	return extension
+
+
+def image_name_for(filename, width=0, mode='RGB', *, amino=False, table=1):
+	"""Add extra info for image variation to filename."""
+	palette = ('Pa' if amino else 'Pn') if mode == 'P' else ''
+	code_table = f't{table}' if amino and table != 1 else ''
+
+	outfile = '.'.join(filter(None, [
+		filename,
+		palette,
+		f'w{width}' if width else '',
+		BASE_ORDER,
+		code_table,
+		'png'
+	]))
+
+	return outfile
 
 
 def wait_user():
