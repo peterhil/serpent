@@ -63,6 +63,7 @@ from serpent.stats import ac_peaks, autocorrelogram, count_sorted, quasar_pulses
 from serpent.visual import (
 	bin_choices,
 	dna_image_seq,
+	dna_quad_image,
 	dna_quasar_seq,
 	interactive,
 	plot_amino_labels,
@@ -295,40 +296,53 @@ def flow(
 				yield from blocks
 
 
-@arg('--amino', '-a', help='Amino acid input')
-@arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
-@arg('--degen', '-g', help='Degenerate data')
-@arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L', 'P'))
-@arg('--out',   '-o', help='Write image to file')
-@arg('--width', '-w', help='Image width', type=int)
+@arg('--amino',  '-a', help='Amino acid input')
+@arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen',  '-g', help='Degenerate data')
+@arg('--mode',   '-m', help='Image mode', choices=('RGB', 'L', 'P', 'Q'))
+@arg('--out',    '-o', help='Write image to file')
+@arg('--length', '-l', help='Peptide length (for Q mode)', type=int)
+@arg('--width',  '-w', help='Image width', type=int)
 @wrap_errors(wrapped_errors)
 def image(
 	filename,
-	width=None, mode="RGB", out=False,
+	length=1, width=None, mode="RGB", out=False,
 	amino=False, degen=False, table=1,
 ):
 	"""Visualise FASTA data as images."""
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
+	channels = 3 if mode == 'Q' else len(mode)
 
 	if not width:
 		file_size = os.path.getsize(filename)
-		width = autowidth_for(file_size, amino, mode)
+		width = autowidth_for(file_size, channels, amino, length)
 		echo(f'Automatically set image width: {width} px')
 
-	rgb = np.vstack([
-		dna_image_seq(
-			seq, width, mode, fill=0,
-			amino=amino, degen=degen, table=table)
-		for seq in seqs
-	])
-
-	img = Image.fromarray(rgb, mode=mode)
+	if mode == 'Q':
+		rgb = np.vstack([
+			dna_quad_image(
+				seq, length, width,
+				# amino=amino, degen=degen, table=table
+			) for seq in seqs
+		])
+		img = Image.fromarray(rgb, mode='RGB')
+	else:
+		rgb = np.vstack([
+			dna_image_seq(
+				seq, width, mode, fill=0,
+				amino=amino, degen=degen, table=table)
+			for seq in seqs
+		])
+		img = Image.fromarray(rgb, mode=mode)
 
 	if mode == 'P':
 		img = apply_palette(img, amino)
 
-	outfile = image_name_for(filename, width, mode, amino=amino, table=table)
+	outfile = image_name_for(
+		filename, width, mode,
+		amino=amino, table=table, length=length
+	)
 	img.show(title=outfile)
 	if out:
 		img.save(outfile)

@@ -36,10 +36,10 @@ def autowidth(n: Real, base: int=64, aspect: Real=phi) -> int:
 	return int(base * multiple)
 
 
-def autowidth_for(file_size: int, amino: bool, mode: str):
+def autowidth_for(file_size: int, amino: bool=False, channels: int=1, length: int=1):
 	"""Get automatic width from the file size."""
 	item_size = 1 if amino else 3
-	size = file_size / (item_size * len(mode))
+	size = file_size / (item_size * channels * length)
 	width = autowidth(size, aspect=phi-1, base=64)
 
 	return width

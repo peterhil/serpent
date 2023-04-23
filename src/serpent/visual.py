@@ -11,6 +11,8 @@ from PIL import Image
 
 from serpent import dna
 from serpent.bitmap import height_for, num_to_pixel
+from serpent.convert.quad import dna_to_quad, quads_to_rgb
+from serpent.fasta import data_and_descriptions
 from serpent.fun import str_join
 from serpent.mapping.amino_spiral_cube import amino_spiral
 from serpent.mathematics import logn, magnitude, normalise
@@ -226,6 +228,30 @@ def dna_image_seq(
 	)
 
 	return rgb
+
+
+def dna_quad_image(
+	seq,
+	length=3, width=64,
+	# *,
+	# amino=False, degen=False, table=1,
+):
+	"""Convert DNA data to image using four base colours (YIQ colour space)."""
+	(data, descriptions) = data_and_descriptions(seq)
+
+	quads = dna_to_quad(data, length)
+	rgb = quads_to_rgb(quads)
+
+	# Compare this with dna_image_data!
+	channels = 3
+	fill = (0, 0, 0)
+
+	padded = np.array(pad_end(rgb, fill, n=channels * width * length))
+	height = height_for(padded, width, channels)
+	pixels = padded.reshape(height, width, channels)
+
+	return pixels
+
 
 
 def dna_quasar_seq(
