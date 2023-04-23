@@ -59,7 +59,11 @@ def file_extension_for(fmt: str = 'base64'):
 	return extension
 
 
-def image_name_for(filename, width=0, mode='RGB', *, amino=False, table=1, length=1):
+def image_name_for(
+	filename, width=0, mode='RGB',
+	*,
+	amino=False, degen=False, table=1, length=1
+):
 	"""Add extra info for image variation to filename."""
 	if mode == 'P':
 		palette = ('Pa' if amino else 'Pn')
@@ -73,7 +77,7 @@ def image_name_for(filename, width=0, mode='RGB', *, amino=False, table=1, lengt
 		filename,
 		palette,
 		f'w{width}' if width else '',
-		BASE_ORDER,
+		f'{BASE_ORDER}g' if degen else BASE_ORDER,
 		code_table,
 		'png'
 	]))

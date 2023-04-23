@@ -10,6 +10,7 @@ import more_itertools as mit
 import numpy as np
 
 from serpent.bitmap import yiq_to_rgb
+from serpent.convert.degenerate import degenerate_exp, inv_degenerate_exp
 from serpent.settings import BASE_ORDER
 
 QUAD_ZERO = np.array((0, 0))
@@ -27,16 +28,45 @@ def peptide_to_quad(peptide: Iterable[str]):
 	return np.mean(quads, axis=0)
 
 
-def dna_to_quad(dna: Iterable[str], length=3):
+def create_dnt_to_quad(bases=BASE_ORDER):
+	def quad_mapping(nts: str) -> tuple[str, tuple[float, float, float]]:
+		"""Map string (combination) of nongenerate bases into YIQ quad value."""
+		num = np.sum([inv_degenerate_exp[nt] for nt in nts])
+		dnt = degenerate_exp[num]
+		quad = np.concatenate([[1 - (len(nts) / len(bases))], peptide_to_quad(nts)])
+		return (dnt, quad)
+
+	return OrderedDict([
+		quad_mapping(quad)
+		for quad in mit.powerset(nt_to_quad)
+	])
+
+
+dnt_to_quad = create_dnt_to_quad()
+
+
+def degen_to_quad(peptide: Iterable[str]):
+	if len(peptide) == 0:
+		peptide = 'Z'
+	quads = [dnt_to_quad.get(nt) for nt in peptide]
+	return np.mean(quads, axis=0)
+
+
+def dna_to_quad(dna: Iterable[str], length=3, degen=False):
+	convert = degen_to_quad if degen else peptide_to_quad
 	# TODO Also try moving average and exponential smoothing!
-	quads = np.array([peptide_to_quad(peptide) for peptide in mit.chunked(dna, length)])
+	quads = np.array([convert(peptide) for peptide in mit.chunked(dna, length)])
 	return quads
 
 
-def quads_to_rgb(quads, lightness=0.75):
-	# TODO Handle lightness on dna_to_quad or elsewhere
-	luma = np.ones(len(quads)) * lightness
-	yiq = np.vstack([luma, quads.T]).T
+def quads_to_rgb(quads, degen=False):
+	if degen:
+		yiq = quads
+	else:
+		# TODO Handle lightness on dna_to_quad or elsewhere
+		lightness = 0.75
+		luma = np.ones(len(quads)) * lightness
+		yiq = np.vstack([luma, quads.T]).T
 
 	rgb = yiq_to_rgb(yiq)
 

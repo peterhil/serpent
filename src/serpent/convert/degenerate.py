@@ -98,8 +98,8 @@ def inverse_quaternary_dnt(bases=BASE_ORDER):
 
 degenerate = binomial_dnt(BASE_ORDER)
 inv_degenerate = inverse_od(degenerate)
-# inv_degenerate = inverse_exp_dnt(BASE_ORDER)
-# degenerate = inverse_od(inv_degenerate)
+inv_degenerate_exp = inverse_exp_dnt(BASE_ORDER)
+degenerate_exp = inverse_od(inv_degenerate_exp)
 # inv_degenerate = inverse_quaternary_dnt(BASE_ORDER)
 # degenerate = inverse_od(inv_degenerate)
 

@@ -323,7 +323,9 @@ def image(
 		rgb = np.vstack([
 			dna_quad_image(
 				seq, length, width,
-				# amino=amino, degen=degen, table=table
+				# amino=amino,
+				degen=degen,
+				# table=table,
 			) for seq in seqs
 		])
 		img = Image.fromarray(rgb, mode='RGB')
@@ -341,7 +343,7 @@ def image(
 
 	outfile = image_name_for(
 		filename, width, mode,
-		amino=amino, table=table, length=length
+		amino=amino, degen=degen, table=table, length=length
 	)
 	img.show(title=outfile)
 	if out:

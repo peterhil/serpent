@@ -233,14 +233,17 @@ def dna_image_seq(
 def dna_quad_image(
 	seq,
 	length=3, width=64,
-	# *,
-	# amino=False, degen=False, table=1,
+	*,
+	# amino=False,
+	degen=False,
+	# table=1,
 ):
 	"""Convert DNA data to image using four base colours (YIQ colour space)."""
 	(data, descriptions) = data_and_descriptions(seq)
 
-	quads = dna_to_quad(data, length)
-	rgb = quads_to_rgb(quads)
+	# TODO Remove degen option altogether and just use dnt conversion
+	quads = dna_to_quad(data, length, degen)
+	rgb = quads_to_rgb(quads, degen)
 
 	# Compare this with dna_image_data!
 	channels = 3
