@@ -5,7 +5,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 from numpy.testing import assert_array_equal
 
-from serpent.convert.quad import dna_to_quad, nt_to_quad, peptide_to_quad
+from serpent.convert.quad import QUAD_ZERO, dna_to_quad, nt_to_quad, peptide_to_quad
 
 a_nucleotide = st.sampled_from('GACT')
 
@@ -40,6 +40,10 @@ def test_peptide_to_quad_dominant(data):
 	actual = peptide_to_quad(dominant * 2 + pep)
 
 	assert_array_equal(np.sign(actual), quadrant)
+
+
+def test_peptide_to_quad_empty_is_zero():
+	assert_array_equal(peptide_to_quad(''), QUAD_ZERO)
 
 
 def test_dna_to_quad():

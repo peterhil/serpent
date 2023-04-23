@@ -12,6 +12,8 @@ import numpy as np
 from serpent.bitmap import yiq_to_rgb
 from serpent.settings import BASE_ORDER
 
+QUAD_ZERO = np.array((0, 0))
+
 nt_to_quad = OrderedDict(zip(
 	BASE_ORDER,
 	[*itr.product([1, -1], repeat=2)]
@@ -19,6 +21,8 @@ nt_to_quad = OrderedDict(zip(
 
 
 def peptide_to_quad(peptide: Iterable[str]):
+	if len(peptide) == 0:
+		return QUAD_ZERO
 	quads = [nt_to_quad.get(nt) for nt in peptide]
 	return np.mean(quads, axis=0)
 
