@@ -23,6 +23,6 @@ def peptide_to_quad(peptide: Iterable[str]):
 
 
 def dna_to_quad(dna: Iterable[str], length=3):
-	# TODO Try also moving average and exponential smoothing!
+	# TODO Also try moving average and exponential smoothing!
 	quads = [peptide_to_quad(peptide) for peptide in mit.chunked(dna, length)]
 	return quads
