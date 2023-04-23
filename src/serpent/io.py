@@ -69,6 +69,8 @@ def image_name_for(
 		palette = ('Pa' if amino else 'Pn')
 	elif mode == 'Q':
 		palette = f'Q{length}'
+	elif mode == 'L':
+		palette = 'L'
 	else:
 		palette = ''
 	code_table = f't{table}' if amino and table != 1 else ''
