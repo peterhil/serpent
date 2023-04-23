@@ -56,6 +56,11 @@ def decoded_to_pixels(
 	return pixels
 
 
+def yiq_to_rgb(yiq):
+	"""Convert YIQ pixel values (+-1) to RGB pixels (0..255)."""
+	return np.uint8(np.apply_along_axis(lambda c: colorsys.yiq_to_rgb(*c), -1, yiq) * 255)
+
+
 def yiq_test_image(size: int=8, ymax: float=0.75, imax: float=0.75, qmax: float=0.75):
 	"""YIQ colour space is used in the NTSC video format.
 
@@ -75,7 +80,7 @@ def yiq_test_image(size: int=8, ymax: float=0.75, imax: float=0.75, qmax: float=
 	iv, qv = np.meshgrid(i * imax, q * qmax)
 	yiq = np.stack([luma, iv, qv], axis=-1)
 
-	rgb = np.uint8(np.apply_along_axis(lambda c: colorsys.yiq_to_rgb(*c), -1, yiq) * 255)
+	rgb = yiq_to_rgb(yiq)
 	# im = Image.fromarray(rgb)
 	# im.show()
 	return rgb
