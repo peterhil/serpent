@@ -246,7 +246,7 @@ def dna_quad_image(
 	channels = 3
 	fill = (0, 0, 0)
 
-	padded = np.array(pad_end(rgb, fill, n=channels * width * length))
+	padded = np.array(pad_end(rgb, fill, n=channels * width))
 	uint8 = np.uint8(padded)
 
 	height = height_for(padded, width, channels)

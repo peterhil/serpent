@@ -20,9 +20,9 @@ def to_uint8(data, old=64, offset=0):
 	return np.uint8(rescale(data, old, 256) + offset)
 
 
-def height_for(data, width, channels=1, length=1):
+def height_for(data, width, channels=1):
 	"""Return minimum heigth for data to fit in width with N channels."""
-	rows: float = data.size / (width * channels * length)
+	rows: float = data.size / (width * channels)
 	height: int = int(np.ceil(rows))
 
 	return height
