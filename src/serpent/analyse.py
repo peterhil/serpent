@@ -316,7 +316,7 @@ def image(
 
 	if not width:
 		file_size = os.path.getsize(filename)
-		width = autowidth_for(file_size, channels, amino, length)
+		width = autowidth_for(file_size, amino, channels)
 		echo(f'Automatically set image width: {width} px')
 
 	if mode == 'Q':
