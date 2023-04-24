@@ -19,8 +19,7 @@ from argh.decorators import aliases, arg, wrap_errors
 from PIL import Image
 
 from serpent import ansi, dna
-from serpent.bitmap import decoded_to_pixels
-from serpent.block_elements import pixels_to_blocks, pixels_to_verbose_blocks
+from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.convert.amino import aa_tables, aminos_for_table, split_aminos
 from serpent.convert.degenerate import is_degenerate
 from serpent.convert.digits import num_to_digits
@@ -268,34 +267,15 @@ def flow(
 
 			if verbose:
 				yield from descriptions
-
-				decoded = dna.decode(data, amino, table, degen)
-
-				if not fmt:
-					fmt = 'amino' if amino else 'codon'
-
-				if fmt in ['a', 'amino']:
-					text = dna.to_amino(data, amino, table, degen)
-				elif fmt in ['c', 'codon', 'b', 'base64']:
-					text = str_join(dna.encode(decoded, fmt=fmt))
-				else:
-					err_msg = 'Unknown format'
-					raise NotImplementedError(err_msg)
-
-				pixels = decoded_to_pixels(decoded, mode, amino, degen)
-				# TODO Use three rows per codon for 1.5 times more data per screen?
-				repeat = 3 * len(mode) if fmt in ['c', 'codon'] else len(mode)
-
-				yield from pixels_to_verbose_blocks(
-					pixels, text, width, mode=mode, repeat=repeat
-				)
+				yield from verbose_flow_blocks(
+					data, width, mode, fmt,
+					amino=amino, degen=degen, table=table)
 			else:
 				if desc:
 					yield from (ansi.dim_text(d) for d in descriptions)
-
-				decoded = dna.decode(data, amino, table, degen)
-				pixels = decoded_to_pixels(decoded, mode, amino, degen)
-				yield from pixels_to_blocks(pixels, width, mode=mode)
+				yield from flow_blocks(
+					data, width, mode,
+					amino=amino, degen=degen, table=table)
 
 
 @arg('--amino',  '-a', help='Amino acid input')
