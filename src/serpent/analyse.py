@@ -32,7 +32,6 @@ from serpent.fasta import (
 	data_and_descriptions,
 	find_fasta_files,
 	find_fasta_sequences,
-	get_data,
 	read,
 	read_sequences,
 )
@@ -265,30 +264,34 @@ def flow(
 		seqs = read_sequences(filename, amino)
 
 		for seq in seqs:
-			[decoded, descriptions] = dna.decode_seq(seq, amino, table, degen)
-			pixels = decoded_to_pixels(decoded, mode, amino, degen)
+			[data, descriptions] = data_and_descriptions(seq)
 
 			if verbose:
 				yield from descriptions
 
+				decoded = dna.decode(data, amino, table, degen)
+
 				if fmt in ['a', 'amino']:
 					repeat = len(mode)
-					data = dna.to_amino(get_data(seq), amino, table, degen)
+					text = dna.to_amino(data, amino, table, degen)
 				elif amino:
 					repeat = len(mode)
-					data = get_data(seq)
+					text = data
 				else:
-					# TODO Use three rows per codon?
+					# TODO Use three rows per codon for 1.5 times more data per screen?
 					repeat = 9 if fmt in ['c', 'codon'] else 3
-					data = str_join(dna.encode(decoded, fmt=fmt))
+					text = str_join(dna.encode(decoded, fmt=fmt))
 
-				blocks = pixels_to_verbose_blocks(
-					pixels, data, width, mode=mode, repeat=repeat
+				pixels = decoded_to_pixels(decoded, mode, amino, degen)
+				yield from pixels_to_verbose_blocks(
+					pixels, text, width, mode=mode, repeat=repeat
 				)
-				yield from blocks
 			else:
 				if desc:
 					yield from (ansi.dim_text(d) for d in descriptions)
+
+				decoded = dna.decode(data, amino, table, degen)
+				pixels = decoded_to_pixels(decoded, mode, amino, degen)
 				yield from pixels_to_blocks(pixels, width, mode=mode)
 
 
