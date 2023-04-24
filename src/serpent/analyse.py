@@ -20,6 +20,7 @@ from PIL import Image
 
 from serpent import ansi, dna
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
+from serpent.cli.image import dna_image
 from serpent.convert.amino import aa_tables, aminos_for_table, split_aminos
 from serpent.convert.degenerate import is_degenerate
 from serpent.convert.digits import num_to_digits
@@ -44,7 +45,6 @@ from serpent.io import (
 	wait_user,
 )
 from serpent.mathematics import autowidth_for
-from serpent.palette import apply_palette
 from serpent.printing import (
 	format_counts,
 	format_decoded,
@@ -60,8 +60,6 @@ from serpent.spatial import amino_path_3d
 from serpent.stats import ac_peaks, autocorrelogram, count_sorted, quasar_pulses
 from serpent.visual import (
 	bin_choices,
-	dna_image_seq,
-	dna_quad_image,
 	dna_quasar_seq,
 	interactive,
 	plot_amino_labels,
@@ -294,39 +292,21 @@ def image(
 	"""Visualise FASTA data as images."""
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
-	channels = 3 if mode == 'Q' else len(mode)
 
 	if not width:
+		channels = 3 if mode == 'Q' else len(mode)
 		file_size = os.path.getsize(filename)
 		width = autowidth_for(file_size, amino, channels)
 		echo(f'Automatically set image width: {width} px')
 
-	if mode == 'Q':
-		rgb = np.vstack([
-			dna_quad_image(
-				seq, length, width,
-				# amino=amino,
-				degen=degen,
-				# table=table,
-			) for seq in seqs
-		])
-		img = Image.fromarray(rgb, mode='RGB')
-	else:
-		rgb = np.vstack([
-			dna_image_seq(
-				seq, width, mode, fill=0,
-				amino=amino, degen=degen, table=table)
-			for seq in seqs
-		])
-		img = Image.fromarray(rgb, mode=mode)
-
-	if mode == 'P':
-		img = apply_palette(img, amino)
+	img = dna_image(
+		seqs, width, mode,
+		amino=amino, degen=degen, table=table, length=length)
 
 	outfile = image_name_for(
 		filename, width, mode,
-		amino=amino, degen=degen, table=table, length=length
-	)
+		amino=amino, degen=degen, table=table, length=length)
+
 	img.show(title=outfile)
 	if out:
 		img.save(outfile)
