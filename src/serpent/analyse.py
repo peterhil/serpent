@@ -266,16 +266,11 @@ def flow(
 
 		for seq in seqs:
 			[decoded, descriptions] = dna.decode_seq(seq, amino, table, degen)
-
-			if desc:
-				yield from (
-					description if verbose else ansi.dim_text(description)
-					for description in descriptions
-				)
-
 			pixels = decoded_to_pixels(decoded, mode, amino, degen)
 
 			if verbose:
+				yield from descriptions
+
 				if fmt in ['a', 'amino']:
 					repeat = len(mode)
 					data = dna.to_amino(get_data(seq), amino, table, degen)
@@ -292,8 +287,9 @@ def flow(
 				)
 				yield from blocks
 			else:
-				blocks = pixels_to_blocks(pixels, width, mode=mode)
-				yield from blocks
+				if desc:
+					yield from (ansi.dim_text(d) for d in descriptions)
+				yield from pixels_to_blocks(pixels, width, mode=mode)
 
 
 @arg('--amino',  '-a', help='Amino acid input')
