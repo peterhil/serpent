@@ -271,18 +271,20 @@ def flow(
 
 				decoded = dna.decode(data, amino, table, degen)
 
-				repeat = len(mode)
 				if fmt in ['a', 'amino']:
 					text = dna.to_amino(data, amino, table, degen)
+				elif fmt in ['c', 'codon', 'b', 'base64']:
+					text = str_join(dna.encode(decoded, fmt=fmt))
 				elif amino:
 					text = data
 				else:
-					# TODO Use three rows per codon for 1.5 times more data per screen?
-					if fmt in ['c', 'codon']:
-						repeat *= 3
-					text = str_join(dna.encode(decoded, fmt=fmt))
+					err_msg = 'Unhandled option combination!'
+					raise NotImplementedError(err_msg)
 
 				pixels = decoded_to_pixels(decoded, mode, amino, degen)
+				# TODO Use three rows per codon for 1.5 times more data per screen?
+				repeat = 3 * len(mode) if fmt in ['c', 'codon'] else len(mode)
+
 				yield from pixels_to_verbose_blocks(
 					pixels, text, width, mode=mode, repeat=repeat
 				)
