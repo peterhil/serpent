@@ -249,7 +249,7 @@ def encode(
 @wrap_errors(wrapped_errors)
 def flow(
 	*inputs,
-	width=64, mode='RGB', fmt='base64', desc=False, verbose=False,
+	width=64, mode='RGB', fmt=None, desc=False, verbose=False,
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into Unicode block graphics."""
@@ -271,14 +271,15 @@ def flow(
 
 				decoded = dna.decode(data, amino, table, degen)
 
+				if not fmt:
+					fmt = 'amino' if amino else 'codon'
+
 				if fmt in ['a', 'amino']:
 					text = dna.to_amino(data, amino, table, degen)
 				elif fmt in ['c', 'codon', 'b', 'base64']:
 					text = str_join(dna.encode(decoded, fmt=fmt))
-				elif amino:
-					text = data
 				else:
-					err_msg = 'Unhandled option combination!'
+					err_msg = 'Unknown format'
 					raise NotImplementedError(err_msg)
 
 				pixels = decoded_to_pixels(decoded, mode, amino, degen)
