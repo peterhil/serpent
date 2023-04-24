@@ -271,15 +271,15 @@ def flow(
 
 				decoded = dna.decode(data, amino, table, degen)
 
+				repeat = len(mode)
 				if fmt in ['a', 'amino']:
-					repeat = len(mode)
 					text = dna.to_amino(data, amino, table, degen)
 				elif amino:
-					repeat = len(mode)
 					text = data
 				else:
 					# TODO Use three rows per codon for 1.5 times more data per screen?
-					repeat = 9 if fmt in ['c', 'codon'] else 3
+					if fmt in ['c', 'codon']:
+						repeat *= 3
 					text = str_join(dna.encode(decoded, fmt=fmt))
 
 				pixels = decoded_to_pixels(decoded, mode, amino, degen)
