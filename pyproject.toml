@@ -14,6 +14,7 @@ dependencies = [
     "argh>=0.28.1",
     "termcolor>=2.2.0",
     "ansi>=0.3.6",
+    "blessed>=1.20.0",
 ]
 requires-python = ">=3.8"
 readme = "README.md"
@@ -48,6 +49,8 @@ serpent = {call = "serpent.analyse:main"}
 degen = {shell = "find ../Data -name '*.fna' -o -name '*.fasta' -print0 | xargs -0 rg -ce '[WSMKRYBDHVNZ-]'"}
 degen-amino = {shell = "find ../Data -name '*.faa' -print0 | xargs -0 rg -ce '[BJZUOX*-]'"}
 doctest = {shell = "pytest --doctest-modules src/serpent/"}
+fasta = {shell = "find ../Data -name '*.f*a' -print0 | xargs -0 ls -xt"}
+
 
 [tool.mypy]
 files = "src"
@@ -80,6 +83,7 @@ warn_unreachable = true
 # You can disable imports or control per-module/file settings here
 [[tool.mypy.overrides]]
 module = [
+    "argh.*",
     "matplotlib.*",
 ]
 ignore_missing_imports = true
