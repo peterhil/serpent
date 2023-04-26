@@ -24,11 +24,11 @@ def pad_end(data: NDArray[T], fill: T, *, n: int=3) -> NDArray[T]:
 	"""Pad data with the fill characters on the end."""
 	padding = get_padding(data, fill, n)
 
-	return np.concatenate([data, padding])
+	return np.concatenate([data, padding], axis=None)
 
 
 def pad_start(data: NDArray[T], fill: T, *, n: int=3) -> NDArray[T]:
 	"""Pad data with the fill character on the beginning."""
 	padding = get_padding(data, fill, n)
 
-	return np.concatenate([padding, data])
+	return np.concatenate([padding, data], axis=None)

@@ -3,9 +3,14 @@
 from __future__ import annotations
 
 from collections import OrderedDict
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import ItemsView, Iterable, Mapping, Sequence
 
 import numpy as np
+
+
+def is_not_none(x):
+	"""Filter helper for when you ONLY want to filter out the None values."""
+	return x is not None
 
 
 def inverse_od(mapping: Mapping) -> OrderedDict:
@@ -25,7 +30,7 @@ def second(seq: Sequence):
 
 
 
-def sort_values(items: Mapping | list[tuple], reverse=False):
+def sort_values(items: ItemsView, reverse=False):
 	"""Sort mapping items by values."""
 	if isinstance(items, Mapping):
 		items = items.items()

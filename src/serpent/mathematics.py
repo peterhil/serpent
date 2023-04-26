@@ -17,6 +17,7 @@ NumericSeq = Union[Sequence[Numeric], ArrayLike]
 phi = (1 + np.sqrt(5)) / 2
 phi_large = 1 / phi
 phi_small = 1 - phi_large
+pi2 = np.pi * 2
 
 
 def autowidth(n: Real, base: int=64, aspect: Real=phi) -> int:
@@ -35,9 +36,18 @@ def autowidth(n: Real, base: int=64, aspect: Real=phi) -> int:
 	return int(base * multiple)
 
 
-def logn(number: NumericSeq, base: LogBase=np.e) -> float:
+def autowidth_for(file_size: int, amino: bool=False, channels: int=1):
+	"""Get automatic width from the file size."""
+	item_size = 1 if amino else 3
+	size = file_size / (item_size * channels)
+	width = autowidth(size, aspect=phi-1, base=64)
+
+	return width
+
+
+def logn(number: NumericSeq, base: LogBase=np.e) -> np.float64:
 	"""Logarithm of number on some base."""
-	return float(np.log2(number) / np.log2(base))
+	return np.log2(number) / np.log2(base)
 
 
 def magnitude(data: NumericSeq, base: LogBase=64) -> int:
@@ -61,7 +71,7 @@ def rescale(seq: NumericSeq, old, new):
 	>>> rescale(np.arange(-3, 4), 4, 12)
 	array([-9., -6., -3.,  0.,  3.,  6.,  9.])
 	"""
-	amax = np.amax(seq)
+	amax = np.amax(seq, initial=0)
 	assert amax < old, f'Expected max {amax} to be less than {old}.'
 
 	return new * seq / old

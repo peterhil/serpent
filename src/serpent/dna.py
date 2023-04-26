@@ -1,78 +1,188 @@
 """DNA and codons data handling."""
 from __future__ import annotations
 
-import itertools as itr
-import re
+import sys
+from collections.abc import Callable, Iterable, Iterator, Sequence
 
+import more_itertools as mit
 import numpy as np
-from more_itertools import grouper
+from numpy.typing import NDArray
 
-from serpent.convert.amino import decode_aminos
-from serpent.convert.codon import codon_to_num, codons_array
-from serpent.convert.degenerate import decode_degenerate
-from serpent.convert.digits import digits_to_num
-from serpent.fasta import AMINO, BASE, DEGENERATE
-from serpent.fun import map_array, str_join
-from serpent.settings import BASE_ORDER
+from serpent.convert.amino import codon_to_amino, decode_aminos
+from serpent.convert.base64 import num_to_base64
+from serpent.convert.codon import codon_to_num, num_to_codon
+from serpent.convert.degenerate import dnt_to_num
+from serpent.convert.digits import change_base
+from serpent.fasta import (
+	AMINO,
+	AMINO_DEGENERATE,
+	BASE,
+	BASE_NONCODING,
+	DEGENERATE,
+	RE_WHITESPACE,
+	FastaToken,
+	data_and_descriptions,
+)
+from serpent.fun import str_join
+from serpent.io import err
 
 
-def decode(dna, amino=False, table=1, degen=False):
-	"""Return codons or amino acids from DNA decoded into numbers 0..63."""
+def encode(decoded: Iterable[int], fmt: str = 'base64') -> Iterable[str]:
+	"""Encode decoded data into base64 or codon format."""
+	if fmt in ['b', 'base64']:
+		encoded = (num_to_base64.get(num) for num in decoded)
+	elif fmt in ['c', 'codon']:
+		encoded = (num_to_codon(num) for num in decoded)
+	else:
+		raise ValueError('Unknown format: ' + fmt)
+
+	return encoded
+
+
+def to_amino(
+	dna: Iterable,
+	amino: bool=False,
+	table: int=1,
+	degen: bool=False
+):
+	"""Encode data as amino acids."""
+	[cleaned, _] = clean_non_dna(dna, amino, degen)
+
+	if amino:
+		# Just clean the data
+		yield from cleaned
+	else:
+		# Convert from codons
+		if degen:
+			err_msg ="Can't map degenerate data into amino acids."
+			raise NotImplementedError(err_msg)
+		codons = get_codons_iter(cleaned)
+		yield from (codon_to_amino(c, table) for c in codons)
+
+
+def decode(
+	dna: Iterable,
+	amino: bool=False,
+	table: int=1,
+	degen: bool=False
+) -> NDArray:
+	"""Decode codons or amino acids into array from DNA into numbers.
+
+	The scale of numbers is:
+	- degen = False: 0..63     (dtype=np.int8)
+	- degen = True:  0...4095  (dtype=np.int32)
+	"""
+	decoded = decode_iter(dna, amino, table, degen)
+	array = _decoded_array(decoded, degen)
+
+	return array
+
+
+def _decoded_array(decoded: Iterable, degen: bool=False) -> NDArray:
+	"""Return iterable decoded data as Numpy array."""
+	dtype = np.int32 if degen else np.int8
+	decoded = np.fromiter(decoded, dtype)
+
+	return decoded
+
+
+def decode_iter(
+	dna: Iterable,
+	amino: bool=False,
+	table: int=1,
+	degen: bool=False
+) -> Iterator:
+	"""Decode codons or amino acids iteratively from DNA into numbers 0..63.
+
+	Warns if there are residual characters.
+	"""
 	# TODO: Handle degenerate amino acid data properly
 	# TODO: Check data against amino option and warn if used incorrectly?
-	dna = clean_non_dna(dna, amino, degen)
+	[dna, residual] = clean_non_dna(dna, amino, degen)
+
 	if amino:
 		return decode_aminos(dna, table)
+
+	if degen:
+		# Handle degenerate data as individual symbols in base 16
+		# and combine to degenerate codons
+		b16 = map(dnt_to_num, dna)
+		return change_base(b16, base=16, n=3)
 	else:
-		codons = get_codons(dna)
-		if degen:
-			return decode_degenerate(codons)
-		else:
-			return map_array(codon_to_num, codons)
+		codons = get_codons_iter(dna)
+		return map(codon_to_num, codons)
 
 
-def clean_non_dna(data, amino=False, degen=False):
-	"""Clean up non DNA or RNA data. Warns if there are residual characters."""
+def decode_seq(
+	seq: Sequence[FastaToken],
+	amino: bool=False,
+	table: int=1,
+	degen: bool=False,
+	decoder: Callable=decode,
+):
+	"""Decode FASTA token sequence."""
+	(data, descriptions) = data_and_descriptions(seq)
+	decoded = decoder(data, amino, table, degen)
+
+	return decoded, descriptions
+
+
+def cleaned_and_residual(
+	data: Iterable, amino: bool=False, degen: bool=False,
+) -> tuple[Iterable[str], Iterable[str]]:
+	"""Get cleaned and residual data from DNA or protein sequence."""
+	# TODO Handle non-coding DNA marked with lowercase symbols.
 	# TODO Convert RNA data into DNA, so everything can be handled in base 4 or
-	# base 64, and convert back if necessary wehen printing.
-	CODES = AMINO if amino else BASE
-	if degen and not amino:
-		CODES += DEGENERATE
-	cleaned = str_join(re.sub(fr"[^{CODES}]{6,}", "", data).split("\n"))
-	residual = str_join(re.findall(fr"[^\n{CODES}]", data))
+	# base 64, and convert back when printing if necessary.
+	CODES = AMINO if amino else BASE + BASE_NONCODING
+	if degen:
+		if amino:
+			CODES += AMINO_DEGENERATE
+		else:
+			CODES += DEGENERATE
 
-	if len(residual) > 0:
-		# TODO Use logger.warn with warnings.warn?
-		print("Residual characters:", residual)
+	(residual, cleaned) = mit.partition(lambda c: c in CODES, data)
+	# Filter out whitespace from residual
+	(residual, _) = mit.partition(RE_WHITESPACE.match, residual)
 
-	return cleaned
+	return (cleaned, residual)
+
+
+def clean_non_dna(
+	data: Iterable, amino: bool=False, degen: bool=False,
+) -> tuple[str, str]:
+	"""Clean up non DNA or RNA data."""
+	(cleaned, residual) = map(mit.peekable, cleaned_and_residual(data, amino, degen))
+
+	if residual.peek(''):
+		err(f'Residual characters: {str_join([*residual])}')
+		if not degen:
+			err('Try again with the --degen / -g option.')
+			sys.exit(1)
+
+	return (cleaned, residual)
 
 
 def get_codons(data, fill="A"):
 	"""Get codons from data as Numpy array."""
-	codons_list = list(grouper(data, 3, incomplete="fill", fillvalue=fill))
-	codons = map_array(str_join, codons_list, dtype="U3")
+	codons = np.fromiter(get_codons_iter(data, fill), dtype="U3")
 
 	return codons
 
 
+def get_codons_iter(data, fill="A"):
+	"""Get codons from data iteratively."""
+	codons = mit.grouper(data, 3, incomplete="fill", fillvalue=fill)
+
+	return map(str_join, codons)
+
+
 def codon_sequences(decoded, n=4, fill=0):
-	"""Chunk data into length N sequences of codons.
+	"""Reinterpret codon data as oligopeptide sequences.
 
-	Count the occurences of different k-mers as numbers between 0..64**n.
-	Return index and counts.
+	Split the decoded codon data into sequences of length n and
+	intepret the sequences as base 64 numbers.
+
+	Resulting data will have the range of 0..64**n.
 	"""
-	sequences = list(grouper(decoded, n, incomplete="fill", fillvalue=fill))
-	numbers = np.apply_along_axis(digits_to_num, 1, sequences)
-
-	return numbers
-
-
-def oligopeptides(length, bases=BASE_ORDER):
-	"""Sequence of all oligopeptide combinations of requested length.
-
-	Wikipedia: https://en.wikipedia.org/wiki/Oligopeptide
-	"""
-	oligos = map(str_join, itr.product(codons_array(bases), repeat=length))
-
-	return np.fromiter(oligos, dtype=f'<U{3*length}')
+	return change_base(decoded, base=64, n=n, fill=fill)
