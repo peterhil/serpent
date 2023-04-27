@@ -72,13 +72,14 @@ def num_to_amino(number: int, table: int=1) -> str:
 	codon = num_to_codon(number)
 	return codon_to_amino(codon, table)
 
-# Quick hack, offset with one so there is room for zero
+
 aminos = OrderedDict([
-	(num + 1 , amino) for (num, amino)
+	(num, amino) for (num, amino)
 	in enumerate(genetic_code_inverse[1])
 ])
 
 aminos_inverse = inverse_od(aminos)
+
 
 def decode_aminos(
 	dna,
