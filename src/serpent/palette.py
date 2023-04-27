@@ -16,6 +16,11 @@ def hue(hue: float=0, sat: float=1.0, lightness: int=255) -> Rgb:
 	return hsv_to_rgb(hue, sat, lightness)
 
 
+def rgb_to_hex(rgb: Rgb) -> str:
+	hexa = ''.join([hex(ch)[2:].zfill(2) for ch in rgb])
+	return f'#{hexa}'
+
+
 def spectrum(n=64, sat=1.0, lightness=255, offset=0):
 	"""Spectrum of n colours."""
 	hues = (np.linspace(0, 1, n, endpoint=False) + offset) % 1

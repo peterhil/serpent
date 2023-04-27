@@ -8,7 +8,7 @@ import fileinput
 import itertools as itr
 import os
 import sys
-from collections import Counter
+from collections import Counter, OrderedDict
 from pathlib import Path
 
 import argh
@@ -45,6 +45,7 @@ from serpent.io import (
 	wait_user,
 )
 from serpent.mathematics import autowidth_for
+from serpent.palette import rgb_to_hex, spectrum_layer_colours
 from serpent.printing import (
 	format_counts,
 	format_decoded,
@@ -315,11 +316,13 @@ def image(
 @arg('--amino', '-a', help='Amino acid input')
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen', '-g', help='Degenerate data')
-@arg('--cumulative', '-c', help='Cumulative')
+@arg('--plot',  '-p', help='Plot data')
+@arg('--count', '-c', help='Print counts')
+@arg('--cumulative', '-m', help='Cumulative')
 @wrap_errors(wrapped_errors)
 def pulse(
 	filename,
-	cumulative=False,
+	count=False, cumulative=False, plot=False,
 	amino=False, degen=False, table=1,
 ):
 	"""Pulse repetition intervals for symbol repeat lengths."""
@@ -327,9 +330,69 @@ def pulse(
 	seqs = read_sequences(filename, amino)
 	key = aminos_for_table(table)
 
-	for seq in seqs:
-		[aminos, descriptions] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
-		pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative, key=key)
+	if plot:
+		colour_map = spectrum_layer_colours(amino)
+		colours = OrderedDict([
+			[aa, rgb_to_hex(rgb)]
+			for aa, rgb in zip(key, colour_map)
+		])
+		size = 10
+		title = 'SRI counts' if count else 'Symbol repetition intervals'
+
+		ax = plt.axes()
+		ax.set_title(f'{title} of\n{filename}')
+
+		for seq in seqs:
+			[aminos, descriptions] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
+			pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative, key=key)
+
+			# ax.plot(pulses.values(), pulses.keys())
+			for i, item in enumerate(reversed(pulses.items())):
+				[aa, pulse] = item
+
+				colour = colours[aa]
+				mx = len(pulses) - 1
+				pos = mx - i
+
+				if count:
+					base = 10
+					data = count_sorted(pulse)
+					ax.plot(*data, colour)
+
+					ax.set_xscale('log', base=base)
+					ax.set_yscale('log', base=base)
+
+					ax.text(
+						1 + scale * (i / mx),
+						2 + height * (1 - i / mx),
+						aa, color=colour,
+						size=size, fontweight='semibold'
+					)
+					ax.set_xlabel('repeat length')
+					ax.set_ylabel('count')
+				else:
+					data = pulse
+					ax.plot(
+						data + pos * 100,
+						colour
+					)
+
+					# ax.set_xscale('log', base=10)
+					# ax.set_yscale('log', base=10)
+
+					ax.text(
+						-15, pos * 100, aa, color=colour,
+						ha='right', size=size, fontweight='semibold'
+					)
+					ax.set_xlabel('index of repetition')
+					ax.set_ylabel('interval length (space between symbols)')
+
+		interactive()
+		wait_user()
+	else:
+		for seq in seqs:
+			[aminos, descriptions] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
+			pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative, key=key)
 
 		yield from descriptions
 		yield from format_quasar(pulses.keys())  # Print symbols
