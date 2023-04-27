@@ -342,11 +342,14 @@ def pulse(
 		ax = plt.axes()
 		ax.set_title(f'{title} of\n{filename}')
 
+		maxheight = maxscale = 0
+
 		for seq in seqs:
 			[aminos, descriptions] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
 			pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative, key=key)
+			maxheight = max(height, maxheight)
+			maxscale = max(scale, maxscale)
 
-			# ax.plot(pulses.values(), pulses.keys())
 			for i, item in enumerate(reversed(pulses.items())):
 				[aa, pulse] = item
 
@@ -362,20 +365,11 @@ def pulse(
 					ax.set_xscale('log', base=base)
 					ax.set_yscale('log', base=base)
 
-					ax.text(
-						1 + scale * (i / mx),
-						2 + height * (1 - i / mx),
-						aa, color=colour,
-						size=size, fontweight='semibold'
-					)
 					ax.set_xlabel('repeat length')
 					ax.set_ylabel('count')
 				else:
 					data = pulse
-					ax.plot(
-						data + pos * 100,
-						colour
-					)
+					ax.plot(data + pos * 100, colour)
 
 					# ax.set_xscale('log', base=10)
 					# ax.set_yscale('log', base=10)
@@ -386,6 +380,17 @@ def pulse(
 					)
 					ax.set_xlabel('index of repetition')
 					ax.set_ylabel('interval length (space between symbols)')
+
+		if count:
+			mx = len(key) - 1
+			for i, aa in enumerate(reversed(key)):
+				colour = colours[aa]
+				ax.text(
+					1 + maxscale * (i / mx),
+					2 + maxheight * (1 - i / mx),
+					aa, color=colour,
+					size=size, fontweight='semibold'
+				)
 
 		interactive()
 		wait_user()
