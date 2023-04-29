@@ -24,6 +24,7 @@ from serpent.cli.image import dna_image
 from serpent.convert.amino import aa_tables, aminos_for_table, split_aminos
 from serpent.convert.degenerate import is_degenerate
 from serpent.convert.digits import num_to_digits
+from serpent.convert.nucleotide import split_nucleotides
 from serpent.dsp import fft_spectra
 from serpent.encoding import BASE64
 from serpent.fasta import (
@@ -52,6 +53,7 @@ from serpent.printing import (
 	format_lines,
 	format_quasar,
 	format_quasar_pulses,
+	format_split,
 )
 from serpent.settings import (
 	COUNT_LIMIT,
@@ -201,7 +203,7 @@ def decode(filename, amino=False, degen=False, table=1):
 @wrap_errors(wrapped_errors)
 def encode(
 	filename,
-	count=False, fmt='base64', out=False, split='', width=64,
+	count=False, fmt='codon', out=False, split='', width=64,
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into various formats."""
@@ -213,10 +215,17 @@ def encode(
 		encoded = dna.to_amino(data, amino, table, degen)
 
 		if split:
-			encoded = (str_join(region) for region in split_aminos(encoded, split=split))
-			yield from encoded
+			regions = split_aminos(encoded, split=split)
+			yield from format_split(regions, width, split=split)
 			return
 	else:
+		if split:
+			[data, residual] = dna.clean_non_dna(data, amino, degen)
+			codons = dna.get_codons(data)
+			regions = split_nucleotides(codons, split=split)
+			yield from format_split(regions, width, split=split)
+			return
+
 		decoded = dna.decode_iter(data, amino, table, degen)
 		encoded = dna.encode(decoded, fmt)
 

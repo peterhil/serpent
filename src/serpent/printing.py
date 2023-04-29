@@ -63,3 +63,10 @@ def format_quasar(data):
 def format_quasar_pulses(pulses, height):
 	for row in range(height):
 		yield from format_quasar([pulses[col][row] for col in pulses])
+
+
+def format_split(regions, width=72, split='n'):
+	for i, region in enumerate(regions):
+		yield f'@split-{split}-{i}'
+		lines = (str_join(line) for line in mit.chunked(str_join(region), width))
+		yield from lines
