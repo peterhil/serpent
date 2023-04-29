@@ -198,12 +198,11 @@ def decode(filename, amino=False, degen=False, table=1):
 @arg('--count', '-c', help='Print counts')
 @arg('--fmt',   '-f', help='Output format', choices=fmt_choices)
 @arg('--out',   '-o', help='Write out to file')
-@arg('--split', '-s', help='Split by stop aNd/oR start codons', choices=('n', 'r'))
 @arg('--width', '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
 def encode(
 	filename,
-	count=False, fmt='codon', out=False, split='', width=64,
+	count=False, fmt='codon', out=False, width=64,
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into various formats."""
@@ -213,25 +212,13 @@ def encode(
 
 	if fmt in ['a', 'amino']:
 		encoded = dna.to_amino(data, amino, table, degen)
-
-		if split:
-			regions = split_aminos(encoded, split=split)
-			yield from format_split(regions, width, split=split)
-			return
 	else:
-		if split:
-			[data, residual] = dna.clean_non_dna(data, amino, degen)
-			codons = dna.get_codons(data)
-			regions = split_nucleotides(codons, split=split)
-			yield from format_split(regions, width, split=split)
-			return
-
 		decoded = dna.decode_iter(data, amino, table, degen)
 		encoded = dna.encode(decoded, fmt)
 
 	if count:
 		counts = Counter(encoded)
-		return (f"{count}\t{codon}" for codon, count in counts.most_common())
+		yield from (f"{count}\t{codon}" for codon, count in counts.most_common())
 
 	lines = (str_join(line) for line in mit.chunked(encoded, width))
 	if out:
@@ -243,6 +230,35 @@ def encode(
 			print(f"Wrote: {outfile}")
 	else:
 		yield from lines
+
+
+@arg('--amino', '-a', help='Amino acid input')
+@arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen', '-g', help='Degenerate data')
+@arg('--fmt',   '-f', help='Output format', choices=fmt_choices)
+@arg('--words', '-r', help='Split by either stop or start codons')
+@arg('--width', '-w', help='Line width', type=int)
+@wrap_errors(wrapped_errors)
+def split(
+	filename,
+	fmt='codon', words=False, width=64,
+	amino=False, degen=False, table=1,
+):
+	"""Split data in various ways."""
+	# TODO Read and decode data iteratively
+	amino = auto_select_amino(filename, amino)
+	data = read(filename, amino)
+	split = 'r' if words else 'n'
+
+	if fmt in ['a', 'amino']:
+		encoded = dna.to_amino(data, amino, table, degen)
+		regions = split_aminos(encoded, split=split)
+	else:
+		[data, residual] = dna.clean_non_dna(data, amino, degen)
+		codons = dna.get_codons(data)
+		regions = split_nucleotides(codons, split=split)
+
+	yield from format_split(regions, width, split=split)
 
 
 @arg('--amino',   '-a', help='Amino acid input')
@@ -664,6 +680,7 @@ def main():
 		quasar,
 		repeats,
 		seq,
+		split,
 		vectors,
 		zigzag,
 	])
