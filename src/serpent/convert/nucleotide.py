@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from collections import OrderedDict
 
-import more_itertools as mit
-
 from serpent.fun import inverse_od
 from serpent.settings import BASE_ORDER
 
@@ -32,26 +30,3 @@ __all__ = [
 
 num_to_nt = OrderedDict(enumerate(BASE_ORDER))
 nt_to_num = inverse_od(num_to_nt)
-
-
-def split_nucleotides(
-	codons,
-	# Hard coded table 11, TODO Use genetic code tables
-	start='GTG ATG ATA ATC ATT CTG TTG',
-	stop='TGA TAG TAA',
-	split='n'):
-	"""Split nucleotide acid sequence by start and stop codons."""
-	# TODO Get all start and stop codons from the genetic code tables!
-	start = start.split(' ')
-	stop = stop.split(' ')
-
-	def start_or_stop(a, b):
-		# 'sentences': Split when a start codon follows a stop codon
-		if split == 'n':
-			return (a in stop and b in start)
-		# 'words': Split on start or stop codons
-		elif split == 'r':
-			return (a in stop or b in start) and a != b
-
-	codons = mit.split_when(codons, start_or_stop)
-	return codons

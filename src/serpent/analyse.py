@@ -21,10 +21,10 @@ from PIL import Image
 from serpent import ansi, dna
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
-from serpent.convert.amino import aa_tables, aminos_for_table, split_aminos
+from serpent.convert.amino import aa_tables, aminos_for_table
 from serpent.convert.degenerate import is_degenerate
 from serpent.convert.digits import num_to_digits
-from serpent.convert.nucleotide import split_nucleotides
+from serpent.convert.split import split_aminos, split_nucleotides
 from serpent.dsp import fft_spectra
 from serpent.encoding import BASE64
 from serpent.fasta import (

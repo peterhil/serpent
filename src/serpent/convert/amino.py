@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from collections import OrderedDict
 
-import more_itertools as mit
-
 from serpent.fun import inverse_od, map_array, str_join
 
 from .codon import CODONS_LEN, codon_to_num, codons_array, num_to_codon
@@ -93,21 +91,6 @@ def decode_aminos(
 	table
 	# return map_array(lambda d: amino_to_num(d, table), dna)
 	return map_array(lambda a: aminos_inverse.get(a, 0), dna)
-
-
-def split_aminos(aminos, start='M', stop='*', split='r'):
-	"""Split amino acid sequence by start and stop codons."""
-	# TODO Get all start and stop codons from the genetic code tables!
-	def start_or_stop(a, b):
-		# 'sentences': Split when a start codon follows a stop codon
-		if split == 'n':
-			return (a in stop and b in start)
-		# 'words': Split on start or stop codons
-		elif split == 'r':
-			return (a in stop or b in start) and a != b
-	aminos = mit.split_when(aminos, start_or_stop)
-
-	return aminos
 
 
 def aminos_for_table(table: int=1):
