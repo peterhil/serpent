@@ -24,7 +24,7 @@ from serpent.cli.image import dna_image
 from serpent.convert.amino import aa_tables, aminos_for_table
 from serpent.convert.degenerate import is_degenerate
 from serpent.convert.digits import num_to_digits
-from serpent.convert.split import split_aminos, split_nucleotides
+from serpent.convert.split import split_aminos, split_encoded
 from serpent.dsp import fft_spectra
 from serpent.encoding import BASE64
 from serpent.fasta import (
@@ -247,11 +247,7 @@ def split(
 
 	data = read(filename, amino)
 	encoded = encode_data(data, fmt, amino, table, degen)
-
-	if fmt in ['a', 'amino']:
-		regions = split_aminos(encoded, split=split)
-	else:
-		regions = split_nucleotides(encoded, split=split)
+	regions = split_encoded(encoded, fmt, split=split)
 
 	yield from format_split(regions, width, split=split)
 

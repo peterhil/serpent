@@ -19,7 +19,7 @@ def split_aminos(aminos, start='M', stop='*', split='r'):
 		return start_or_stop(a, b, start, stop, split)
 	aminos = mit.split_when(aminos, splitter)
 
-	return aminos
+	yield from aminos
 
 
 def split_nucleotides(
@@ -37,4 +37,13 @@ def split_nucleotides(
 		return start_or_stop(a, b, start, stop, split)
 	codons = mit.split_when(codons, splitter)
 
-	return codons
+	yield from codons
+
+
+def split_encoded(encoded, fmt, split='n'):
+	if fmt in ['a', 'amino']:
+		regions = split_aminos(encoded, split=split)
+	else:
+		regions = split_nucleotides(encoded, split=split)
+
+	yield from regions
