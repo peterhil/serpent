@@ -145,7 +145,7 @@ def cleaned_and_residual(
 	# Filter out whitespace from residual
 	(residual, _) = mit.partition(RE_WHITESPACE.match, residual)
 
-	return (cleaned, residual)
+	yield from (cleaned, residual)
 
 
 def clean_non_dna(
@@ -160,7 +160,7 @@ def clean_non_dna(
 			err('Try again with the --degen / -g option.')
 			sys.exit(1)
 
-	return (cleaned, residual)
+	yield from (cleaned, residual)
 
 
 def get_codons(data, fill="A"):

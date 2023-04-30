@@ -257,4 +257,4 @@ def descriptions_and_data(sequence):
 	# FIXME Read data iteratively by removing str_join (which breaks things)
 	data = str_join(token.data for token in tokens if token.data)
 
-	return descriptions, data
+	yield from (descriptions, data)
