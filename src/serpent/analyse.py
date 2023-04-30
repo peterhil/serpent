@@ -203,29 +203,38 @@ def decode(filename, amino=False, degen=False, table=1):
 @arg('--width', '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
 def encode(
-	filename,
+	*inputs,
 	count=False, fmt='codon', out=False, width=64,
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into various formats."""
-	# TODO Read and decode data iteratively
-	amino = auto_select_amino(filename, amino)
-	data = read(filename, amino)
+	amino_opt = amino
+	paths = check_paths(inputs)
 
-	encoded = encode_data(data, fmt, amino, table, degen)
+	for filename in paths:
+		if len(inputs) > 1:
+			yield f';file:{filename}'
+		amino = auto_select_amino(filename, amino_opt)
+		seqs = read_sequences(filename, amino)
 
-	if count:
-		counts = Counter(encoded)
-		yield from (f"{count}\t{codon}" for codon, count in counts.most_common())
+		for seq in seqs:
+			[descriptions, data] = descriptions_and_data(seq)
+			yield from descriptions
 
-	lines = reflow(encoded, width)
+			encoded = encode_data(data, fmt, amino, table, degen)
 
-	if out:
-		ext = file_extension_for(fmt)
-		outfile = f'{filename}.enc.{ext}'
-		write_iterable(lines, outfile)
-	else:
-		yield from lines
+			if count:
+				counts = Counter(encoded)
+				yield from (f"{count}\t{codon}" for codon, count in counts.most_common())
+
+			lines = reflow(encoded, width)
+
+			if out:
+				ext = file_extension_for(fmt)
+				outfile = f'{filename}.enc.{ext}'
+				write_iterable(lines, outfile)
+			else:
+				yield from lines
 
 
 @arg('--amino', '-a', help='Amino acid input')
@@ -241,7 +250,6 @@ def split(
 	amino=False, degen=False, table=1,
 ):
 	"""Split data in various ways."""
-	# TODO Read and decode data iteratively
 	amino_opt = amino
 	paths = check_paths(inputs)
 	split = 'r' if words else 'n'
