@@ -37,6 +37,12 @@ def format_lines(data, width=80, sep=' '):
 	return lines
 
 
+def reflow(data, width=80):
+	"""Reflow text data into line width."""
+	# TODO Replace str_join with an iterative solution
+	return (str_join(line) for line in mit.chunked(str_join(data), width))
+
+
 def format_counts(counts: Counter, limit=COUNT_LIMIT) -> Iterable[str]:
 	yield from (
 		f'{item}\t{count}'

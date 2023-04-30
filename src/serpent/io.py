@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator, Sequence
 from fileinput import hook_encoded
+from functools import partial
 from pathlib import Path
 from sys import argv, stderr, stdout
 
@@ -49,10 +50,12 @@ def check_paths(inputs: Sequence[str], recurse: bool=False) -> Iterator[Path | s
 
 def file_extension_for(fmt: str = 'base64'):
 	"""Get file extension for encoded data format."""
-	if fmt in ['b', 'base64']:
+	if fmt in ['a', 'amino']:
+		extension = 'faa'
+	elif fmt in ['b', 'base64']:
 		extension = 'ser64'
 	elif fmt in ['c', 'codon']:
-		extension = 'codon.fasta'
+		extension = 'fna'
 	else:
 		raise ValueError('Unknown format: ' + fmt)
 
@@ -93,3 +96,11 @@ def wait_user():
 	Useful for allowing the user time to explore the interactive plots.
 	"""
 	return input('Press ENTER when ready. ')
+
+
+def write_iterable(lines, outfile):
+	with Path(outfile).open("w", encoding="UTF-8") as f:
+		writeln = partial(print, file=f)
+		for line in lines:
+			writeln(line)
+	print(f"Wrote: {outfile}")

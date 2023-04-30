@@ -9,7 +9,6 @@ import itertools as itr
 import os
 import sys
 from collections import Counter, OrderedDict
-from pathlib import Path
 
 import argh
 import matplotlib.pyplot as plt
@@ -45,6 +44,7 @@ from serpent.io import (
 	image_name_for,
 	openhook,
 	wait_user,
+	write_iterable,
 )
 from serpent.mathematics import autowidth_for
 from serpent.palette import rgb_to_hex, spectrum_layer_colours
@@ -55,6 +55,7 @@ from serpent.printing import (
 	format_quasar,
 	format_quasar_pulses,
 	format_split,
+	reflow,
 )
 from serpent.settings import (
 	COUNT_LIMIT,
@@ -217,14 +218,12 @@ def encode(
 		counts = Counter(encoded)
 		yield from (f"{count}\t{codon}" for codon, count in counts.most_common())
 
-	lines = (str_join(line) for line in mit.chunked(encoded, width))
+	lines = reflow(encoded, width)
+
 	if out:
-		file_ext = file_extension_for(fmt)
-		outfile = f'{filename}.{file_ext}'
-		with Path(outfile).open("w", encoding="UTF-8") as file:
-			file.write(str_join(lines, "\n"))
-			file.write("\n")  # Newline at the end
-			print(f"Wrote: {outfile}")
+		ext = file_extension_for(fmt)
+		outfile = f'{filename}.enc.{ext}'
+		write_iterable(lines, outfile)
 	else:
 		yield from lines
 
