@@ -248,7 +248,7 @@ def split(
 
 	for filename in paths:
 		if len(inputs) > 1:
-			yield(f';file:{filename}')
+			yield f';file:{filename}'
 		amino = auto_select_amino(filename, amino_opt)
 		seqs = read_sequences(filename, amino)
 
@@ -281,7 +281,7 @@ def flow(
 
 	for filename in paths:
 		if len(inputs) > 1:
-			yield(f';file:{filename}')
+			yield f';file:{filename}'
 		amino = auto_select_amino(filename, amino_opt)
 		seqs = read_sequences(filename, amino)
 
