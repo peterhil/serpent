@@ -231,7 +231,7 @@ def encode(
 @arg('--amino', '-a', help='Amino acid input')
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen', '-g', help='Degenerate data')
-@arg('--fmt',   '-f', help='Output format', choices=fmt_choices)
+@arg('--fmt',   '-f', help='Output format', choices=['a', 'amino', 'c', 'codon'])
 @arg('--words', '-r', help='Split by either stop or start codons')
 @arg('--width', '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
@@ -243,16 +243,15 @@ def split(
 	"""Split data in various ways."""
 	# TODO Read and decode data iteratively
 	amino = auto_select_amino(filename, amino)
-	data = read(filename, amino)
 	split = 'r' if words else 'n'
 
+	data = read(filename, amino)
+	encoded = encode_data(data, fmt, amino, table, degen)
+
 	if fmt in ['a', 'amino']:
-		encoded = dna.to_amino(data, amino, table, degen)
 		regions = split_aminos(encoded, split=split)
 	else:
-		[data, residual] = dna.clean_non_dna(data, amino, degen)
-		codons = dna.get_codons(data)
-		regions = split_nucleotides(codons, split=split)
+		regions = split_nucleotides(encoded, split=split)
 
 	yield from format_split(regions, width, split=split)
 
