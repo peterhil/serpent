@@ -30,7 +30,7 @@ from serpent.encoding import BASE64
 from serpent.fasta import (
 	ParseError,
 	auto_select_amino,
-	data_and_descriptions,
+	descriptions_and_data,
 	find_fasta_files,
 	find_fasta_sequences,
 	read,
@@ -124,7 +124,7 @@ def codons(filename, degen_only=False, width=20, stats=False, limit=COUNT_LIMIT)
 	seqs = read_sequences(filename)
 
 	for seq in seqs:
-		(data, descriptions) = data_and_descriptions(seq)
+		[descriptions, data] = descriptions_and_data(seq)
 
 		yield from descriptions
 		codons = dna.get_codons_iter(data)
@@ -253,7 +253,7 @@ def split(
 		seqs = read_sequences(filename, amino)
 
 		for seq in seqs:
-			[data, descriptions] = data_and_descriptions(seq)
+			[descriptions, data] = descriptions_and_data(seq)
 			yield from descriptions
 
 			encoded = encode_data(data, fmt, amino, table, degen)
@@ -286,7 +286,7 @@ def flow(
 		seqs = read_sequences(filename, amino)
 
 		for seq in seqs:
-			[data, descriptions] = data_and_descriptions(seq)
+			[descriptions, data] = descriptions_and_data(seq)
 
 			if verbose:
 				yield from descriptions

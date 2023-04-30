@@ -12,7 +12,7 @@ from PIL import Image
 from serpent import dna
 from serpent.bitmap import height_for, num_to_pixel
 from serpent.convert.quad import dna_to_quad, quads_to_rgb
-from serpent.fasta import data_and_descriptions
+from serpent.fasta import descriptions_and_data
 from serpent.fun import str_join
 from serpent.mapping.amino_spiral_cube import amino_spiral
 from serpent.mathematics import logn, magnitude, normalise
@@ -239,7 +239,7 @@ def dna_quad_image(
 	# table=1,
 ):
 	"""Convert DNA data to image using four base colours (YIQ colour space)."""
-	(data, descriptions) = data_and_descriptions(seq)
+	[descriptions, data] = descriptions_and_data(seq)
 
 	# TODO Remove degen option altogether and just use dnt conversion
 	quads = dna_to_quad(data, length, degen)

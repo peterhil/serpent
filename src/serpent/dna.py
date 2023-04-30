@@ -21,7 +21,7 @@ from serpent.fasta import (
 	DEGENERATE,
 	RE_WHITESPACE,
 	FastaToken,
-	data_and_descriptions,
+	descriptions_and_data,
 )
 from serpent.fun import str_join
 from serpent.io import err
@@ -121,7 +121,7 @@ def decode_seq(
 	decoder: Callable=decode,
 ):
 	"""Decode FASTA token sequence."""
-	(data, descriptions) = data_and_descriptions(seq)
+	[descriptions, data] = descriptions_and_data(seq)
 	decoded = decoder(data, amino, table, degen)
 
 	return decoded, descriptions
