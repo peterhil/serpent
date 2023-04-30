@@ -21,9 +21,9 @@ from serpent import ansi, dna
 from serpent.cli.encode import encode_data
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
+from serpent.cli.repeats import analyse_repeats
 from serpent.convert.amino import aa_tables, aminos_for_table
 from serpent.convert.degenerate import is_degenerate
-from serpent.convert.digits import num_to_digits
 from serpent.convert.split import split_aminos, split_encoded
 from serpent.dsp import fft_spectra
 from serpent.encoding import BASE64
@@ -629,19 +629,6 @@ def pep(
 		absent = combos[[combo not in peptides for combo in combos]]
 
 		yield from format_lines(absent, 32)
-
-
-def analyse_repeats(decoded, length=4, limit=2, fmt='codon'):
-	"""Analyse codon sequence repeats."""
-	[index, count] = count_sorted(dna.codon_sequences(decoded, length))
-	repeats = index[count >= limit]
-
-	echo("Repeated codon sequences:")
-	b64 = (num_to_digits(num, base=64) for num in repeats)
-	encoded = (str_join(dna.encode(codon, fmt)) for codon in b64)
-
-	width = 32 if fmt in ['b', 'base64'] else 8
-	yield from format_lines(encoded, width)
 
 
 @arg('--amino',  '-a', help='Amino acid input')
