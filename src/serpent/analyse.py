@@ -19,6 +19,7 @@ from argh.decorators import aliases, arg, wrap_errors
 from PIL import Image
 
 from serpent import ansi, dna
+from serpent.cli.encode import encode_data
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
 from serpent.convert.amino import aa_tables, aminos_for_table
@@ -210,11 +211,7 @@ def encode(
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 
-	if fmt in ['a', 'amino']:
-		encoded = dna.to_amino(data, amino, table, degen)
-	else:
-		decoded = dna.decode_iter(data, amino, table, degen)
-		encoded = dna.encode(decoded, fmt)
+	encoded = encode_data(data, fmt, amino, table, degen)
 
 	if count:
 		counts = Counter(encoded)
