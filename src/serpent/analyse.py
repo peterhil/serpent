@@ -236,20 +236,29 @@ def encode(
 @arg('--width', '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
 def split(
-	filename,
+	*inputs,
 	fmt='codon', words=False, width=64,
 	amino=False, degen=False, table=1,
 ):
 	"""Split data in various ways."""
 	# TODO Read and decode data iteratively
-	amino = auto_select_amino(filename, amino)
+	amino_opt = amino
+	paths = check_paths(inputs)
 	split = 'r' if words else 'n'
 
-	data = read(filename, amino)
-	encoded = encode_data(data, fmt, amino, table, degen)
-	regions = split_encoded(encoded, fmt, split=split)
+	for filename in paths:
+		if len(inputs) > 1:
+			yield(f';file:{filename}')
+		amino = auto_select_amino(filename, amino_opt)
+		seqs = read_sequences(filename, amino)
 
-	yield from format_split(regions, width, split=split)
+		for seq in seqs:
+			[data, descriptions] = data_and_descriptions(seq)
+			yield from descriptions
+
+			encoded = encode_data(data, fmt, amino, table, degen)
+			regions = split_encoded(encoded, fmt, split=split)
+			yield from format_split(regions, width, split=split)
 
 
 @arg('--amino',   '-a', help='Amino acid input')
@@ -272,8 +281,7 @@ def flow(
 
 	for filename in paths:
 		if len(inputs) > 1:
-			print('file:', filename)
-
+			yield(f';file:{filename}')
 		amino = auto_select_amino(filename, amino_opt)
 		seqs = read_sequences(filename, amino)
 
