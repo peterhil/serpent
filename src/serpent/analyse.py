@@ -150,7 +150,6 @@ def cat(*inputs):
 	"""Concatenate and print FASTA sequences from files."""
 	# TODO Handle compressed files and archives
 	paths = check_paths(inputs)
-
 	with fileinput.input(paths, mode='r', openhook=openhook) as fi:
 		for line in fi:
 			yield line.rstrip()
@@ -162,7 +161,6 @@ def find(*inputs, num=False, seq=False):
 	"""Find FASTA sequences from files and directories."""
 	# TODO Handle compressed files and archives
 	paths = check_paths(inputs, recurse=True)
-
 	with fileinput.input(paths, mode='r', openhook=openhook) as fi:
 		if seq:
 			yield from find_fasta_sequences(fi, num)
@@ -209,9 +207,8 @@ def encode(
 ):
 	"""Encode data into various formats."""
 	amino_opt = amino
-	paths = check_paths(inputs)
 
-	for filename in paths:
+	for filename in check_paths(inputs):
 		if len(inputs) > 1:
 			yield f';file:{filename}'
 		amino = auto_select_amino(filename, amino_opt)
@@ -251,10 +248,9 @@ def split(
 ):
 	"""Split data in various ways."""
 	amino_opt = amino
-	paths = check_paths(inputs)
 	split = 'r' if words else 'n'
 
-	for filename in paths:
+	for filename in check_paths(inputs):
 		if len(inputs) > 1:
 			yield f';file:{filename}'
 		amino = auto_select_amino(filename, amino_opt)
@@ -284,10 +280,9 @@ def flow(
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into Unicode block graphics."""
-	paths = check_paths(inputs)
 	amino_opt = amino
 
-	for filename in paths:
+	for filename in check_paths(inputs):
 		if len(inputs) > 1:
 			yield f';file:{filename}'
 		amino = auto_select_amino(filename, amino_opt)
