@@ -21,7 +21,12 @@ from serpent import ansi, dna
 from serpent.cli.encode import encode_data
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
-from serpent.cli.pulse import pulse_count_symbols_legend, pulse_text
+from serpent.cli.pulse import (
+	pulse_plot,
+	pulse_plot_counts,
+	pulse_plot_symbols_legend,
+	pulse_text,
+)
 from serpent.cli.repeats import analyse_repeats
 from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
@@ -62,7 +67,7 @@ from serpent.settings import (
 	DEFAULT_COLOR,
 )
 from serpent.spatial import amino_path_3d
-from serpent.stats import ac_peaks, autocorrelogram, count_sorted, quasar_pulses
+from serpent.stats import ac_peaks, autocorrelogram, quasar_pulses
 from serpent.visual import (
 	bin_choices,
 	dna_quasar_seq,
@@ -415,31 +420,12 @@ def pulse(
 				pos = mx - i
 
 				if count:
-					base = 10
-					data = count_sorted(pulse)
-					ax.plot(*data, colour)
-
-					ax.set_xscale('log', base=base)
-					ax.set_yscale('log', base=base)
-
-					ax.set_xlabel('repeat length')
-					ax.set_ylabel('count')
+					pulse_plot_counts(ax, pulse, colour, base=10)
 				else:
-					data = pulse
-					ax.plot(data + pos * 100, colour)
-
-					# ax.set_xscale('log', base=10)
-					# ax.set_yscale('log', base=10)
-
-					ax.text(
-						-15, pos * 100, aa, color=colour,
-						ha='right', size=size, fontweight='semibold'
-					)
-					ax.set_xlabel('index of repetition')
-					ax.set_ylabel('interval length (space between symbols)')
+					pulse_plot(ax, pulse, colour, symbol=aa, y_offset=pos * 100, size=size)
 
 		if count:
-			pulse_count_symbols_legend(
+			pulse_plot_symbols_legend(
 				ax, key, colours, width=maxscale, height=maxheight, size=size
 			)
 
