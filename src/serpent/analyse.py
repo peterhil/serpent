@@ -8,7 +8,7 @@ import fileinput
 import itertools as itr
 import os
 import sys
-from collections import Counter, OrderedDict
+from collections import Counter
 
 import argh
 import matplotlib.pyplot as plt
@@ -21,7 +21,7 @@ from serpent import ansi, dna
 from serpent.cli.encode import encode_data
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
-from serpent.cli.pulse import pulse_text
+from serpent.cli.pulse import pulse_count_symbols_legend, pulse_text
 from serpent.cli.repeats import analyse_repeats
 from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
@@ -49,7 +49,7 @@ from serpent.io import (
 	write_iterable,
 )
 from serpent.mathematics import autowidth_for
-from serpent.palette import rgb_to_hex, spectrum_layer_colours
+from serpent.palette import spectrum_layer_colours_for
 from serpent.printing import (
 	format_counter,
 	format_decoded,
@@ -392,11 +392,7 @@ def pulse(
 	key = aminos_for_table(table)
 
 	if plot:
-		colour_map = spectrum_layer_colours(amino)
-		colours = OrderedDict([
-			[aa, rgb_to_hex(rgb)]
-			for aa, rgb in zip(key, colour_map)
-		])
+		colours = spectrum_layer_colours_for(key, amino)
 		size = 10
 		title = 'SRI counts' if count else 'Symbol repetition intervals'
 
@@ -443,15 +439,9 @@ def pulse(
 					ax.set_ylabel('interval length (space between symbols)')
 
 		if count:
-			mx = len(key) - 1
-			for i, aa in enumerate(reversed(key)):
-				colour = colours[aa]
-				ax.text(
-					1 + maxscale * (i / mx),
-					2 + maxheight * (1 - i / mx),
-					aa, color=colour,
-					size=size, fontweight='semibold'
-				)
+			pulse_count_symbols_legend(
+				ax, key, colours, width=maxscale, height=maxheight, size=size
+			)
 
 		interactive()
 		wait_user()

@@ -77,6 +77,16 @@ def spectrum_layer_colours(amino: bool):
 	return colours
 
 
+def spectrum_layer_colours_for(key: str, amino: bool=False):
+	colour_map = spectrum_layer_colours(amino)
+	colours = OrderedDict([
+		[aa, rgb_to_hex(rgb)]
+		for aa, rgb in zip(key, colour_map)
+	])
+
+	return colours
+
+
 def spectrum_layer_colour_map(amino: bool):
 	colours = spectrum_layer_colours(amino)
 	colour_map = OrderedDict((i, tuple(c)) for i, c in enumerate(colours))
