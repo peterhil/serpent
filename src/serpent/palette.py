@@ -66,7 +66,7 @@ def spectrum_layer_colours(amino: bool):
 		# 27 colours
 		layers = 3
 		num_colours = 9
-		start = 0.25
+		start = 1/3
 	else:
 		# 64 colours
 		layers = 4
