@@ -22,9 +22,7 @@ from serpent.cli.encode import encode_data
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
 from serpent.cli.pulse import (
-	pulse_plot,
-	pulse_plot_counts,
-	pulse_plot_symbols_legend,
+	pulse_plot_sequences,
 	pulse_text,
 )
 from serpent.cli.repeats import analyse_repeats
@@ -54,7 +52,6 @@ from serpent.io import (
 	write_iterable,
 )
 from serpent.mathematics import autowidth_for
-from serpent.palette import spectrum_layer_colours_for
 from serpent.printing import (
 	format_counter,
 	format_decoded,
@@ -397,35 +394,15 @@ def pulse(
 	key = aminos_for_table(table)
 
 	if plot:
-		colours = spectrum_layer_colours_for(key, amino)
 		title = 'SRI counts' if count else 'Symbol repetition intervals'
-
 		ax = plt.axes()
 		ax.set_title(f'{title} of\n{filename}')
 
-		maxheight = maxscale = 0
-
-		for seq in seqs:
-			[aminos, descriptions] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
-			pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative, key=key)
-			maxheight = max(height, maxheight)
-			maxscale = max(scale, maxscale)
-
-			for i, item in enumerate(reversed(pulses.items())):
-				[aa, pulse] = item
-
-				colour = colours[aa]
-				mx = len(pulses) - 1
-				pos = mx - i
-
-				if count:
-					pulse_plot_counts(ax, pulse, colour, base=10)
-				else:
-					pulse_plot(ax, pulse, colour, symbol=aa, y_offset=pos * 100)
-
-		if count:
-			pulse_plot_symbols_legend(ax, key, colours, width=maxscale, height=maxheight)
-
+		pulse_plot_sequences(
+			ax, seqs, key,
+			amino=amino, table=table, degen=degen,
+			count=count, cumulative=cumulative,
+		)
 		interactive()
 		wait_user()
 	else:

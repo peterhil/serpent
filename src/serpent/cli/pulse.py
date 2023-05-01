@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from serpent import dna
+from serpent.palette import spectrum_layer_colours_for
 from serpent.printing import format_quasar, format_quasar_pulses
 from serpent.settings import PLOT_FONT_SIZE
-from serpent.stats import count_sorted
+from serpent.stats import count_sorted, quasar_pulses
 
 
 def pulse_plot(ax, pulse, colour, *, symbol, y_offset=0):
@@ -40,6 +42,37 @@ def pulse_plot_symbols_legend(ax, key, colours, width, height):
 			size=PLOT_FONT_SIZE,
 			fontweight='semibold'
 		)
+
+
+def pulse_plot_sequences(
+	ax, seqs, key,
+	*,
+	amino=False, table=1, degen=False,
+	count=False, cumulative=False,
+):
+	colours = spectrum_layer_colours_for(key, amino)
+	maxheight = maxscale = 0
+
+	for seq in seqs:
+		[aminos, descriptions] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
+		pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative, key=key)
+		maxheight = max(height, maxheight)
+		maxscale = max(scale, maxscale)
+
+		for i, item in enumerate(reversed(pulses.items())):
+			[aa, pulse] = item
+
+			colour = colours[aa]
+			mx = len(pulses) - 1
+			pos = mx - i
+
+			if count:
+				pulse_plot_counts(ax, pulse, colour, base=10)
+			else:
+				pulse_plot(ax, pulse, colour, symbol=aa, y_offset=pos * 100)
+
+	if count:
+		pulse_plot_symbols_legend(ax, key, colours, width=maxscale, height=maxheight)
 
 
 def pulse_text(pulses, height, scale):
