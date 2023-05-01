@@ -29,9 +29,9 @@ from serpent.cli.repeats import analyse_repeats
 from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
 from serpent.convert.degenerate import is_degenerate
+from serpent.convert.format import symbols_for
 from serpent.convert.split import split_aminos, split_encoded
 from serpent.dsp import fft_spectra
-from serpent.encoding import BASE64
 from serpent.fasta import (
 	ParseError,
 	auto_select_amino,
@@ -569,7 +569,7 @@ def vectors(filename, split='', amino=False, table=1, degen=False):
 @arg('--amino',   '-a', help='Amino acid input')
 @arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',   '-g', help='Degenerate data')
-@arg('--fmt',     '-f', help='Output format', choices=['b', 'base64', 'c', 'codon'])
+@arg('--fmt',     '-f', help='Output format', choices=fmt_choices)
 @arg('--count',   '-c', help='Print counts')
 @arg('--seql',    '-q', help='Sequence length', type=int)
 @arg('--missing', '-m', help='Missing peptides')
@@ -582,11 +582,8 @@ def pep(
 	"""Peptide statistics."""
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
-	decoded = dna.decode_iter(data, amino, table, degen)
-	dtype = f'U{seql}'
 
-	# FIXME Allow using amino acid codes and amino fmt
-	encoded = dna.encode(decoded, fmt=fmt)
+	encoded = encode_data(data, fmt, amino, table, degen)
 	peptides = (str_join(pep) for pep in mit.chunked(encoded, seql))
 
 	if count:
@@ -608,7 +605,9 @@ def pep(
 		yield from format_lines(peptides, 32)
 	else:
 		print("Peptides not appearing:\n")
-		combos = np.fromiter(map(str_join, itr.product(BASE64, repeat=seql)), dtype=dtype)
+		dtype = f'U{seql}'
+		symbols = symbols_for(fmt, table)
+		combos = np.fromiter(map(str_join, itr.product(symbols, repeat=seql)), dtype=dtype)
 		absent = combos[[combo not in peptides for combo in combos]]
 
 		yield from format_lines(absent, 32)
