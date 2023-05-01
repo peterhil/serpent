@@ -124,8 +124,8 @@ def codons(filename, degen_only=False, width=20, stats=False, limit=COUNT_LIMIT)
 	"""Print codons and statistics."""
 	seqs = read_sequences(filename)
 
-	for seq in seqs:
-		[descriptions, data] = descriptions_and_data(seq)
+	for sequence in seqs:
+		[descriptions, data] = descriptions_and_data(sequence)
 
 		yield from descriptions
 		codons = dna.get_codons_iter(data)
@@ -214,8 +214,8 @@ def encode(
 		amino = auto_select_amino(filename, amino_opt)
 		seqs = read_sequences(filename, amino)
 
-		for seq in seqs:
-			[descriptions, data] = descriptions_and_data(seq)
+		for sequence in seqs:
+			[descriptions, data] = descriptions_and_data(sequence)
 			yield from descriptions
 
 			encoded = encode_data(data, fmt, amino, table, degen)
@@ -252,8 +252,8 @@ def count(
 		seqs = read_sequences(filename, amino)
 		total = Counter()
 
-		for seq in seqs:
-			[descriptions, data] = descriptions_and_data(seq)
+		for sequence in seqs:
+			[descriptions, data] = descriptions_and_data(sequence)
 
 			if fmt is not None:
 				data = encode_data(data, fmt, amino, table, degen)
@@ -292,8 +292,8 @@ def split(
 		amino = auto_select_amino(filename, amino_opt)
 		seqs = read_sequences(filename, amino)
 
-		for seq in seqs:
-			[descriptions, data] = descriptions_and_data(seq)
+		for sequence in seqs:
+			[descriptions, data] = descriptions_and_data(sequence)
 			yield from descriptions
 
 			encoded = encode_data(data, fmt, amino, table, degen)
@@ -324,8 +324,8 @@ def flow(
 		amino = auto_select_amino(filename, amino_opt)
 		seqs = read_sequences(filename, amino)
 
-		for seq in seqs:
-			[descriptions, data] = descriptions_and_data(seq)
+		for sequence in seqs:
+			[descriptions, data] = descriptions_and_data(sequence)
 
 			if verbose:
 				yield from descriptions
@@ -406,8 +406,8 @@ def pulse(
 		interactive()
 		wait_user()
 	else:
-		for seq in seqs:
-			[aminos, descriptions] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
+		for sequence in seqs:
+			[aminos, descriptions] = dna.decode_seq(sequence, amino, table, degen, dna.to_amino)
 			pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative, key=key)
 
 			yield from descriptions
@@ -435,8 +435,8 @@ def quasar(
 	key = aminos_for_table(table)
 
 	rgb = np.vstack([
-		dna_quasar_seq(seq, amino, degen, table, cumulative, log, mod, test, key=key)
-		for seq in seqs
+		dna_quasar_seq(sequence, amino, degen, table, cumulative, log, mod, test, key=key)
+		for sequence in seqs
 	])
 
 	img = Image.fromarray(rgb, mode='L')
@@ -537,8 +537,8 @@ def vectors(filename, split='', amino=False, table=1, degen=False):
 	ax = plt.axes(projection='3d')
 	ax.set_title(title)
 
-	for index, seq in enumerate(seqs):
-		[aminos, _] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
+	for index, sequence in enumerate(seqs):
+		[aminos, _] = dna.decode_seq(sequence, amino, table, degen, dna.to_amino)
 
 		if split:
 			for peptide in split_aminos(aminos, split=split):
