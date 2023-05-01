@@ -21,6 +21,7 @@ from serpent import ansi, dna
 from serpent.cli.encode import encode_data
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
+from serpent.cli.pulse import pulse_text
 from serpent.cli.repeats import analyse_repeats
 from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
@@ -53,8 +54,6 @@ from serpent.printing import (
 	format_counter,
 	format_decoded,
 	format_lines,
-	format_quasar,
-	format_quasar_pulses,
 	format_split,
 	reflow,
 )
@@ -461,10 +460,8 @@ def pulse(
 			[aminos, descriptions] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
 			pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative, key=key)
 
-		yield from descriptions
-		yield from format_quasar(pulses.keys())  # Print symbols
-		yield from format_quasar_pulses(pulses, height)
-		yield f'scale: {scale}'
+			yield from descriptions
+			yield from pulse_text(pulses, height, scale)
 
 
 @arg('--amino', '-a', help='Amino acid input')
