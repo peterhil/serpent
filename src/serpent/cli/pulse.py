@@ -9,9 +9,6 @@ def pulse_plot(ax, pulse, colour, *, symbol, y_offset=0):
 	data = pulse
 	ax.plot(data + y_offset, colour)
 
-	# ax.set_xscale('log', base=10)
-	# ax.set_yscale('log', base=10)
-
 	ax.text(
 		-15, y_offset, symbol, color=colour,
 		ha='right', size=PLOT_FONT_SIZE, fontweight='semibold'
@@ -38,8 +35,10 @@ def pulse_plot_symbols_legend(ax, key, colours, width, height):
 		ax.text(
 			1 + width * (i / mx),
 			2 + height * (1 - i / mx),
-			aa, color=colour,
-			size=PLOT_FONT_SIZE, fontweight='semibold'
+			aa,
+			color=colour,
+			size=PLOT_FONT_SIZE,
+			fontweight='semibold'
 		)
 
 
