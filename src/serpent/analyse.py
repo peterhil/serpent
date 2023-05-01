@@ -22,6 +22,7 @@ from serpent.cli.encode import encode_data
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
 from serpent.cli.repeats import analyse_repeats
+from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
 from serpent.convert.degenerate import is_degenerate
 from serpent.convert.split import split_aminos, split_encoded
@@ -72,7 +73,6 @@ from serpent.visual import (
 	plot_histogram_sized,
 	plot_sequence_counts,
 )
-from serpent.zigzag import zigzag_blocks, zigzag_text
 
 fmt_choices = ['a', 'amino', 'b', 'base64', 'c', 'codon']
 wrapped_errors = [AssertionError, ParseError]
