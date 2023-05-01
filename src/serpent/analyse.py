@@ -572,10 +572,11 @@ def vectors(filename, split='', amino=False, table=1, degen=False):
 @arg('--fmt',     '-f', help='Output format', choices=fmt_choices)
 @arg('--seql',    '-q', help='Sequence length', type=int)
 @arg('--missing', '-m', help='Missing peptides')
+@arg('--unique',  '-u', help='Unique peptides')
 @wrap_errors(wrapped_errors)
 def pep(
 	filename,
-	fmt=None, seql=2, missing=False,
+	fmt=None, seql=2, missing=False, unique=False,
 	amino=False, table=1, degen=False,
 ):
 	"""Peptides found or missing in the data."""
@@ -587,6 +588,8 @@ def pep(
 	peptides = (str_join(pep) for pep in mit.chunked(encoded, seql))
 
 	if not missing:
+		if unique:
+			peptides = map(str_join, sorted(set(peptides)))
 		yield from format_lines(peptides, 32)
 	else:
 		print("Peptides not appearing:\n")
