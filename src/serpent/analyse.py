@@ -21,6 +21,7 @@ from serpent import ansi, dna
 from serpent.cli.encode import encode_data
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
+from serpent.cli.pep import all_symbols_for
 from serpent.cli.pulse import (
 	pulse_plot_sequences,
 	pulse_text,
@@ -29,7 +30,6 @@ from serpent.cli.repeats import analyse_repeats
 from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
 from serpent.convert.degenerate import is_degenerate
-from serpent.convert.format import symbols_for
 from serpent.convert.split import split_aminos, split_encoded
 from serpent.dsp import fft_spectra
 from serpent.fasta import (
@@ -597,10 +597,7 @@ def pep(
 		yield from format_lines(peptides, width)
 	else:
 		print("Peptides not appearing:\n")
-		item_size = seql * 3 if fmt in ['c', 'codon'] else seql
-		dtype = f'U{item_size}'
-		symbols = symbols_for(fmt, table)
-		combos = np.fromiter(map(str_join, itr.product(symbols, repeat=seql)), dtype=dtype)
+		combos = all_symbols_for(fmt, seql, table)
 		absent = combos[[combo not in peptides for combo in combos]]
 
 		yield from format_lines(absent, width)
