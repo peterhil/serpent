@@ -53,6 +53,7 @@ from serpent.io import (
 )
 from serpent.mathematics import autowidth_for
 from serpent.printing import (
+	auto_line_width_for,
 	format_counter,
 	format_decoded,
 	format_lines,
@@ -582,6 +583,8 @@ def pep(
 	"""Peptides found or missing in the data."""
 	amino = auto_select_amino(filename, amino)
 	fmt = fmt or ('amino' if amino else 'codon')
+	width = auto_line_width_for(fmt, seql, base=8, indent=8)
+
 	data = read(filename, amino)
 	encoded = encode_data(data, fmt, amino, table, degen)
 
@@ -590,15 +593,17 @@ def pep(
 	if not missing:
 		if unique:
 			peptides = map(str_join, sorted(set(peptides)))
-		yield from format_lines(peptides, 32)
+
+		yield from format_lines(peptides, width)
 	else:
 		print("Peptides not appearing:\n")
-		dtype = f'U{seql * 3}' if fmt in ['c', 'codon'] else f'U{seql}'
+		item_size = seql * 3 if fmt in ['c', 'codon'] else seql
+		dtype = f'U{item_size}'
 		symbols = symbols_for(fmt, table)
 		combos = np.fromiter(map(str_join, itr.product(symbols, repeat=seql)), dtype=dtype)
 		absent = combos[[combo not in peptides for combo in combos]]
 
-		yield from format_lines(absent, 32)
+		yield from format_lines(absent, width)
 
 
 @arg('--amino',   '-a', help='Amino acid input')
@@ -615,6 +620,8 @@ def pepcount(
 	"""Peptide counts."""
 	amino = auto_select_amino(filename, amino)
 	fmt = fmt or ('amino' if amino else 'codon')
+	width = auto_line_width_for(fmt, seql, base=8, indent=8)
+
 	data = read(filename, amino)
 	encoded = encode_data(data, fmt, amino, table, degen)
 
@@ -630,7 +637,7 @@ def pepcount(
 	]
 	for count, values in grouped:
 		yield f"-- {count} times --"
-		yield from format_lines(sorted(values), 32)
+		yield from format_lines(sorted(values), width)
 
 
 @arg('--amino',  '-a', help='Amino acid input')

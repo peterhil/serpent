@@ -1,11 +1,26 @@
 from __future__ import annotations
 
+import blessed
 import more_itertools as mit
 import numpy as np
 
 from serpent.fun import str_join
 from serpent.mathematics import percent
 from serpent.stats import gc_content
+
+
+def auto_line_width(item_size, base=8, indent=0, sep=1):
+	term_width = blessed.Terminal().width
+	unrounded_width = (term_width + sep - indent) // (item_size + sep)
+	width = base * max(1, (unrounded_width // base))
+
+	return width
+
+
+def auto_line_width_for(fmt, seql, base=8, indent=8, sep=1):
+	item_size = seql * 3 if fmt in ['c', 'codon'] else seql
+	width = auto_line_width(item_size, base, indent, sep)
+	return width
 
 
 def format_data(data, width=80, sep=' '):
