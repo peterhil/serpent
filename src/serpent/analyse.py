@@ -580,7 +580,7 @@ def pep(
 ):
 	"""Peptides found or missing in the data."""
 	amino = auto_select_amino(filename, amino)
-	fmt = fmt or 'amino' if amino else 'codon'
+	fmt = fmt or ('amino' if amino else 'codon')
 	data = read(filename, amino)
 	encoded = encode_data(data, fmt, amino, table, degen)
 
