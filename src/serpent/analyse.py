@@ -398,7 +398,6 @@ def pulse(
 
 	if plot:
 		colours = spectrum_layer_colours_for(key, amino)
-		size = 10
 		title = 'SRI counts' if count else 'Symbol repetition intervals'
 
 		ax = plt.axes()
@@ -422,12 +421,10 @@ def pulse(
 				if count:
 					pulse_plot_counts(ax, pulse, colour, base=10)
 				else:
-					pulse_plot(ax, pulse, colour, symbol=aa, y_offset=pos * 100, size=size)
+					pulse_plot(ax, pulse, colour, symbol=aa, y_offset=pos * 100)
 
 		if count:
-			pulse_plot_symbols_legend(
-				ax, key, colours, width=maxscale, height=maxheight, size=size
-			)
+			pulse_plot_symbols_legend(ax, key, colours, width=maxscale, height=maxheight)
 
 		interactive()
 		wait_user()
