@@ -570,36 +570,21 @@ def vectors(filename, split='', amino=False, table=1, degen=False):
 @arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',   '-g', help='Degenerate data')
 @arg('--fmt',     '-f', help='Output format', choices=fmt_choices)
-@arg('--count',   '-c', help='Print counts')
 @arg('--seql',    '-q', help='Sequence length', type=int)
 @arg('--missing', '-m', help='Missing peptides')
 @wrap_errors(wrapped_errors)
 def pep(
 	filename,
-	seql=2, count=False, missing=False, fmt='base64',
+	fmt=None, seql=2, missing=False,
 	amino=False, table=1, degen=False,
 ):
-	"""Peptide statistics."""
+	"""Peptides found or missing in the data."""
 	amino = auto_select_amino(filename, amino)
+	fmt = fmt or 'amino' if amino else 'codon'
 	data = read(filename, amino)
-
 	encoded = encode_data(data, fmt, amino, table, degen)
+
 	peptides = (str_join(pep) for pep in mit.chunked(encoded, seql))
-
-	if count:
-		counts = Counter(peptides)
-
-		# TODO There must be a better way to use these iterators!
-		groups = itr.groupby(counts.most_common(), lambda x: x[1])
-		grouped = [
-			(c, [k for k, c in group])
-			for c, group in groups
-			if c > 1
-		]
-		for count, values in grouped:
-			yield f"-- {count} times --"
-			yield from format_lines(sorted(values), 32)
-		return None
 
 	if not missing:
 		yield from format_lines(peptides, 32)
@@ -611,6 +596,37 @@ def pep(
 		absent = combos[[combo not in peptides for combo in combos]]
 
 		yield from format_lines(absent, 32)
+
+
+@arg('--amino',   '-a', help='Amino acid input')
+@arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen',   '-g', help='Degenerate data')
+@arg('--fmt',     '-f', help='Output format', choices=fmt_choices)
+@arg('--seql',    '-q', help='Sequence length', type=int)
+@wrap_errors(wrapped_errors)
+def pepcount(
+	filename,
+	fmt='amino', seql=2,
+	amino=False, table=1, degen=False,
+):
+	"""Peptide counts."""
+	amino = auto_select_amino(filename, amino)
+	data = read(filename, amino)
+	encoded = encode_data(data, fmt, amino, table, degen)
+
+	peptides = (str_join(pep) for pep in mit.chunked(encoded, seql))
+	counts = Counter(peptides)
+
+	# TODO There must be a better way to use these iterators!
+	groups = itr.groupby(counts.most_common(), lambda x: x[1])
+	grouped = [
+		(c, [k for k, c in group])
+		for c, group in groups
+		if c > 1
+	]
+	for count, values in grouped:
+		yield f"-- {count} times --"
+		yield from format_lines(sorted(values), 32)
 
 
 @arg('--amino',  '-a', help='Amino acid input')
@@ -648,6 +664,7 @@ def main():
 		hist,
 		image,
 		pep,
+		pepcount,
 		pulse,
 		quasar,
 		repeats,
