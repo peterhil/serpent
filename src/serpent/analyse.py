@@ -85,12 +85,12 @@ wrapped_errors = [AssertionError, ParseError]
 @arg('--limit',  '-l', help='Peak limit', type=float)
 @arg('--linear', '-n', help='Linear output (do not sort results)')
 @arg('--plot',   '-p', help='Plot data')
-@arg('--seq',    '-s', help='Sequence length', type=int)
+@arg('--seql',   '-q', help='Sequence length', type=int)
 @arg('--width',  '-w', help='Autocorrelogram width', type=int)
 @wrap_errors(wrapped_errors)
 def ac(
 	filename,
-	limit=0.05, linear=False, width=256, seq=1,
+	limit=0.05, linear=False, width=256, seql=1,
 	plot=False,
 	amino=False, degen=False, table=1,
 ):
@@ -99,8 +99,9 @@ def ac(
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
 
-	if seq > 1:
-		decoded = dna.codon_sequences(decoded, seq)
+	if seql > 1:
+		# FIXME Change autocorrelogram to accept iterators
+		decoded = [*dna.codon_sequences(decoded, seql)]
 
 	ac = autocorrelogram(decoded, width)
 
@@ -345,12 +346,12 @@ def flow(
 @arg('--degen',  '-g', help='Degenerate data')
 @arg('--mode',   '-m', help='Image mode', choices=('RGB', 'L', 'P', 'Q'))
 @arg('--out',    '-o', help='Write image to file')
-@arg('--length', '-l', help='Peptide length (for Q mode)', type=int)
+@arg('--seql',   '-q', help='Sequence length (for Q mode)', type=int)
 @arg('--width',  '-w', help='Image width', type=int)
 @wrap_errors(wrapped_errors)
 def image(
 	filename,
-	length=1, width=None, mode="RGB", out=False,
+	seql=1, width=None, mode="RGB", out=False,
 	amino=False, degen=False, table=1,
 ):
 	"""Visualise FASTA data as images."""
@@ -365,11 +366,11 @@ def image(
 
 	img = dna_image(
 		seqs, width, mode,
-		amino=amino, degen=degen, table=table, length=length)
+		amino=amino, degen=degen, table=table, length=seql)
 
 	outfile = image_name_for(
 		filename, width, mode,
-		amino=amino, degen=degen, table=table, length=length)
+		amino=amino, degen=degen, table=table, length=seql)
 
 	img.show(title=outfile)
 	if out:
@@ -447,11 +448,11 @@ def quasar(
 @arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',  '-g', help='Degenerate data')
 @arg('--length', '-l', help='Fourier transform length', type=int)
-@arg('--seq',    '-s', help='Sequence length', type=int)
+@arg('--seql',   '-q', help='Sequence length', type=int)
 @wrap_errors(wrapped_errors)
 def fft(
 	filename,
-	length=None, seq=1,
+	length=None, seql=1,
 	amino=False, degen=False, table=1,
 ):
 	"""Plot Fourier transform of the DNA data."""
@@ -459,8 +460,8 @@ def fft(
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
 
-	if seq > 1:
-		decoded = np.fromiter(dna.codon_sequences(decoded, n=seq), dtype=np.uint64)
+	if seql > 1:
+		decoded = np.fromiter(dna.codon_sequences(decoded, n=seql), dtype=np.uint64)
 
 	# TODO Make a spectrogram by windowing
 	[freqs, spectra] = fft_spectra(decoded, n=length)
@@ -477,13 +478,13 @@ def fft(
 @arg('--num',   '-n', help='Number of bins (overrides bins option)', type=int)
 @arg('--cumulative', '-c', help='Cumulative distribution')
 @arg('--density', '-d', help='Normalise histogram into density')
-@arg('--length', '-l', help='Sequence length', type=int)
+@arg('--seql',  '-q', help='Sequence length', type=int)
 @wrap_errors(wrapped_errors)
 def hist(
 	filename,
 	bins='base',
 	num=None,
-	length=1,
+	seql=1,
 	density=False,
 	cumulative=False,
 	amino=False, degen=False, table=1,
@@ -492,12 +493,12 @@ def hist(
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode_iter(data, amino, table, degen)
-	seqs = np.fromiter(dna.codon_sequences(decoded, length), dtype=np.uint64)
+	seqs = np.fromiter(dna.codon_sequences(decoded, n=seql), dtype=np.uint64)
 
 	plot_histogram_sized(
 		seqs,
 		size=num or bins,
-		multi=max(16, 2 ** length),  # cap to 16 * base = 1024
+		multi=max(16, 2 ** seql),  # cap to 16 * base = 1024
 		color=DEFAULT_COLOR,
 		cumulative=cumulative,
 		density=density,
@@ -509,15 +510,15 @@ def hist(
 @arg('--amino',  '-a', help='Amino acid input')
 @arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',  '-g', help='Degenerate data')
-@arg('--length', '-l', help='Sequence length', type=int)
+@arg('--seql',   '-q', help='Sequence length', type=int)
 @wrap_errors(wrapped_errors)
-def seq(filename, length=1, amino=False, degen=False, table=1):
+def seq(filename, seql=1, amino=False, degen=False, table=1):
 	"""Plot DNA sequence count statistics."""
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode_iter(data, amino, table, degen)
 
-	plot_sequence_counts(decoded, n=length, color=DEFAULT_COLOR)
+	plot_sequence_counts(decoded, n=seql, color=DEFAULT_COLOR)
 	interactive()
 	wait_user()
 
@@ -570,23 +571,23 @@ def vectors(filename, split='', amino=False, table=1, degen=False):
 @arg('--degen',   '-g', help='Degenerate data')
 @arg('--fmt',     '-f', help='Output format', choices=['b', 'base64', 'c', 'codon'])
 @arg('--count',   '-c', help='Print counts')
-@arg('--length',  '-l', help='Peptide length', type=int)
+@arg('--seql',    '-q', help='Sequence length', type=int)
 @arg('--missing', '-m', help='Missing peptides')
 @wrap_errors(wrapped_errors)
 def pep(
 	filename,
-	length=2, count=False, missing=False, fmt='base64',
+	seql=2, count=False, missing=False, fmt='base64',
 	amino=False, table=1, degen=False,
 ):
 	"""Peptide statistics."""
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode_iter(data, amino, table, degen)
-	dtype = f'U{length}'
+	dtype = f'U{seql}'
 
-	# TODO Allow using amino acid codes?
+	# FIXME Allow using amino acid codes and amino fmt
 	encoded = dna.encode(decoded, fmt=fmt)
-	peptides = (str_join(pep) for pep in mit.chunked(encoded, length))
+	peptides = (str_join(pep) for pep in mit.chunked(encoded, seql))
 
 	if count:
 		counts = Counter(peptides)
@@ -607,7 +608,7 @@ def pep(
 		yield from format_lines(peptides, 32)
 	else:
 		print("Peptides not appearing:\n")
-		combos = np.fromiter(map(str_join, itr.product(BASE64, repeat=length)), dtype=dtype)
+		combos = np.fromiter(map(str_join, itr.product(BASE64, repeat=seql)), dtype=dtype)
 		absent = combos[[combo not in peptides for combo in combos]]
 
 		yield from format_lines(absent, 32)
@@ -618,11 +619,11 @@ def pep(
 @arg('--degen',  '-g', help='Degenerate data')
 @arg('--fmt',    '-f', help='Output format', choices=['b', 'base64', 'c', 'codon'])
 @arg('--limit',  '-l', help='Limit to at least this many repeats', type=int)
-@arg('--seq',    '-s', help='Sequence length', type=int)
+@arg('--seql',   '-q', help='Sequence length', type=int)
 @wrap_errors(wrapped_errors)
 def repeats(
 	filename,
-	seq=2, limit=2, fmt='codon',
+	seql=2, limit=2, fmt='codon',
 	amino=False, degen=False, table=1,
 ):
 	"""Find repeated codon sequences."""
@@ -630,7 +631,7 @@ def repeats(
 	data = read(filename, amino)
 	decoded = dna.decode_iter(data, amino, table, degen)
 
-	yield from analyse_repeats(decoded, length=seq, limit=limit, fmt=fmt)
+	yield from analyse_repeats(decoded, length=seql, limit=limit, fmt=fmt)
 
 
 def main():
