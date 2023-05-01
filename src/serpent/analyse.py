@@ -12,7 +12,6 @@ from collections import Counter
 
 import argh
 import matplotlib.pyplot as plt
-import more_itertools as mit
 import numpy as np
 from argh.decorators import aliases, arg, wrap_errors
 from PIL import Image
@@ -21,7 +20,7 @@ from serpent import ansi, dna
 from serpent.cli.encode import encode_data
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
-from serpent.cli.pep import all_symbols_for
+from serpent.cli.pep import all_symbols_for, peptides_of_length
 from serpent.cli.pulse import (
 	pulse_plot_sequences,
 	pulse_text,
@@ -588,7 +587,7 @@ def pep(
 	data = read(filename, amino)
 	encoded = encode_data(data, fmt, amino, table, degen)
 
-	peptides = (str_join(pep) for pep in mit.chunked(encoded, seql))
+	peptides = peptides_of_length(encoded, seql)
 
 	if not missing:
 		if unique:
@@ -622,7 +621,7 @@ def pepcount(
 	data = read(filename, amino)
 	encoded = encode_data(data, fmt, amino, table, degen)
 
-	peptides = (str_join(pep) for pep in mit.chunked(encoded, seql))
+	peptides = peptides_of_length(encoded, seql)
 	counts = Counter(peptides)
 
 	# TODO There must be a better way to use these iterators!
