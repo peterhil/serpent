@@ -49,7 +49,7 @@ from serpent.io import (
 from serpent.mathematics import autowidth_for
 from serpent.palette import rgb_to_hex, spectrum_layer_colours
 from serpent.printing import (
-	format_counts,
+	format_counter,
 	format_decoded,
 	format_lines,
 	format_quasar,
@@ -135,7 +135,7 @@ def codons(filename, degen_only=False, width=20, stats=False, limit=COUNT_LIMIT)
 		if stats:
 			counts = Counter(codons)
 			print("Counts:")
-			yield from format_counts(counts, limit)
+			yield from format_counter(counts, limit=limit)
 
 			unique = counts.keys()  # np.unique(codons)
 			yield from format_lines(unique, width)
@@ -195,14 +195,13 @@ def decode(filename, amino=False, degen=False, table=1):
 @arg('--amino', '-a', help='Amino acid input')
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen', '-g', help='Degenerate data')
-@arg('--count', '-c', help='Print counts')
 @arg('--fmt',   '-f', help='Output format', choices=fmt_choices)
 @arg('--out',   '-o', help='Write out to file')
 @arg('--width', '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
 def encode(
 	*inputs,
-	count=False, fmt='codon', out=False, width=64,
+	fmt='codon', out=False, width=64,
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into various formats."""
@@ -219,11 +218,6 @@ def encode(
 			yield from descriptions
 
 			encoded = encode_data(data, fmt, amino, table, degen)
-
-			if count:
-				counts = Counter(encoded)
-				yield from (f"{count}\t{codon}" for codon, count in counts.most_common())
-
 			lines = reflow(encoded, width)
 
 			if out:
@@ -232,6 +226,47 @@ def encode(
 				write_iterable(lines, outfile)
 			else:
 				yield from lines
+
+
+@arg('--amino', '-a', help='Amino acid input')
+@arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen', '-g', help='Degenerate data')
+@arg('--fmt',   '-f', help='Output format', choices=fmt_choices)
+@arg('--summary', '-s', help='Summarise counts per file')
+@wrap_errors(wrapped_errors)
+def count(
+	*inputs,
+	fmt=None, summary=False,
+	amino=False, degen=False, table=1,
+):
+	"""Count data."""
+	amino_opt = amino
+
+	for filename in check_paths(inputs):
+		if len(inputs) > 1:
+			yield f';file:{filename}'
+		amino = auto_select_amino(filename, amino_opt)
+		show_gc = fmt is None and not amino
+
+		seqs = read_sequences(filename, amino)
+		total = Counter()
+
+		for seq in seqs:
+			[descriptions, data] = descriptions_and_data(seq)
+
+			if fmt is not None:
+				data = encode_data(data, fmt, amino, table, degen)
+
+			counts = Counter(data)
+			total.update(counts)
+
+			if not summary:
+				yield from descriptions
+				yield from format_counter(counts, show_gc)
+
+		if summary:
+			print(f'Summary: {filename}')
+			yield from format_counter(total, show_gc)
 
 
 @arg('--amino', '-a', help='Amino acid input')
@@ -657,6 +692,7 @@ def main():
 		ac,
 		cat,
 		codons,
+		count,
 		decode,
 		encode,
 		fft,

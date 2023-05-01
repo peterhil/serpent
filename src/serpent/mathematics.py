@@ -60,6 +60,10 @@ def normalise(seq: NumericSeq) -> NDArray[np.float64]:
 	return np.asanyarray(seq, dtype=np.float64) / np.amax(seq)
 
 
+def percent(value: float, decimals=2) -> float:
+	return round(100 * value, decimals)
+
+
 def rescale(seq: NumericSeq, old, new):
 	"""Rescale data from old to new range.
 

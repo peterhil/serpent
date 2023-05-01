@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from collections import Counter
-from collections.abc import Iterable
-
 import more_itertools as mit
 import numpy as np
 
 from serpent.fun import str_join
-from serpent.settings import COUNT_LIMIT
+from serpent.mathematics import percent
+from serpent.stats import gc_content
 
 
 def format_data(data, width=80, sep=' '):
@@ -43,12 +41,12 @@ def reflow(data, width=80):
 	return (str_join(line) for line in mit.chunked(str_join(data), width))
 
 
-def format_counts(counts: Counter, limit=COUNT_LIMIT) -> Iterable[str]:
-	yield from (
-		f'{item}\t{count}'
-		for (item, count)
-		in mit.take(limit, counts.most_common())
-	)
+def format_counter(counts, show_gc=False, *, limit=None):
+	yield from (f'{count}\t{symbol}' for symbol, count in counts.most_common(limit))
+	if show_gc:
+		gc_percent = percent(gc_content(counts), 3)
+		yield f'GC content: {gc_percent}%'
+
 
 def format_decoded(decoded, degen=False):
 	uniq = len(np.unique(decoded))
