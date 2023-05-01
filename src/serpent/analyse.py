@@ -590,7 +590,7 @@ def pep(
 		yield from format_lines(peptides, 32)
 	else:
 		print("Peptides not appearing:\n")
-		dtype = f'U{seql}'
+		dtype = f'U{seql * 3}' if fmt in ['c', 'codon'] else f'U{seql}'
 		symbols = symbols_for(fmt, table)
 		combos = np.fromiter(map(str_join, itr.product(symbols, repeat=seql)), dtype=dtype)
 		absent = combos[[combo not in peptides for combo in combos]]
