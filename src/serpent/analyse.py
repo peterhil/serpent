@@ -606,11 +606,12 @@ def pep(
 @wrap_errors(wrapped_errors)
 def pepcount(
 	filename,
-	fmt='amino', seql=2,
+	fmt=None, seql=2,
 	amino=False, table=1, degen=False,
 ):
 	"""Peptide counts."""
 	amino = auto_select_amino(filename, amino)
+	fmt = fmt or ('amino' if amino else 'codon')
 	data = read(filename, amino)
 	encoded = encode_data(data, fmt, amino, table, degen)
 
