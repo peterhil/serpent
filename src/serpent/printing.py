@@ -56,13 +56,14 @@ def reflow(data, width=80):
 	return (str_join(line) for line in mit.chunked(str_join(data), width))
 
 
-def format_counter(counts, show_gc=False, *, limit=None, precision=2):
+def format_counter(counts, show_gc=False, *, limit=1, top=None, precision=2):
 	total = np.sum([*counts.values()])
 
 	yield 'symbol\tcount\tpercent'
 	yield from (
 		f'{symbol}\t{count}\t{percent(count / total, precision)}%'
-		for symbol, count in counts.most_common(limit)
+		for symbol, count in counts.most_common(top)
+		if count >= limit
 	)
 	if show_gc:
 		gc = gc_content(counts)

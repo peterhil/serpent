@@ -135,14 +135,11 @@ def codons(filename, degen_only=False, width=20, stats=False, limit=COUNT_LIMIT)
 
 		if stats:
 			counts = Counter(codons)
-			print("Counts:")
-			yield from format_counter(counts, limit=limit)
+			yield from format_counter(counts, top=limit)
 
 			unique = counts.keys()  # np.unique(codons)
+			yield f"unique\t{len(unique)}"
 			yield from format_lines(unique, width)
-
-			total = np.sum([*counts.values()])
-			print(f"Unique codons: {len(counts)} (total: {total})")
 		else:
 			yield from format_lines(codons, width)
 
@@ -229,15 +226,17 @@ def encode(
 				yield from lines
 
 
-@arg('--amino', '-a', help='Amino acid input')
-@arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
-@arg('--degen', '-g', help='Degenerate data')
-@arg('--fmt',   '-f', help='Output format', choices=fmt_choices)
+@arg('--amino',   '-a', help='Amino acid input')
+@arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen',   '-g', help='Degenerate data')
+@arg('--fmt',     '-f', help='Output format', choices=fmt_choices)
+@arg('--seql',    '-q', help='Sequence length', type=int)
+@arg('--limit',   '-l', help='Limit to at least this many repeats', type=int)
 @arg('--summary', '-s', help='Summarise counts per file')
 @wrap_errors(wrapped_errors)
 def count(
 	*inputs,
-	fmt=None, summary=False,
+	fmt=None, summary=False, seql=1, limit=1,
 	amino=False, degen=False, table=1,
 ):
 	"""Count data."""
@@ -258,16 +257,19 @@ def count(
 			if fmt is not None:
 				data = encode_data(data, fmt, amino, table, degen)
 
+			if seql > 1:
+				data = peptides_of_length(data, seql)
+
 			counts = Counter(data)
 			total.update(counts)
 
 			if not summary:
 				yield from descriptions
-				yield from format_counter(counts, show_gc)
+				yield from format_counter(counts, show_gc, limit=limit)
 
 		if summary:
 			print(f'Summary: {filename}')
-			yield from format_counter(total, show_gc)
+			yield from format_counter(total, show_gc, limit=limit)
 
 
 @arg('--amino', '-a', help='Amino acid input')
