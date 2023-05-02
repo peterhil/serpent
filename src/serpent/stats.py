@@ -58,9 +58,7 @@ def entropy(data: Sequence[int], n=2, base=2):
 
 def gc_content(counts: Counter) -> float:
 	"""Get GC content from nucleotide counts."""
-	gc = counts['G'] + counts['C']
-	total = np.sum([*counts.values()])
-	return gc / total
+	return counts['G'] + counts['C']
 
 
 def pulse_repetition_intervals(data: Iterable[str]):

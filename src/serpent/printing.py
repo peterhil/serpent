@@ -56,11 +56,20 @@ def reflow(data, width=80):
 	return (str_join(line) for line in mit.chunked(str_join(data), width))
 
 
-def format_counter(counts, show_gc=False, *, limit=None):
-	yield from (f'{count}\t{symbol}' for symbol, count in counts.most_common(limit))
+def format_counter(counts, show_gc=False, *, limit=None, precision=2):
+	total = np.sum([*counts.values()])
+
+	yield 'symbol\tcount\tpercent'
+	yield from (
+		f'{symbol}\t{count}\t{percent(count / total, precision)}%'
+		for symbol, count in counts.most_common(limit)
+	)
 	if show_gc:
-		gc_percent = percent(gc_content(counts), 3)
-		yield f'GC content: {gc_percent}%'
+		gc = gc_content(counts)
+		gc_percent = percent(gc / total, precision)
+		yield f'GC\t{gc}\t{gc_percent}%'
+
+	yield f'total\t{total}'
 
 
 def format_decoded(decoded, degen=False):
