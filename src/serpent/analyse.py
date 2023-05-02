@@ -40,7 +40,7 @@ from serpent.fasta import (
 	read,
 	read_sequences,
 )
-from serpent.fun import sort_values, str_join
+from serpent.fun import second, sort_values, str_join
 from serpent.io import (
 	check_paths,
 	echo,
@@ -625,13 +625,12 @@ def pepcount(
 	peptides = peptides_of_length(encoded, seql)
 	counts = Counter(peptides)
 
-	# TODO There must be a better way to use these iterators!
-	groups = itr.groupby(counts.most_common(), lambda x: x[1])
-	grouped = [
-		(c, [k for k, c in group])
-		for c, group in groups
-		if c >= limit
-	]
+	groups = itr.groupby(counts.most_common(), second)
+	grouped = (
+		(count, [peptide for peptide, _ in group])
+		for count, group in groups
+		if count >= limit
+	)
 	for count, values in grouped:
 		yield f"-- {count} times --"
 		yield from format_lines(sorted(values), width)
