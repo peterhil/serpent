@@ -17,7 +17,7 @@ from argh.decorators import aliases, arg, wrap_errors
 from PIL import Image
 
 from serpent import ansi, dna
-from serpent.cli.encode import encode_data
+from serpent.cli.encode import encode_data, encode_sequences
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
 from serpent.cli.pep import all_symbols_for, peptides_of_length
@@ -56,7 +56,6 @@ from serpent.printing import (
 	format_decoded,
 	format_lines,
 	format_split,
-	reflow,
 )
 from serpent.settings import (
 	COUNT_LIMIT,
@@ -211,19 +210,14 @@ def encode(
 		amino = auto_select_amino(filename, amino_opt)
 		seqs = read_sequences(filename, amino)
 
-		for sequence in seqs:
-			[descriptions, data] = descriptions_and_data(sequence)
-			yield from descriptions
+		lines = encode_sequences(seqs, width, fmt, amino=amino, table=table, degen=degen)
 
-			encoded = encode_data(data, fmt, amino, table, degen)
-			lines = reflow(encoded, width)
-
-			if out:
-				ext = file_extension_for(fmt)
-				outfile = f'{filename}.enc.{ext}'
-				write_iterable(lines, outfile)
-			else:
-				yield from lines
+		if out:
+			ext = file_extension_for(fmt)
+			outfile = f'{filename}.enc.{ext}'
+			write_iterable(lines, outfile)
+		else:
+			yield from lines
 
 
 @arg('--amino',   '-a', help='Amino acid input')
