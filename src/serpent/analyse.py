@@ -94,7 +94,7 @@ def ac(
 	plot=False,
 	amino=False, degen=False, table=1,
 ):
-	"""Plot autocorrelation of sequences."""
+	"""Autocorrelation of sequences (with plot option)."""
 	amino = auto_select_amino(filename, amino)
 	data = read(filename, amino)
 	decoded = dna.decode(data, amino, table, degen)
@@ -316,7 +316,7 @@ def flow(
 	width=64, mode='RGB', fmt=None, desc=False, verbose=False,
 	amino=False, degen=False, table=1,
 ):
-	"""Encode data into Unicode block graphics."""
+	"""Visualise and explore data with Unicode block graphics."""
 	amino_opt = amino
 
 	for filename in check_paths(inputs):
@@ -389,7 +389,7 @@ def pulse(
 	count=False, cumulative=False, plot=False,
 	amino=False, degen=False, table=1,
 ):
-	"""Pulse repetition intervals for symbol repeat lengths."""
+	"""Pulse repetition intervals for symbol repeat lengths (with plot option)."""
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
 	key = aminos_for_table(table)
@@ -428,7 +428,7 @@ def quasar(
 	cumulative=False, log=False, mod=0, test=False,
 	amino=False, degen=False, table=1,
 ):
-	"""Visualise symbol repeats as image."""
+	"""Visualise symbol repeats as images."""
 	# TODO Show data as block flow
 	# TODO Show animated image of multiple sequences?
 	amino = auto_select_amino(filename, amino)
@@ -529,7 +529,7 @@ def seq(filename, seql=1, amino=False, degen=False, table=1):
 @arg('--split',  '-s', help='Split by stop aNd/oR start codons', choices=('n', 'r'))
 @aliases('vec')
 def vectors(filename, split='', amino=False, table=1, degen=False):
-	"""Visualise amino acids in 3D vector space."""
+	"""Spatial visualisation of amino acids in 3D vector space."""
 	amino = auto_select_amino(filename, amino)
 	seqs = read_sequences(filename, amino)
 
