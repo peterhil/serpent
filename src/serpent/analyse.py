@@ -25,7 +25,6 @@ from serpent.cli.pulse import (
 	pulse_plot_sequences,
 	pulse_text,
 )
-from serpent.cli.repeats import analyse_repeats
 from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
 from serpent.convert.degenerate import is_degenerate
@@ -608,13 +607,14 @@ def pep(
 @arg('--fmt',     '-f', help='Output format', choices=fmt_choices)
 @arg('--limit',   '-l', help='Limit to at least this many repeats', type=int)
 @arg('--seql',    '-q', help='Sequence length', type=int)
+@aliases('repeats')
 @wrap_errors(wrapped_errors)
 def pepcount(
 	filename,
 	fmt=None, limit=2, seql=2,
 	amino=False, table=1, degen=False,
 ):
-	"""Peptide repeat counts."""
+	"""Repeated peptide counts."""
 	amino = auto_select_amino(filename, amino)
 	fmt = fmt or ('amino' if amino else 'codon')
 	width = auto_line_width_for(fmt, seql, base=8, indent=8)
@@ -636,26 +636,6 @@ def pepcount(
 		yield from format_lines(sorted(values), width)
 
 
-@arg('--amino',  '-a', help='Amino acid input')
-@arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
-@arg('--degen',  '-g', help='Degenerate data')
-@arg('--fmt',    '-f', help='Output format', choices=['b', 'base64', 'c', 'codon'])
-@arg('--limit',  '-l', help='Limit to at least this many repeats', type=int)
-@arg('--seql',   '-q', help='Sequence length', type=int)
-@wrap_errors(wrapped_errors)
-def repeats(
-	filename,
-	seql=2, limit=2, fmt='codon',
-	amino=False, degen=False, table=1,
-):
-	"""Find repeated codon sequences."""
-	amino = auto_select_amino(filename, amino)
-	data = read(filename, amino)
-	decoded = dna.decode_iter(data, amino, table, degen)
-
-	yield from analyse_repeats(decoded, length=seql, limit=limit, fmt=fmt)
-
-
 def main():
 	parser = argh.ArghParser()
 	parser.add_commands([
@@ -674,7 +654,6 @@ def main():
 		pepcount,
 		pulse,
 		quasar,
-		repeats,
 		seq,
 		split,
 		vectors,
