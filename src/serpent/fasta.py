@@ -14,7 +14,7 @@ import more_itertools as mit
 from termcolor import colored
 
 from serpent.fun import str_join
-from serpent.io import err
+from serpent.io import err, info
 from serpent.settings import DEBUG, DEFAULT_TERM_COLOR
 
 DATA_TOKENS = [
@@ -50,7 +50,7 @@ RE_WHITESPACE = re.compile(r'\s')
 def auto_select_amino(filename: str, amino: bool) -> bool:
 	if (match := re.search(r'\.f([an])a$', str(filename).lower())):
 		amino = match.group(1) == 'a'
-		err(f'{filename}: Auto selected amino = {amino}')
+		info(f'info: {filename}: Auto selected amino = {amino}')
 	return amino
 
 
@@ -73,7 +73,7 @@ def find_fasta_files(fi: FileInput, debug=DEBUG) -> Iterator[str]:
 		if fi.isfirstline() and get_description(line):
 			yield filename
 		elif debug:
-			err(f"{filename}: Not FASTA!")
+			err(f"err: {filename}: Not FASTA!")
 		fi.nextfile()
 
 

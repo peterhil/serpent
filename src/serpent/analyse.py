@@ -45,6 +45,7 @@ from serpent.io import (
 	echo,
 	file_extension_for,
 	image_name_for,
+	info,
 	openhook,
 	wait_user,
 	write_iterable,
@@ -206,7 +207,7 @@ def encode(
 
 	for filename in check_paths(inputs):
 		if len(inputs) > 1:
-			yield f';file:{filename}'
+			info(f'file: {filename}')
 		amino = auto_select_amino(filename, amino_opt)
 		seqs = read_sequences(filename, amino)
 
@@ -238,7 +239,7 @@ def count(
 
 	for filename in check_paths(inputs):
 		if len(inputs) > 1:
-			yield f';file:{filename}'
+			info(f'file: {filename}')
 		amino = auto_select_amino(filename, amino_opt)
 		show_gc = fmt is None and not amino
 
@@ -284,7 +285,7 @@ def split(
 
 	for filename in check_paths(inputs):
 		if len(inputs) > 1:
-			yield f';file:{filename}'
+			info(f'file: {filename}')
 		amino = auto_select_amino(filename, amino_opt)
 		seqs = read_sequences(filename, amino)
 

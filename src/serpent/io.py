@@ -13,11 +13,16 @@ openhook = hook_encoded("utf-8", "surrogateescape")
 
 
 def echo(message):
-	return stdout.write(f"{message}\n")
+	stdout.write(f"{message}\n")
 
 
 def err(message):
-	return stderr.write(f"{message}\n")
+	stderr.write(f"{message}\n")
+
+
+def info(message):
+	# TODO Use logger?
+	print(message, file=stderr)
 
 
 def check_path(input: Path | str, recurse: bool=False) -> Iterator[Path | str]:
