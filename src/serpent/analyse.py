@@ -606,14 +606,15 @@ def pep(
 @arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',   '-g', help='Degenerate data')
 @arg('--fmt',     '-f', help='Output format', choices=fmt_choices)
+@arg('--limit',   '-l', help='Limit to at least this many repeats', type=int)
 @arg('--seql',    '-q', help='Sequence length', type=int)
 @wrap_errors(wrapped_errors)
 def pepcount(
 	filename,
-	fmt=None, seql=2,
+	fmt=None, limit=2, seql=2,
 	amino=False, table=1, degen=False,
 ):
-	"""Peptide counts."""
+	"""Peptide repeat counts."""
 	amino = auto_select_amino(filename, amino)
 	fmt = fmt or ('amino' if amino else 'codon')
 	width = auto_line_width_for(fmt, seql, base=8, indent=8)
@@ -629,7 +630,7 @@ def pepcount(
 	grouped = [
 		(c, [k for k, c in group])
 		for c, group in groups
-		if c > 1
+		if c >= limit
 	]
 	for count, values in grouped:
 		yield f"-- {count} times --"
