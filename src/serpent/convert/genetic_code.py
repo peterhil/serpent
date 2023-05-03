@@ -36,6 +36,13 @@ qualifier on the CDS feature.
 """
 from __future__ import annotations
 
+from collections import OrderedDict
+
+from serpent.convert.codon import CODONS_LEN, codons_array
+from serpent.fun import inverse_od
+
+CODONS_NCBI = codons_array('TCAG')
+
 GENETIC_CODE = {
 	# Base  1:  "TTTTTTTTTTTTTTTTCCCCCCCCCCCCCCCCAAAAAAAAAAAAAAAAGGGGGGGGGGGGGGGG"
 	# Base  2:  "TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG"
@@ -94,3 +101,22 @@ GENETIC_CODE = {
 	# Base  2:  "TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG"
 	# Base  3:  "TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG"
 }
+
+
+def create_genetic_table(table: str) -> OrderedDict[str, str]:
+	assert len(table) == CODONS_LEN, 'Table should have 64 characters.'
+	return OrderedDict(reversed(list(zip(
+		CODONS_NCBI,
+		table,
+	))))
+
+
+genetic_code = OrderedDict([
+	(i, create_genetic_table(table))
+	for i, table in GENETIC_CODE.items()
+])
+
+genetic_code_inverse = OrderedDict([
+	(i, inverse_od(table))
+	for i, table in genetic_code.items()
+])

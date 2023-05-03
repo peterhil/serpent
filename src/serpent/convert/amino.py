@@ -2,35 +2,15 @@ from __future__ import annotations
 
 from collections import OrderedDict
 
+from serpent.convert.codon import codon_to_num, num_to_codon
+from serpent.convert.genetic_code import (
+	GENETIC_CODE,
+	genetic_code,
+	genetic_code_inverse,
+)
 from serpent.fun import inverse_od, map_array, str_join
 
-from .codon import CODONS_LEN, codon_to_num, codons_array, num_to_codon
-from .genetic_code import GENETIC_CODE
-
-CODONS_NCBI = codons_array('TCAG')
-
-
-def create_genetic_table(table: str) -> OrderedDict[str, str]:
-	assert len(table) == CODONS_LEN, 'Table should have 64 characters.'
-	return OrderedDict(reversed(list(zip(
-		CODONS_NCBI,
-		table,
-	))))
-
-
-genetic_code = OrderedDict([
-	(i, create_genetic_table(table))
-	for i, table in GENETIC_CODE.items()
-])
-
-genetic_code_inverse = OrderedDict([
-	(i, inverse_od(table))
-	for i, table in genetic_code.items()
-])
-
-
 aa_tables = [*GENETIC_CODE.keys()]
-
 
 # TODO: Handle degenerate data
 degenerate_amino = OrderedDict({
