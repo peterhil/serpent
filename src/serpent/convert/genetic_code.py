@@ -103,16 +103,14 @@ GENETIC_CODE = {
 }
 
 
-def create_genetic_table(table: str) -> OrderedDict[str, str]:
-	assert len(table) == CODONS_LEN, 'Table should have 64 characters.'
-	return OrderedDict(zip(
-		reversed(CODONS_NCBI),
-		reversed(table),
-	))
+def create_genetic_table(table: str, codons: str=CODONS_NCBI) -> OrderedDict[str, str]:
+	table = OrderedDict(zip(codons, table))
+	assert len(table) == CODONS_LEN, 'Codons and table should have 64 characters.'
+	return table
 
 
 genetic_code = OrderedDict([
-	(i, create_genetic_table(table))
+	(i, create_genetic_table(reversed(table), reversed(CODONS_NCBI)))
 	for i, table in GENETIC_CODE.items()
 ])
 

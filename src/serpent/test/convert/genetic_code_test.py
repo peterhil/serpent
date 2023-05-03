@@ -5,10 +5,14 @@ from collections import OrderedDict
 import pytest
 
 from serpent.convert.codon import codons_array
-from serpent.convert.genetic_code import genetic_code, genetic_code_inverse
+from serpent.convert.genetic_code import (
+	create_genetic_table,
+	genetic_code,
+	genetic_code_inverse,
+)
 from serpent.fun import inverse_od
 
-codons = codons_array('GACT')
+fixture_codons = codons_array('GACT')
 fixture_genetic_table = {
 	1: 'GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLW*CC**YYSSSSLLFF',
 	2: 'GGGGEEDDAAAAVVVV**SSKKNNTTTTMMIIRRRRQQHHPPPPLLLLWWCC**YYSSSSLLFF',
@@ -16,10 +20,15 @@ fixture_genetic_table = {
 }
 
 fixture_code = OrderedDict({
-	1: OrderedDict(zip(codons, fixture_genetic_table[1])),
-	2: OrderedDict(zip(codons, fixture_genetic_table[2])),
-	5: OrderedDict(zip(codons, fixture_genetic_table[5])),
+	1: OrderedDict(zip(fixture_codons, fixture_genetic_table[1])),
+	2: OrderedDict(zip(fixture_codons, fixture_genetic_table[2])),
+	5: OrderedDict(zip(fixture_codons, fixture_genetic_table[5])),
 })
+
+
+def test_create_genetic_table():
+	table = fixture_genetic_table[1]
+	assert create_genetic_table(table, fixture_codons) == fixture_code[1]
 
 
 @pytest.mark.parametrize(('n'), [1, 2, 5])
