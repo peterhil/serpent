@@ -5,7 +5,8 @@ from collections import OrderedDict
 import pytest
 
 from serpent.convert.codon import codons_array
-from serpent.convert.genetic_code import genetic_code
+from serpent.convert.genetic_code import genetic_code, genetic_code_inverse
+from serpent.fun import inverse_od
 
 codons = codons_array('GACT')
 fixture_genetic_table = {
@@ -23,4 +24,11 @@ fixture_code = OrderedDict({
 
 @pytest.mark.parametrize(('n'), [1, 2, 5])
 def test_genetic_code(n):
-	assert genetic_code[n] == fixture_code[n], f'Genetic code table {n} differs.'
+	err_msg = f'Genetic code table {n} differs.'
+	assert genetic_code[n] == fixture_code[n], err_msg
+
+
+@pytest.mark.parametrize(('n'), [1, 2, 5])
+def test_genetic_code_inverse(n):
+	err_msg = f'Inverse genetic code table {n} differs.'
+	assert genetic_code_inverse[n] == inverse_od(fixture_code[n]), err_msg
