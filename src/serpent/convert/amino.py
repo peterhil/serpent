@@ -8,7 +8,6 @@ from .codon import CODONS_LEN, codon_to_num, codons_array, num_to_codon
 from .genetic_code import GENETIC_CODE
 
 CODONS_NCBI = codons_array('TCAG')
-TRANSL_TABLE = 1
 
 
 def create_genetic_table(table: str) -> OrderedDict[str, str]:
