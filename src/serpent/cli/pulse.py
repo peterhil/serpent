@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from collections import defaultdict
+
+import numpy as np
+
 from serpent import dna
 from serpent.palette import spectrum_layer_colours_for
 from serpent.printing import format_quasar, format_quasar_pulses
@@ -29,6 +33,8 @@ def pulse_plot_counts(ax, pulse, colour, base: float=10):
 	ax.set_xlabel('repeat length')
 	ax.set_ylabel('count')
 
+	return data
+
 
 def pulse_plot_symbols_legend(ax, key, colours, width, height):
 	mx = len(key) - 1
@@ -52,6 +58,7 @@ def pulse_plot_sequences(
 ):
 	colours = spectrum_layer_colours_for(key, amino)
 	maxheight = maxscale = 0
+	sum_pulses = defaultdict(int)
 
 	for seq in seqs:
 		[aminos, descriptions] = dna.decode_seq(seq, amino, table, degen, dna.to_amino)
@@ -67,11 +74,18 @@ def pulse_plot_sequences(
 			pos = mx - i
 
 			if count:
-				pulse_plot_counts(ax, pulse, colour, base=10)
+				sorted_pulse = pulse_plot_counts(ax, pulse, colour, base=10)
+				for repeat, count in sorted_pulse.T:
+					sum_pulses[repeat] += count
 			else:
 				pulse_plot(ax, pulse, colour, symbol=aa, y_offset=pos * 100)
 
 	if count:
+		# sum pulses
+		sum_pulses = np.array([*sorted(sum_pulses.items())]).T
+		ax.plot(*sum_pulses, color='#2227')
+
+		# symbols legend
 		pulse_plot_symbols_legend(ax, key, colours, width=maxscale, height=maxheight)
 
 
