@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import more_itertools as mit
 
+from serpent.convert.genetic_code import STANDARD_TABLES
+
 
 def start_or_stop(a, b, start, stop, split='n'):
 	# 'sentences': Split when a start codon follows a stop codon
@@ -24,14 +26,12 @@ def split_aminos(aminos, start='M', stop='*', split='r'):
 
 def split_nucleotides(
 	codons,
-	# Hard coded table 11, TODO Use genetic code tables
-	start='GTG ATG ATA ATC ATT CTG TTG',
-	stop='TGA TAG TAA',
+	table=1,
 	split='n'
 ):
 	"""Split nucleotide sequence by start and stop codons."""
-	start = start.split(' ')
-	stop = stop.split(' ')
+	start = STANDARD_TABLES[table].start
+	stop = STANDARD_TABLES[table].stop
 
 	def splitter(a, b):
 		return start_or_stop(a, b, start, stop, split)
@@ -40,10 +40,10 @@ def split_nucleotides(
 	yield from codons
 
 
-def split_encoded(encoded, fmt, split='n'):
+def split_encoded(encoded, fmt, table, split='n'):
 	if fmt in ['a', 'amino']:
 		regions = split_aminos(encoded, split=split)
 	else:
-		regions = split_nucleotides(encoded, split=split)
+		regions = split_nucleotides(encoded, table, split=split)
 
 	yield from regions

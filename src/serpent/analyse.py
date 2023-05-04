@@ -294,7 +294,7 @@ def split(
 			yield from descriptions
 
 			encoded = encode_data(data, fmt, amino, table, degen)
-			regions = split_encoded(encoded, fmt, split=split)
+			regions = split_encoded(encoded, fmt, table, split=split)
 			yield from format_split(regions, width, split=split)
 
 
