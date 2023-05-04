@@ -37,84 +37,124 @@ qualifier on the CDS feature.
 from __future__ import annotations
 
 from collections import OrderedDict
+from typing import NamedTuple
+
+import numpy as np
 
 from serpent.convert.codon import CODONS_LEN, codons_array
-from serpent.fun import inverse_od
+from serpent.fun import find_offsets, inverse_od, str_join
 
 CODONS_NCBI = codons_array('TCAG')
 
-GENETIC_CODE = {
-	# Base  1:  "TTTTTTTTTTTTTTTTCCCCCCCCCCCCCCCCAAAAAAAAAAAAAAAAGGGGGGGGGGGGGGGG"
-	# Base  2:  "TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG"
-	# Base  3:  "TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG"
-	1:          "FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 1:  "---M------**--*----M---------------M----------------------------",
-	2:          "FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIMMTTTTNNKKSS**VVVVAAAADDEEGGGG",
-	# Start 2:  "----------**--------------------MMMM----------**---M------------",
-	3:          "FFLLSSSSYY**CCWWTTTTPPPPHHQQRRRRIIMMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 3:  "----------**----------------------MM---------------M------------",
-	4:          "FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 4:  "--MM------**-------M------------MMMM---------------M------------",
-	5:          "FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIMMTTTTNNKKSSSSVVVVAAAADDEEGGGG",
-	# Start 5:  "---M------**--------------------MMMM---------------M------------",
-	6:          "FFLLSSSSYYQQCC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 6:  "--------------*--------------------M----------------------------",
-	9:          "FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIIMTTTTNNNKSSSSVVVVAAAADDEEGGGG",
-	# Start 9:  "----------**-----------------------M---------------M------------",
-	10:         "FFLLSSSSYY**CCCWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 10: "----------**-----------------------M----------------------------",
-	11:         "FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 11: "---M------**--*----M------------MMMM---------------M------------",
-	12:         "FFLLSSSSYY**CC*WLLLSPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 12: "----------**--*----M---------------M----------------------------",
-	13:         "FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIMMTTTTNNKKSSGGVVVVAAAADDEEGGGG",
-	# Start 13: "---M------**----------------------MM---------------M------------",
-	14:         "FFLLSSSSYYY*CCWWLLLLPPPPHHQQRRRRIIIMTTTTNNNKSSSSVVVVAAAADDEEGGGG",
-	# Start 14: "-----------*-----------------------M----------------------------",
-	16:         "FFLLSSSSYY*LCC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 16: "----------*---*--------------------M----------------------------",
-	21:         "FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIMMTTTTNNNKSSSSVVVVAAAADDEEGGGG",
-	# Start 21: "----------**-----------------------M---------------M------------",
-	22:         "FFLLSS*SYY*LCC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 22: "------*---*---*--------------------M----------------------------",
-	23:         "FF*LSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 23: "--*-------**--*-----------------M--M---------------M------------",
-	24:         "FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSSKVVVVAAAADDEEGGGG",
-	# Start 24: "---M------**-------M---------------M---------------M------------",
-	25:         "FFLLSSSSYY**CCGWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 25: "---M------**-----------------------M---------------M------------",
-	26:         "FFLLSSSSYY**CC*WLLLAPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 26: "----------**--*----M---------------M----------------------------",
-	27:         "FFLLSSSSYYQQCCWWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 27: "--------------*--------------------M----------------------------",
-	28:         "FFLLSSSSYYQQCCWWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 28: "----------**--*--------------------M----------------------------",
-	29:         "FFLLSSSSYYYYCC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 29: "--------------*--------------------M----------------------------",
-	30:         "FFLLSSSSYYEECC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 30: "--------------*--------------------M----------------------------",
-	31:         "FFLLSSSSYYEECCWWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
-	# Start 31: "----------**-----------------------M----------------------------",
-	33:         "FFLLSSSSYYY*CCWWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSSKVVVVAAAADDEEGGGG",
-	# Start 33: "---M-------*-------M---------------M---------------M------------",
-	# Base  1:  "TTTTTTTTTTTTTTTTCCCCCCCCCCCCCCCCAAAAAAAAAAAAAAAAGGGGGGGGGGGGGGGG"
-	# Base  2:  "TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG"
-	# Base  3:  "TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG"
-}
+
+class GeneticCode(NamedTuple):
+	"""Standard genetic code table."""
+
+	code: OrderedDict[str, str]
+	start: set
+	stop: set
 
 
-def create_genetic_table(table: str, codons: str=CODONS_NCBI) -> OrderedDict[str, str]:
+def genetic_code_map(table: str, codons: str=CODONS_NCBI) -> OrderedDict[str, str]:
 	table = OrderedDict(zip(codons, table))
 	assert len(table) == CODONS_LEN, 'Codons and table should have 64 characters.'
 	return table
 
 
-genetic_code = OrderedDict([
-	(i, create_genetic_table(reversed(table), reversed(CODONS_NCBI)))
-	for i, table in GENETIC_CODE.items()
+def special_set(codons, special: str, marker: str):
+	return set(codons[[*find_offsets(special, marker)]])
+
+
+def code_table(
+	code: str, special: str, codons: str=CODONS_NCBI
+) -> OrderedDict[str, str]:
+	err_msg = 'Codons and table should have 64 characters.'
+	assert len(code) == len(special) == CODONS_LEN, err_msg
+
+	code = genetic_code_map(code, codons)
+	start = special_set(codons, special, 'M')
+	stop = special_set(codons, special, '*')
+
+	return GeneticCode(code, start, stop)
+
+
+def sgc(code: str, special: str, codons: str=CODONS_NCBI) -> OrderedDict[str, str]:
+	# TODO Reverse the strings in STANDARD_TABLES
+	codons = np.array(list(reversed(codons)))
+	code = str_join(reversed(code))
+	special = str_join(reversed(special))
+
+	return code_table(code, special, codons)
+
+
+# flake8: noqa ET128
+STANDARD_TABLES = OrderedDict({
+	#		"TTTTTTTTTTTTTTTTCCCCCCCCCCCCCCCCAAAAAAAAAAAAAAAAGGGGGGGGGGGGGGGG"  # Base 1
+	#		"TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG"  # Base 2
+	#		"TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG"  # Base 3
+	1:  sgc("FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"---M------**--*----M---------------M----------------------------"),
+	2:  sgc("FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIMMTTTTNNKKSS**VVVVAAAADDEEGGGG",
+			"----------**--------------------MMMM----------**---M------------"),
+	3:  sgc("FFLLSSSSYY**CCWWTTTTPPPPHHQQRRRRIIMMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"----------**----------------------MM---------------M------------"),
+	4:  sgc("FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"--MM------**-------M------------MMMM---------------M------------"),
+	5:  sgc("FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIMMTTTTNNKKSSSSVVVVAAAADDEEGGGG",
+			"---M------**--------------------MMMM---------------M------------"),
+	6:  sgc("FFLLSSSSYYQQCC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"--------------*--------------------M----------------------------"),
+	9:  sgc("FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIIMTTTTNNNKSSSSVVVVAAAADDEEGGGG",
+			"----------**-----------------------M---------------M------------"),
+	10: sgc("FFLLSSSSYY**CCCWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"----------**-----------------------M----------------------------"),
+	11: sgc("FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"---M------**--*----M------------MMMM---------------M------------"),
+	12: sgc("FFLLSSSSYY**CC*WLLLSPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"----------**--*----M---------------M----------------------------"),
+	13: sgc("FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIMMTTTTNNKKSSGGVVVVAAAADDEEGGGG",
+			"---M------**----------------------MM---------------M------------"),
+	14: sgc("FFLLSSSSYYY*CCWWLLLLPPPPHHQQRRRRIIIMTTTTNNNKSSSSVVVVAAAADDEEGGGG",
+			"-----------*-----------------------M----------------------------"),
+	16: sgc("FFLLSSSSYY*LCC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"----------*---*--------------------M----------------------------"),
+	21: sgc("FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIMMTTTTNNNKSSSSVVVVAAAADDEEGGGG",
+			"----------**-----------------------M---------------M------------"),
+	22: sgc("FFLLSS*SYY*LCC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"------*---*---*--------------------M----------------------------"),
+	23: sgc("FF*LSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"--*-------**--*-----------------M--M---------------M------------"),
+	24: sgc("FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSSKVVVVAAAADDEEGGGG",
+			"---M------**-------M---------------M---------------M------------"),
+	25: sgc("FFLLSSSSYY**CCGWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"---M------**-----------------------M---------------M------------"),
+	26: sgc("FFLLSSSSYY**CC*WLLLAPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"----------**--*----M---------------M----------------------------"),
+	27: sgc("FFLLSSSSYYQQCCWWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"--------------*--------------------M----------------------------"),
+	28: sgc("FFLLSSSSYYQQCCWWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"----------**--*--------------------M----------------------------"),
+	29: sgc("FFLLSSSSYYYYCC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"--------------*--------------------M----------------------------"),
+	30: sgc("FFLLSSSSYYEECC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"--------------*--------------------M----------------------------"),
+	31: sgc("FFLLSSSSYYEECCWWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG",
+			"----------**-----------------------M----------------------------"),
+	33: sgc("FFLLSSSSYYY*CCWWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSSKVVVVAAAADDEEGGGG",
+			"---M-------*-------M---------------M---------------M------------"),
+	#		"TTTTTTTTTTTTTTTTCCCCCCCCCCCCCCCCAAAAAAAAAAAAAAAAGGGGGGGGGGGGGGGG"  # Base 1
+	#		"TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG"  # Base 2
+	#		"TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG"  # Base 3
+})
+
+
+GENETIC_CODE = OrderedDict([
+	(key, table.code)
+	for key, table in STANDARD_TABLES.items()
 ])
 
+genetic_code = GENETIC_CODE
 genetic_code_inverse = OrderedDict([
-	(i, inverse_od(table))
-	for i, table in genetic_code.items()
+	(key, inverse_od(table))
+	for key, table in genetic_code.items()
 ])

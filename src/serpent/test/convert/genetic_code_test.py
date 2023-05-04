@@ -6,9 +6,9 @@ import pytest
 
 from serpent.convert.codon import codons_array
 from serpent.convert.genetic_code import (
-	create_genetic_table,
 	genetic_code,
 	genetic_code_inverse,
+	genetic_code_map,
 )
 from serpent.fun import inverse_od
 
@@ -26,9 +26,9 @@ fixture_code = OrderedDict({
 })
 
 
-def test_create_genetic_table():
+def test_genetic_code_map():
 	table = fixture_genetic_table[1]
-	assert create_genetic_table(table, fixture_codons) == fixture_code[1]
+	assert genetic_code_map(table, fixture_codons) == fixture_code[1]
 
 
 @pytest.mark.parametrize(('n'), [1, 2, 5])

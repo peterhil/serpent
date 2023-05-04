@@ -38,6 +38,17 @@ def sort_values(items: ItemsView, reverse=False):
 	return sorted(items, key=second, reverse=reverse)
 
 
+def find_offsets(string, substring):
+	"""Find all (possibly overlapping) indices of substring in string."""
+	offset = -1
+	while True:
+		offset = string.find(substring, offset + 1)
+		if offset == -1:
+			break
+		else:
+			yield offset
+
+
 def str_join(seq: Iterable, joiner='') -> str:
 	"""Join a sequence into a string."""
 	return joiner.join(seq)
