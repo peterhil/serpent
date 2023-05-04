@@ -68,8 +68,8 @@ def special_set(codons, special: str, marker: str):
 def code_table(
 	code: str, special: str, codons: str=STANDARD_CODONS
 ) -> OrderedDict[str, str]:
-	err_msg = 'Codons and table should have 64 characters.'
-	assert len(code) == len(special) == CODONS_LEN, err_msg
+	err_msg = 'All arguments should have 64 characters.'
+	assert len(code) == len(special) == len(codons) == CODONS_LEN, err_msg
 
 	code = genetic_code_map(code, codons)
 	start = special_set(codons, special, 'M')
