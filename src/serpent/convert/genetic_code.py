@@ -141,13 +141,11 @@ STANDARD_TABLES = OrderedDict({
 	#		"GACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACT"  # Base 3
 })
 
-
-GENETIC_CODE = OrderedDict([
+genetic_code = OrderedDict([
 	(key, table.code)
 	for key, table in STANDARD_TABLES.items()
 ])
 
-genetic_code = GENETIC_CODE
 genetic_code_inverse = OrderedDict([
 	(key, inverse_od(table))
 	for key, table in genetic_code.items()

@@ -3,14 +3,10 @@ from __future__ import annotations
 from collections import OrderedDict
 
 from serpent.convert.codon import codon_to_num, num_to_codon
-from serpent.convert.genetic_code import (
-	GENETIC_CODE,
-	genetic_code,
-	genetic_code_inverse,
-)
+from serpent.convert.genetic_code import genetic_code, genetic_code_inverse
 from serpent.fun import inverse_od, map_array, str_join
 
-aa_tables = [*GENETIC_CODE.keys()]
+aa_tables = list(genetic_code.keys())
 
 # TODO: Handle degenerate data
 degenerate_amino = OrderedDict({
@@ -73,8 +69,5 @@ def decode_aminos(
 
 
 def aminos_for_table(table: int=1):
-	return str_join(OrderedDict([
-		(amino, index)
-		for index, amino
-		in enumerate(reversed(GENETIC_CODE[table]))
-	]).keys())
+	"""Amino acids for a table as string to use as a key."""
+	return str_join(genetic_code_inverse[table].keys())
