@@ -12,7 +12,8 @@ def dna_image(
 	*,
 	length=1,
 	amino=False, degen=False, table=1,
-):
+) -> Image.Image:
+	"""DNA data as full colour image in various modes."""
 	if mode == 'Q':
 		rgb = np.vstack([
 			dna_quad_image(

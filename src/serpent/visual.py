@@ -7,7 +7,6 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy.typing import NDArray
-from PIL import Image
 
 from serpent import dna
 from serpent.bitmap import height_for, num_to_pixel
@@ -149,25 +148,6 @@ def plot_sequence_counts(decoded, *args, n=4, **kwargs):
 	plt.plot(np.arange(size), data, *args, **kwargs)
 
 	return [count, index]
-
-
-# ruff: noqa: PLR0913
-def dna_image(
-	decoded: CodonData, width=64, fill=0, mode="RGB",
-	amino=False, degen=False,
-) -> Image.Image:
-	"""Get decoded DNA data as full colour image.
-
-	See `dna_image_data` for details.
-	"""
-	rgb = dna_image_data(
-		decoded,
-		width=width, fill=fill, mode=mode,
-		amino=amino, degen=degen,
-	)
-	img = Image.fromarray(rgb, mode=mode)
-
-	return img
 
 
 # ruff: noqa: PLR0913
