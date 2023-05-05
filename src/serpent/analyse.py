@@ -432,7 +432,14 @@ def quasar(
 	key = aminos_for_table(table)
 
 	rgb = np.vstack([
-		dna_quasar_seq(sequence, amino, degen, table, cumulative, log, mod, test, key=key)
+		dna_quasar_seq(
+			sequence,
+			cumulative=cumulative,
+			log=log,
+			mod=mod,
+			test=test,
+			key=key,
+			amino=amino, table=table, degen=degen)
 		for sequence in seqs
 	])
 

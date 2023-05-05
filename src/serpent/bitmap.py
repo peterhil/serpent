@@ -10,6 +10,8 @@ import numpy as np
 from serpent.mathematics import rescale
 from serpent.palette import Rgb, amino_colour_map, codon_colour_map
 
+RGB_MAX = 255
+
 
 def to_uint8(data, old=64, offset=0):
 	"""Rescale data to 8 bit uints.

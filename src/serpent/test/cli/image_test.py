@@ -4,7 +4,7 @@ import numpy as np
 from numpy.testing import assert_array_equal
 
 from serpent import dna
-from serpent.visual import dna_image_data
+from serpent.cli.image import dna_image_data
 
 
 def test_dna_image_data():
