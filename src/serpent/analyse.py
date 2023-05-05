@@ -25,6 +25,7 @@ from serpent.cli.pulse import (
 	pulse_plot_sequences,
 	pulse_text,
 )
+from serpent.cli.quasar import dna_quasar_seq
 from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
 from serpent.convert.degenerate import is_degenerate
@@ -66,7 +67,6 @@ from serpent.spatial import amino_path_3d
 from serpent.stats import ac_peaks, autocorrelogram, quasar_pulses
 from serpent.visual import (
 	bin_choices,
-	dna_quasar_seq,
 	interactive,
 	plot_amino_labels,
 	plot_directions,
