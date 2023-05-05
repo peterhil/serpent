@@ -159,18 +159,6 @@ def dna_image_data(
 
 	The codons are mapped to 64 ** 3 (=262144) RGB colours quite directly,
 	so that: G: 1, A: 85, C: 169, T (or U): 253.
-
-	Examples
-	--------
-	A (bluish) grey band of 4 colours from dark to light:
-
-	>>> codons = dna.decode('GGGGGAGGCAAGAAAAATCCGCCACCCTTATTCTTT')
-	>>> codons
-	array([ 0,  1,  2, 20, 21, 23, 40, 41, 42, 61, 62, 63], dtype=int8)
-
-	>>> im = dna_image(codons, width=4)
-	>>> [*im.getdata()]
-	[(1, 5, 9), (81, 85, 93), (161, 165, 169), (245, 249, 253)]
 	"""
 	# TODO decode data here, so gaps can be accomodated for requested width?
 	channels: int = len(mode)
