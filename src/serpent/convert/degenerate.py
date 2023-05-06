@@ -36,8 +36,12 @@ def snp_to_degen(codons: list[str]) -> str:
 	>>> snp_to_degen(['ATA', 'ATC', 'ATT'])
 	'ATH'
 	"""
-	# TODO Assert SNP property of codons in the list
-	transposed = [list(g) for g in mit.unzip(codons)]
+	transposed = [str_join(list(g)) for g in mit.unzip(codons)]
+
+	# Assert SNP property of the codons
+	length_check = set(sorted([len(set(g)) for g in transposed])[:-1])
+	assert length_check == {1}, f'Codons should differ in only one position, got: {codons}'
+
 	return str_join([compress_dntset(set(bases)) for bases in transposed])
 
 
