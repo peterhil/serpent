@@ -11,6 +11,7 @@ from serpent.fun import inverse_od, second
 from serpent.math.combinatorics import unspread
 from serpent.settings import BASE_ORDER
 
+Dnt = str
 DntBits = int
 DntSet = Union[set, str]
 
@@ -124,3 +125,7 @@ def dntset_to_bits(dntset: DntSet) -> DntBits:
 	[0, 1, 2, 4, 8, 3, 5, 9, 6, 10, 12, 7, 11, 13, 14, 15]
 	"""
 	return reduce(or_, (dnt_to_bits[dnt] for dnt in set(dntset)), 0)
+
+
+def compress_dntset(dntset: DntSet) -> Dnt:
+	return bits_to_dnt.get(dntset_to_bits(dntset))
