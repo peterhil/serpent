@@ -64,7 +64,7 @@ from serpent.settings import (
 	COUNT_LIMIT,
 	DEFAULT_COLOR,
 )
-from serpent.spatial import amino_path_3d
+from serpent.spatial.path import amino_path_3d
 from serpent.visual import ansi
 from serpent.visual.plot import (
 	bin_choices,

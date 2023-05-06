@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from serpent import dna
-from serpent.mapping.amino_spiral_cube import amino_spiral
 from serpent.math.basic import magnitude
 from serpent.math.statistic import count_sorted
+from serpent.spatial.amino_spiral_cube import amino_spiral
 
 bin_choices = [
 	'base', 'auto', 'fd', 'doane', 'scott', 'stone', 'rice', 'sturges', 'sqrt',
