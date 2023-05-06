@@ -9,7 +9,7 @@ from collections.abc import Iterable
 import more_itertools as mit
 import numpy as np
 
-from serpent.convert.degenerate import degenerate_exp, inv_degenerate_exp
+from serpent.convert.dnt import degenerate_exp, inv_degenerate_exp
 from serpent.settings import BASE_ORDER
 from serpent.visual.bitmap import yiq_to_rgb
 

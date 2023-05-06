@@ -11,8 +11,8 @@ from numpy.typing import NDArray
 from serpent.convert.amino import codon_to_amino, decode_aminos
 from serpent.convert.base64 import num_to_base64
 from serpent.convert.codon import codon_to_num, num_to_codon
-from serpent.convert.degenerate import dnt_to_num
 from serpent.convert.digits import change_base
+from serpent.convert.dnt import dnt_to_num
 from serpent.fun import str_join
 from serpent.io.fasta import (
 	AMINO,
