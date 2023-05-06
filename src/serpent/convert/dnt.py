@@ -3,11 +3,16 @@
 from __future__ import annotations
 
 from collections import OrderedDict
+from functools import reduce
+from operator import or_
+from typing import Union
 
 from serpent.fun import inverse_od, second
 from serpent.math.combinatorics import unspread
 from serpent.settings import BASE_ORDER
 
+DntBits = int
+DntSet = Union[set, str]
 
 def is_degenerate(nts: str, bases: str=BASE_ORDER) -> bool:
 	"""Return true if any nucleotide is degenerate in the given string.
@@ -92,3 +97,30 @@ def num_to_dnt(num: int) -> str:
 def dnt_to_num(dnt: str) -> int:
 	"""Convert degenerate nucleotide base to number (<16)."""
 	return inv_dnt_binomial[dnt]
+
+
+def dntset_to_bits(dntset: DntSet) -> DntBits:
+	"""Convert a set of nucleotides to an integer representing four bits.
+
+	Returns the highest DNT bits representing all the DNTs in given DNT set.
+
+	The bits represent the bases in BASE_ORDER, for example:
+	{G: 1, A: 2, C: 4, T: 8}
+
+	# Few examples
+	>>> dntset_to_bits('GACT')
+	15
+	>>> dntset_to_bits('GAC')
+	7
+	>>> dntset_to_bits('R')
+	3
+
+	# Test powerset of bases
+	>>> from serpent.settings import BASE_ORDER
+	>>> import more_itertools as mit
+	>>>
+	>>> sets = [set(nts) for nts in mit.powerset(BASE_ORDER)]
+	>>> [dntset_to_bits(s) for s in sets]
+	[0, 1, 2, 4, 8, 3, 5, 9, 6, 10, 12, 7, 11, 13, 14, 15]
+	"""
+	return reduce(or_, (dnt_to_bits[dnt] for dnt in set(dntset)), 0)
