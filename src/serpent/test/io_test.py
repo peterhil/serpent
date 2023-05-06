@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from serpent.io import image_name_for
+from serpent.io.files import image_name_for
 
 
 def test_image_name_for_isnt_filename():

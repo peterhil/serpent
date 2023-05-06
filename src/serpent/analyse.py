@@ -30,7 +30,8 @@ from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
 from serpent.convert.degenerate import is_degenerate
 from serpent.convert.split import split_aminos, split_encoded
-from serpent.fasta import (
+from serpent.fun import second, sort_values, str_join
+from serpent.io.fasta import (
 	ParseError,
 	auto_select_amino,
 	descriptions_and_data,
@@ -39,8 +40,7 @@ from serpent.fasta import (
 	read,
 	read_sequences,
 )
-from serpent.fun import second, sort_values, str_join
-from serpent.io import (
+from serpent.io.files import (
 	check_paths,
 	echo,
 	file_extension_for,
@@ -50,16 +50,16 @@ from serpent.io import (
 	wait_user,
 	write_iterable,
 )
-from serpent.math.basic import autowidth_for
-from serpent.math.dsp import fft_spectra
-from serpent.math.statistic import ac_peaks, autocorrelogram, quasar_pulses
-from serpent.printing import (
+from serpent.io.printing import (
 	auto_line_width_for,
 	format_counter,
 	format_decoded,
 	format_lines,
 	format_split,
 )
+from serpent.math.basic import autowidth_for
+from serpent.math.dsp import fft_spectra
+from serpent.math.statistic import ac_peaks, autocorrelogram, quasar_pulses
 from serpent.settings import (
 	COUNT_LIMIT,
 	DEFAULT_COLOR,

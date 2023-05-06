@@ -14,7 +14,7 @@ import more_itertools as mit
 from termcolor import colored
 
 from serpent.fun import str_join
-from serpent.io import err, info
+from serpent.io.files import err, info
 from serpent.settings import DEBUG, DEFAULT_TERM_COLOR
 
 DATA_TOKENS = [

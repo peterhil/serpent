@@ -7,9 +7,9 @@ from numpy.typing import NDArray
 
 from serpent import dna
 from serpent.fun import str_join
+from serpent.io.printing import format_quasar
 from serpent.math.basic import logn, normalise
 from serpent.math.statistic import quasar_pulses
-from serpent.printing import format_quasar
 from serpent.settings import DEBUG
 from serpent.visual.bitmap import RGB_MAX
 

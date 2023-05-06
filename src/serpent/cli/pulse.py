@@ -5,8 +5,8 @@ from collections import defaultdict
 import numpy as np
 
 from serpent import dna
+from serpent.io.printing import format_quasar, format_quasar_pulses
 from serpent.math.statistic import count_sorted, quasar_pulses
-from serpent.printing import format_quasar, format_quasar_pulses
 from serpent.settings import PLOT_FONT_SIZE
 from serpent.visual.palette import spectrum_layer_colours_for
 

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from serpent import dna
-from serpent.fasta import descriptions_and_data
-from serpent.printing import reflow
+from serpent.io.fasta import descriptions_and_data
+from serpent.io.printing import reflow
 
 
 def encode_data(data, fmt, amino=False, table=1, degen=False):

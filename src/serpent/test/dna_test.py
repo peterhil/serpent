@@ -5,8 +5,8 @@ import pytest
 from numpy.testing import assert_array_equal
 
 from serpent import dna
-from serpent.fasta import AMINO, BASE, DEGENERATE
 from serpent.fun import str_join
+from serpent.io.fasta import AMINO, BASE, DEGENERATE
 
 
 def test_decode():

@@ -8,7 +8,7 @@ from serpent import (
          convert,
          dna,
          encoding,
-         fasta,
+         io,
          fun,
          math,
          padding,

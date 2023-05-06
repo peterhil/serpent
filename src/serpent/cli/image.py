@@ -6,7 +6,7 @@ from PIL import Image
 
 from serpent import dna
 from serpent.convert.quad import dna_to_quad, quads_to_rgb
-from serpent.fasta import descriptions_and_data
+from serpent.io.fasta import descriptions_and_data
 from serpent.padding import pad_end
 from serpent.typing import CodonData
 from serpent.visual.bitmap import RGB_MAX, height_for, num_to_pixel

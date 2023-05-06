@@ -13,7 +13,8 @@ from serpent.convert.base64 import num_to_base64
 from serpent.convert.codon import codon_to_num, num_to_codon
 from serpent.convert.degenerate import dnt_to_num
 from serpent.convert.digits import change_base
-from serpent.fasta import (
+from serpent.fun import str_join
+from serpent.io.fasta import (
 	AMINO,
 	AMINO_DEGENERATE,
 	BASE,
@@ -23,8 +24,7 @@ from serpent.fasta import (
 	FastaToken,
 	descriptions_and_data,
 )
-from serpent.fun import str_join
-from serpent.io import err
+from serpent.io.files import err
 
 
 def encode(decoded: Iterable[int], fmt: str = 'base64') -> Iterable[str]:
