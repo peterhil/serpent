@@ -16,7 +16,7 @@ import numpy as np
 from argh.decorators import aliases, arg, wrap_errors
 from PIL import Image
 
-from serpent import ansi, dna
+from serpent import dna
 from serpent.cli.encode import encode_data, encode_sequences
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
@@ -65,7 +65,8 @@ from serpent.settings import (
 )
 from serpent.spatial import amino_path_3d
 from serpent.stats import ac_peaks, autocorrelogram, quasar_pulses
-from serpent.visual import (
+from serpent.visual import ansi
+from serpent.visual.plot import (
 	bin_choices,
 	interactive,
 	plot_amino_labels,

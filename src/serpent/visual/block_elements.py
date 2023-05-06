@@ -10,8 +10,8 @@ from collections.abc import Iterator, Sequence
 
 import more_itertools as mit
 
-from serpent import ansi
 from serpent.fun import str_join
+from serpent.visual import ansi
 
 COLOUR_MODES = ['RGB', 'P']
 HALF_BLOCK = '\u2580'

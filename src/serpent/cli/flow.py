@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from serpent import dna
-from serpent.bitmap import decoded_to_pixels
-from serpent.block_elements import pixels_to_blocks, pixels_to_verbose_blocks
 from serpent.fun import str_join
+from serpent.visual.bitmap import decoded_to_pixels
+from serpent.visual.block_elements import pixels_to_blocks, pixels_to_verbose_blocks
 
 
 def flow_blocks(

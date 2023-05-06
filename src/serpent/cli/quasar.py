@@ -6,12 +6,12 @@ import numpy as np
 from numpy.typing import NDArray
 
 from serpent import dna
-from serpent.bitmap import RGB_MAX
 from serpent.fun import str_join
 from serpent.mathematics import logn, normalise
 from serpent.printing import format_quasar
 from serpent.settings import DEBUG
 from serpent.stats import quasar_pulses
+from serpent.visual.bitmap import RGB_MAX
 
 
 # ruff: noqa: PLR0913

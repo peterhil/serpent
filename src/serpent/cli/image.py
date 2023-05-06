@@ -5,12 +5,12 @@ from numpy.typing import NDArray
 from PIL import Image
 
 from serpent import dna
-from serpent.bitmap import RGB_MAX, height_for, num_to_pixel
 from serpent.convert.quad import dna_to_quad, quads_to_rgb
 from serpent.fasta import descriptions_and_data
 from serpent.padding import pad_end
-from serpent.palette import apply_palette
 from serpent.typing import CodonData
+from serpent.visual.bitmap import RGB_MAX, height_for, num_to_pixel
+from serpent.visual.palette import apply_palette
 
 
 # ruff: noqa: PLR0913

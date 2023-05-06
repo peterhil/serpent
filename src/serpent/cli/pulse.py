@@ -5,10 +5,10 @@ from collections import defaultdict
 import numpy as np
 
 from serpent import dna
-from serpent.palette import spectrum_layer_colours_for
 from serpent.printing import format_quasar, format_quasar_pulses
 from serpent.settings import PLOT_FONT_SIZE
 from serpent.stats import count_sorted, quasar_pulses
+from serpent.visual.palette import spectrum_layer_colours_for
 
 
 def pulse_plot(ax, pulse, colour, *, symbol, y_offset=0):
