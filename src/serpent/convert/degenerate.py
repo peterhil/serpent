@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import itertools as itr
 from collections import OrderedDict
+from functools import cache
 from operator import itemgetter
 
 import more_itertools as mit
@@ -45,9 +46,9 @@ def snp_to_degen(codons: list[str]) -> str:
 	return str_join([compress_dntset(set(bases)) for bases in transposed])
 
 
+@cache
 def create_degen_to_amino_map(table: int=1) -> str:
 	"""Get a mapping for degenerate codon to an amino acid conversion."""
-	# TODO Memoize or precalculcate the mappings for each table
 	aminos = STANDARD_TABLES[table].raw
 	codons = STANDARD_CODONS
 	iterable = zip(aminos, codons)
