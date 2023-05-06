@@ -121,8 +121,12 @@ def degenerate_codons():
 	return np.array([*degenerates], dtype='U3')
 
 
-def is_degenerate(codon: str, bases: str=BASE_ORDER) -> bool:
-	return not (set(codon) < set(bases))
+def is_degenerate(nts: str, bases: str=BASE_ORDER) -> bool:
+	"""Return true if any nucleotide is degenerate in the given string.
+
+	Accepts a string of nucleotides or single codon.
+	"""
+	return not (set(nts) <= set(bases))
 
 
 # Codons
