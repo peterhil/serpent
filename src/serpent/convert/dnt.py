@@ -51,7 +51,7 @@ def binomial_dnt(bases=BASE_ORDER):
 
 
 def inverse_exp_dnt(bases=BASE_ORDER):
-	# TODO Does not match create_dnt currently, but kept as a reference
+	# TODO Does not match binomial_dnt
 	idnt = OrderedDict([(base, 2 ** n) for n, base in enumerate(bases)])
 	[G, A, C, T] = [idnt['G'], idnt['A'], idnt['C'], idnt['T']]
 
@@ -103,8 +103,8 @@ def inverse_quaternary_dnt(bases=BASE_ORDER):
 
 dnt_binomial = binomial_dnt(BASE_ORDER)
 inv_dnt_binomial = inverse_od(dnt_binomial)
-inv_dnt_exp = inverse_exp_dnt(BASE_ORDER)
-dnt_exp = inverse_od(inv_dnt_exp)
+dnt_to_bits = inverse_exp_dnt(BASE_ORDER)
+bits_to_dnt = inverse_od(dnt_to_bits)
 # inv_dnt_quatro = inverse_quaternary_dnt(BASE_ORDER)
 # dnt_quatro = inverse_od(inv_dnt)
 
