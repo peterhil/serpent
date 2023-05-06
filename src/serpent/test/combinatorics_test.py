@@ -4,7 +4,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 from numpy.testing import assert_array_equal
 
-from serpent.combinatorics import spread, unspread
+from serpent.math.combinatorics import spread, unspread
 
 
 @given(st.data())

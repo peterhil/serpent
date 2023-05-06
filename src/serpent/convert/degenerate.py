@@ -7,8 +7,8 @@ from collections import OrderedDict
 
 import numpy as np
 
-from serpent.combinatorics import unspread
 from serpent.fun import inverse_od, second, str_join
+from serpent.math.combinatorics import unspread
 from serpent.settings import BASE_ORDER
 
 

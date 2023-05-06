@@ -3,7 +3,7 @@ from __future__ import annotations
 from hypothesis import given
 from hypothesis import strategies as st
 
-from serpent.mathematics import autowidth, phi_small
+from serpent.math.basic import autowidth, phi_small
 
 
 def test_autowidth_square():

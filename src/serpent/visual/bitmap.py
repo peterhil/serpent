@@ -7,7 +7,7 @@ from collections.abc import Iterable
 
 import numpy as np
 
-from serpent.mathematics import rescale
+from serpent.math.basic import rescale
 from serpent.visual.palette import Rgb, amino_colour_map, codon_colour_map
 
 RGB_MAX = 255

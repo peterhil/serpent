@@ -30,7 +30,6 @@ from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
 from serpent.convert.degenerate import is_degenerate
 from serpent.convert.split import split_aminos, split_encoded
-from serpent.dsp import fft_spectra
 from serpent.fasta import (
 	ParseError,
 	auto_select_amino,
@@ -51,7 +50,9 @@ from serpent.io import (
 	wait_user,
 	write_iterable,
 )
-from serpent.mathematics import autowidth_for
+from serpent.math.basic import autowidth_for
+from serpent.math.dsp import fft_spectra
+from serpent.math.statistic import ac_peaks, autocorrelogram, quasar_pulses
 from serpent.printing import (
 	auto_line_width_for,
 	format_counter,
@@ -64,7 +65,6 @@ from serpent.settings import (
 	DEFAULT_COLOR,
 )
 from serpent.spatial import amino_path_3d
-from serpent.stats import ac_peaks, autocorrelogram, quasar_pulses
 from serpent.visual import ansi
 from serpent.visual.plot import (
 	bin_choices,

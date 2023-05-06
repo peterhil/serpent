@@ -10,8 +10,7 @@ from serpent import (
          encoding,
          fasta,
          fun,
-         mathematics,
+         math,
          padding,
-         stats,
          visual,
 )

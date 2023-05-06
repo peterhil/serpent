@@ -10,7 +10,7 @@ import blessed
 import numpy as np
 
 from serpent.io import check_paths
-from serpent.mathematics import rescale
+from serpent.math.basic import rescale
 from serpent.visual.block_elements import HALF_BLOCK
 
 

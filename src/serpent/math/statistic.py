@@ -6,7 +6,7 @@ from collections.abc import Callable, Iterable, Sequence
 
 import numpy as np
 
-from serpent.mathematics import logn
+from serpent.math.basic import logn
 from serpent.padding import pad_end
 
 
