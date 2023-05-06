@@ -7,7 +7,7 @@ from collections import OrderedDict
 
 import numpy as np
 
-from serpent.convert.dnt import degenerate
+from serpent.convert.dnt import dnt_binomial
 from serpent.fun import inverse_od, str_join
 
 CODON_LEN = 3
@@ -15,7 +15,7 @@ DEGEN_MAX = 4096
 
 
 def degenerate_codons():
-	symbols = str_join(degenerate.values())
+	symbols = str_join(dnt_binomial.values())
 	degenerates = map(str_join, itr.product(symbols, repeat=3))
 
 	return np.array([*degenerates], dtype='U3')

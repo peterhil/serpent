@@ -9,7 +9,7 @@ from collections.abc import Iterable
 import more_itertools as mit
 import numpy as np
 
-from serpent.convert.dnt import degenerate_exp, inv_degenerate_exp
+from serpent.convert.dnt import dnt_exp, inv_dnt_exp
 from serpent.settings import BASE_ORDER
 from serpent.visual.bitmap import yiq_to_rgb
 
@@ -31,8 +31,8 @@ def peptide_to_quad(peptide: Iterable[str]):
 def create_dnt_to_quad(bases=BASE_ORDER):
 	def quad_mapping(nts: str) -> tuple[str, tuple[float, float, float]]:
 		"""Map string (combination) of nongenerate bases into YIQ quad value."""
-		num = np.sum([inv_degenerate_exp[nt] for nt in nts])
-		dnt = degenerate_exp[num]
+		num = np.sum([inv_dnt_exp[nt] for nt in nts])
+		dnt = dnt_exp[num]
 		quad = np.concatenate([[1 - (len(nts) / len(bases))], peptide_to_quad(nts)])
 		return (dnt, quad)
 

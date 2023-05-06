@@ -101,19 +101,19 @@ def inverse_quaternary_dnt(bases=BASE_ORDER):
 
 # Bases
 
-degenerate = binomial_dnt(BASE_ORDER)
-inv_degenerate = inverse_od(degenerate)
-inv_degenerate_exp = inverse_exp_dnt(BASE_ORDER)
-degenerate_exp = inverse_od(inv_degenerate_exp)
-# inv_degenerate = inverse_quaternary_dnt(BASE_ORDER)
-# degenerate = inverse_od(inv_degenerate)
+dnt_binomial = binomial_dnt(BASE_ORDER)
+inv_dnt_binomial = inverse_od(dnt_binomial)
+inv_dnt_exp = inverse_exp_dnt(BASE_ORDER)
+dnt_exp = inverse_od(inv_dnt_exp)
+# inv_dnt_quatro = inverse_quaternary_dnt(BASE_ORDER)
+# dnt_quatro = inverse_od(inv_dnt)
 
 
 def num_to_dnt(num: int) -> str:
 	"""Convert number (<16) to degenerate nucleotide base."""
-	return degenerate[num]
+	return dnt_binomial[num]
 
 
 def dnt_to_num(dnt: str) -> int:
 	"""Convert degenerate nucleotide base to number (<16)."""
-	return inv_degenerate[dnt]
+	return inv_dnt_binomial[dnt]
