@@ -24,7 +24,7 @@ from serpent.io.fasta import (
 	FastaToken,
 	descriptions_and_data,
 )
-from serpent.io.files import err
+from serpent.io.printing import err
 
 
 def encode(decoded: Iterable[int], fmt: str = 'base64') -> Iterable[str]:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from sys import stderr, stdout
+
 import blessed
 import more_itertools as mit
 import numpy as np
@@ -21,6 +23,19 @@ def auto_line_width_for(fmt, seql, base=8, indent=8, sep=1):
 	item_size = seql * 3 if fmt in ['c', 'codon'] else seql
 	width = auto_line_width(item_size, base, indent, sep)
 	return width
+
+
+def echo(message):
+	stdout.write(f"{message}\n")
+
+
+def err(message):
+	stderr.write(f"{message}\n")
+
+
+def info(message):
+	# TODO Use logger?
+	print(message, file=stderr)
 
 
 def format_data(data, width=80, sep=' '):
@@ -99,3 +114,11 @@ def format_split(regions, width=72, split='n'):
 		yield f'@split-{split}-{i}'
 		lines = (str_join(line) for line in mit.chunked(str_join(region), width))
 		yield from lines
+
+
+def wait_user():
+	"""Wait for user to enter any key.
+
+	Useful for allowing the user time to explore the interactive plots.
+	"""
+	return input('Press ENTER when ready. ')

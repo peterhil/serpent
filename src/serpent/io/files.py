@@ -4,25 +4,13 @@ from collections.abc import Iterator, Sequence
 from fileinput import hook_encoded
 from functools import partial
 from pathlib import Path
-from sys import argv, stderr, stdout
+from sys import argv
 
+from serpent.io.printing import err
 from serpent.settings import BASE_ORDER
 
 # TODO Check out hook_compressed and zzzip
 openhook = hook_encoded("utf-8", "surrogateescape")
-
-
-def echo(message):
-	stdout.write(f"{message}\n")
-
-
-def err(message):
-	stderr.write(f"{message}\n")
-
-
-def info(message):
-	# TODO Use logger?
-	print(message, file=stderr)
 
 
 def check_path(input: Path | str, recurse: bool=False) -> Iterator[Path | str]:
@@ -93,14 +81,6 @@ def image_name_for(
 	]))
 
 	return outfile
-
-
-def wait_user():
-	"""Wait for user to enter any key.
-
-	Useful for allowing the user time to explore the interactive plots.
-	"""
-	return input('Press ENTER when ready. ')
 
 
 def write_iterable(lines, outfile):

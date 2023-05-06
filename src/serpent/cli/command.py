@@ -42,20 +42,20 @@ from serpent.io.fasta import (
 )
 from serpent.io.files import (
 	check_paths,
-	echo,
 	file_extension_for,
 	image_name_for,
-	info,
 	openhook,
-	wait_user,
 	write_iterable,
 )
 from serpent.io.printing import (
 	auto_line_width_for,
+	echo,
 	format_counter,
 	format_decoded,
 	format_lines,
 	format_split,
+	info,
+	wait_user,
 )
 from serpent.math.basic import autowidth_for
 from serpent.math.dsp import fft_spectra
