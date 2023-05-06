@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from serpent import (
-         analyse,
+         cli,
          convert,
          dna,
          encoding,

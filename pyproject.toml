@@ -45,7 +45,7 @@ dev = [
 ]
 
 [tool.pdm.scripts]
-serpent = {call = "serpent.analyse:main"}
+serpent = {call = "serpent.cli.command:main"}
 degen = {shell = "find ../Data -name '*.fna' -o -name '*.fasta' -print0 | xargs -0 rg -ce '[WSMKRYBDHVNZ-]'"}
 degen-amino = {shell = "find ../Data -name '*.faa' -print0 | xargs -0 rg -ce '[BJZUOX*-]'"}
 doctest = {shell = "pytest --doctest-modules src/serpent/"}
