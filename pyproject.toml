@@ -47,8 +47,8 @@ dev = [
 
 [tool.pdm.scripts]
 serpent = {call = "serpent.cli.command:main"}
-degen = {shell = "find ../Data -name '*.fna' -o -name '*.fasta' -print0 | xargs -0 rg -ce '[WSMKRYBDHVNZ-]'"}
-degen-amino = {shell = "find ../Data -name '*.faa' -print0 | xargs -0 rg -ce '[BJZUOX*-]'"}
+degen = {shell = "find ../Data \\( -name '*.fna' -o -name '*.fasta' \\) -print0 | xargs -0 rg -ce '^[^>@;].*[WSMKRYBDHVZ-]'"}
+degen-amino = {shell = "find ../Data -name '*.faa' -print0 | xargs -0 rg -ce '^[^>@;].*[UOBJZX-]'"}
 doctest = {shell = "pytest --doctest-modules src/serpent/"}
 fasta = {shell = "find ../Data -name '*.f*a' -print0 | xargs -0 ls -xt"}
 
