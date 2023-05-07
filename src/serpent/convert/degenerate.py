@@ -11,7 +11,7 @@ import more_itertools as mit
 import numpy as np
 from pytrie import SortedStringTrie as Trie
 
-from serpent.convert.dnt import compress_dntset, dnt_binomial, dnt_include
+from serpent.convert.dnt import compress_dntset, dnt_binomial, dnt_degree, dnt_include
 from serpent.convert.genetic_code import STANDARD_CODONS, STANDARD_TABLES
 from serpent.fun import inverse_od, str_join
 
@@ -85,3 +85,9 @@ def num_to_degen(code: int) -> str:
 	"""Encode a number between (<4096) into a degenerate codon."""
 	assert code < DEGEN_MAX, 'Invalid degenerate codon number.'
 	return inv_degen_codons[code]
+
+
+def degeneracy(degen: str):
+	"""Degree of degeneracy for a degenerate codon."""
+	degree = np.product([dnt_degree(dnt) for dnt in degen])
+	return degree

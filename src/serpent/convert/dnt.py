@@ -8,6 +8,7 @@ from operator import or_
 from typing import Union
 
 from serpent.fun import inverse_od, second
+from serpent.math.bits import popcount
 from serpent.math.combinatorics import unspread
 from serpent.settings import BASE_ORDER
 
@@ -139,3 +140,9 @@ def dnt_include(dnt: Dnt, mask: Dnt) -> bool:
 	bits = dnt_to_bits[dnt]
 	mask = dnt_to_bits[mask]
 	return bits_include(bits, mask)
+
+
+def dnt_degree(dnt: str) -> int:
+	"""Degree of degeneracy for a degenerate nucleotide symbol."""
+	bits = dnt_to_bits[dnt]
+	return popcount(bits)
