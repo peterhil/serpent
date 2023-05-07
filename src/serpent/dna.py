@@ -11,6 +11,7 @@ from numpy.typing import NDArray
 from serpent.convert.amino import codon_to_amino, decode_aminos
 from serpent.convert.base64 import num_to_base64
 from serpent.convert.codon import codon_to_num, num_to_codon
+from serpent.convert.degenerate import degen_to_amino
 from serpent.convert.digits import change_base
 from serpent.convert.dnt import dnt_to_num
 from serpent.fun import str_join
@@ -53,11 +54,9 @@ def to_amino(
 		yield from cleaned
 	else:
 		# Convert from codons
-		if degen:
-			err_msg ="Can't map degenerate data into amino acids."
-			raise NotImplementedError(err_msg)
 		codons = get_codons_iter(cleaned)
-		yield from (codon_to_amino(c, table) for c in codons)
+		convert = degen_to_amino if degen else codon_to_amino
+		yield from (convert(c, table) for c in codons)
 
 
 def decode(
