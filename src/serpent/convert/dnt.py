@@ -129,3 +129,13 @@ def dntset_to_bits(dntset: DntSet) -> DntBits:
 
 def compress_dntset(dntset: DntSet) -> Dnt:
 	return bits_to_dnt.get(dntset_to_bits(dntset))
+
+
+def bits_include(bits: DntBits, mask: DntBits) -> bool:
+	return ~mask & bits == 0
+
+
+def dnt_include(dnt: Dnt, mask: Dnt) -> bool:
+	bits = dnt_to_bits[dnt]
+	mask = dnt_to_bits[mask]
+	return bits_include(bits, mask)

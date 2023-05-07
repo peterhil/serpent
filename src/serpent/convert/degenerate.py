@@ -9,8 +9,9 @@ from operator import itemgetter
 
 import more_itertools as mit
 import numpy as np
+from pytrie import SortedStringTrie as Trie
 
-from serpent.convert.dnt import compress_dntset, dnt_binomial
+from serpent.convert.dnt import compress_dntset, dnt_binomial, dnt_include
 from serpent.convert.genetic_code import STANDARD_CODONS, STANDARD_TABLES
 from serpent.fun import inverse_od, str_join
 
@@ -64,8 +65,14 @@ def create_degen_to_amino_map(table: int=1) -> str:
 def degen_to_amino(degen: str, table: int=1) -> str:
 	"""Convert a degenerate codon to an amino acid."""
 	mapping = create_degen_to_amino_map(table)
-	# FIXME Use trie with a custom key, as now this only finds the exact degenerate codons
-	return mapping.get(degen, 'X')
+
+	t = Trie(mapping)
+	items = t.items(degen[:2])
+
+	matching = [amino for dg, amino in items if dnt_include(degen[2], dg[2])]
+	amino = matching[0] if len(matching) else 'X'
+
+	return amino
 
 
 def degen_to_num(codon: str) -> int:
