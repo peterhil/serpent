@@ -56,8 +56,8 @@ def magnitude(data: NumericSeq, base: LogBase=64) -> int:
 
 
 def normalise(seq: NumericSeq) -> NDArray[np.float64]:
-	"""Normalise data max to be 1."""
-	return np.asanyarray(seq, dtype=np.float64) / np.amax(seq)
+	"""Normalise data abs max to be 1."""
+	return np.asanyarray(seq, dtype=np.float64) / np.amax(np.abs(seq), initial=1)
 
 
 def percent(value: float, decimals=2) -> float:

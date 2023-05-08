@@ -29,6 +29,7 @@ from serpent.cli.quasar import dna_quasar_seq
 from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
 from serpent.convert.degenerate import is_degenerate
+from serpent.convert.quad import dna_to_quad
 from serpent.convert.split import split_aminos, split_encoded
 from serpent.fun import second, sort_values, str_join
 from serpent.io.fasta import (
@@ -57,7 +58,7 @@ from serpent.io.printing import (
 	format_lines,
 	format_split,
 )
-from serpent.math.basic import autowidth_for
+from serpent.math.basic import autowidth_for, normalise
 from serpent.math.dsp import fft_spectra
 from serpent.math.statistic import ac_peaks, autocorrelogram, quasar_pulses
 from serpent.settings import (
@@ -570,6 +571,40 @@ def vectors(filename, split='', amino=False, table=1, degen=False):
 	wait_user()
 
 
+# @arg('--amino',  '-a', help='Amino acid input')
+# @arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen',  '-g', help='Degenerate data')
+@arg('--norm', '-n', help='Normalise path to unit square')
+@arg('--quality', '-q', help='Quality parameter (determines path resolution)', type=int)
+def walk(
+	filename, quality=1024, norm=False,
+	# amino=False, table=1,
+	degen=False
+):
+	"""Spatial walk visualisation of nucleotides in 2D space."""
+	amino = auto_select_amino(filename, False)
+	if amino:
+		err_msg = 'Walk command only works for nucleotide data.'
+		raise NotImplementedError(err_msg)
+	seqs = read_sequences(filename, amino)
+
+	for index, sequence in enumerate(seqs):
+		[descriptions, data] = descriptions_and_data(sequence)
+		yield from descriptions
+
+		color = DEFAULT_COLOR if index == 0 else None
+		seql = max([1, len(data) // quality])
+
+		quads = dna_to_quad(data, length=seql, degen=degen)
+		dirs = np.cumsum(quads, axis=0).T
+		xy = normalise(dirs) if norm else dirs
+		plt.plot(*xy, color=color)
+
+	plt.axis('equal')
+	interactive()
+	wait_user()
+
+
 @arg('--amino',   '-a', help='Amino acid input')
 @arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',   '-g', help='Degenerate data')
@@ -662,6 +697,7 @@ def main():
 		seq,
 		split,
 		vectors,
+		walk,
 		zigzag,
 	])
 	# parser.set_default_command(serpent)
