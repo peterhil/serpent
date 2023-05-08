@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import itertools as itr
 from collections import OrderedDict
-from functools import cache
+from functools import cache, lru_cache
 from operator import itemgetter
 
 import more_itertools as mit
@@ -81,6 +81,7 @@ def degen_to_amino(degen: str, table: int=1) -> str:
 	return amino
 
 
+@lru_cache(maxsize=3375)
 def degen_to_aminoset(degen: str, table: int=1) -> set:
 	"""Return set of amino acids possibly represented by a degenerate codon."""
 	nt_sets = [decompress_dnt(dnt) for dnt in degen]
