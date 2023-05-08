@@ -7,7 +7,7 @@ from functools import reduce
 from operator import or_
 from typing import Union
 
-from serpent.fun import inverse_od, second
+from serpent.fun import inverse_od, second, str_join
 from serpent.math.bits import popcount
 from serpent.math.combinatorics import unspread
 from serpent.settings import BASE_ORDER
@@ -129,7 +129,20 @@ def dntset_to_bits(dntset: DntSet) -> DntBits:
 
 
 def compress_dntset(dntset: DntSet) -> Dnt:
+	"""Contract a set of DNTs into more generic DNT that covers the whole set.
+
+	Complementary to decompress_dnt.
+	"""
 	return bits_to_dnt.get(dntset_to_bits(dntset))
+
+
+def decompress_dnt(dnt: Dnt, bases=BASE_ORDER) -> set:
+	"""Expand DNT to nucleotide bases (G, A, C, T).
+
+	Complementary to compress_dntset.
+	"""
+	assert dnt in dnt_to_bits, f'DNT not found: {dnt}'
+	return {str_join(nt) for nt in bases if dnt_include(nt, dnt or 'Z')}
 
 
 def bits_include(bits: DntBits, mask: DntBits) -> bool:

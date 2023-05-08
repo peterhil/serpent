@@ -11,7 +11,13 @@ import more_itertools as mit
 import numpy as np
 from pytrie import SortedStringTrie as Trie
 
-from serpent.convert.dnt import compress_dntset, dnt_binomial, dnt_degree, dnt_include
+from serpent.convert.dnt import (
+	compress_dntset,
+	decompress_dnt,
+	dnt_binomial,
+	dnt_degree,
+	dnt_include,
+)
 from serpent.convert.genetic_code import STANDARD_CODONS, STANDARD_TABLES
 from serpent.fun import inverse_od, str_join
 
@@ -73,6 +79,14 @@ def degen_to_amino(degen: str, table: int=1) -> str:
 	amino = matching[0] if len(matching) else 'X'
 
 	return amino
+
+
+def degen_to_aminoset(degen: str, table: int=1) -> set:
+	"""Return set of amino acids possibly represented by a degenerate codon."""
+	nt_sets = [decompress_dnt(dnt) for dnt in degen]
+	codons = [str_join(nts) for nts in itr.product(*nt_sets)]
+
+	return {degen_to_amino(dgn, table) for dgn in codons}
 
 
 def degen_to_num(codon: str) -> int:
