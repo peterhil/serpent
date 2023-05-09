@@ -24,7 +24,7 @@ nt_to_quad = OrderedDict(zip(
 def peptide_to_quad(peptide: Iterable[str]):
 	if len(peptide) == 0:
 		return QUAD_ZERO
-	quads = [nt_to_quad.get(nt) for nt in peptide]
+	quads = [nt_to_quad[nt] for nt in peptide]
 	return np.mean(quads, axis=0)
 
 
@@ -48,7 +48,7 @@ dnt_to_quad = create_dnt_to_quad()
 def degen_to_quad(peptide: Iterable[str]):
 	if len(peptide) == 0:
 		peptide = 'Z'
-	quads = [dnt_to_quad.get(nt) for nt in peptide]
+	quads = [dnt_to_quad[nt] for nt in peptide]
 	return np.mean(quads, axis=0)
 
 
