@@ -40,6 +40,7 @@ from serpent.io.fasta import (
 	find_fasta_sequences,
 	read,
 	read_sequences,
+	regex_no_match,
 )
 from serpent.io.files import (
 	check_paths,
@@ -306,12 +307,13 @@ def split(
 @arg('--desc',    '-c', help='Output descriptions')
 @arg('--fmt',     '-f', help='Output format', choices=fmt_choices)
 @arg('--mode',    '-m', help='Image mode', choices=('RGB', 'L', 'P'))
+@arg('--reg',     '-r', help='Filter sequences by regexp on descriptions', type=str)
 @arg('--verbose', '-v', help='Verbose mode')
 @arg('--width',   '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
 def flow(
 	*inputs,
-	width=64, mode='RGB', fmt=None, desc=False, verbose=False,
+	width=64, mode='RGB', fmt=None, desc=False, reg=None, verbose=False,
 	amino=False, degen=False, table=1,
 ):
 	"""Visualise and explore data with Unicode block graphics."""
@@ -325,6 +327,8 @@ def flow(
 
 		for sequence in seqs:
 			[descriptions, data] = descriptions_and_data(sequence)
+			if regex_no_match(reg, descriptions):
+				continue
 
 			if verbose:
 				yield from descriptions
@@ -571,13 +575,14 @@ def vectors(filename, split='', amino=False, table=1, degen=False):
 	wait_user()
 
 
-# @arg('--amino',  '-a', help='Amino acid input')
-# @arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
-@arg('--degen',  '-g', help='Degenerate data')
-@arg('--norm', '-n', help='Normalise path to unit square')
+# @arg('--amino',   '-a', help='Amino acid input')
+# @arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen',   '-g', help='Degenerate data')
+@arg('--norm',    '-n', help='Normalise path to unit square')
 @arg('--quality', '-q', help='Quality parameter (determines path resolution)', type=int)
+@arg('--reg',     '-r', help='Filter sequences by regexp on descriptions', type=str)
 def walk(
-	filename, quality=1024, norm=False,
+	filename, quality=1024, norm=False, reg=None,
 	# amino=False, table=1,
 	degen=False
 ):
@@ -590,6 +595,9 @@ def walk(
 
 	for index, sequence in enumerate(seqs):
 		[descriptions, data] = descriptions_and_data(sequence)
+		if regex_no_match(reg, descriptions):
+			continue
+
 		yield from descriptions
 
 		color = DEFAULT_COLOR if index == 0 else None
