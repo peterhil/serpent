@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from serpent import dna
-from serpent.io.fasta import descriptions_and_data
+from serpent.io.fasta import descriptions_and_data, regex_no_match
 from serpent.io.printing import reflow
 
 
@@ -22,10 +22,15 @@ def encode_data(data, fmt, amino=False, table=1, degen=False):
 
 def encode_sequences(
 	seqs, width, fmt,
-	*, amino=False, table=1, degen=False
+	*,
+	reg=None,
+	amino=False, table=1, degen=False
 ):
 	for sequence in seqs:
 		[descriptions, data] = descriptions_and_data(sequence)
+		if regex_no_match(reg, descriptions):
+			continue
+
 		yield from descriptions
 
 		encoded = encode_data(data, fmt, amino, table, degen)

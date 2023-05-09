@@ -198,11 +198,12 @@ def decode(filename, amino=False, degen=False, table=1):
 @arg('--degen', '-g', help='Degenerate data')
 @arg('--fmt',   '-f', help='Output format', choices=fmt_choices)
 @arg('--out',   '-o', help='Write out to file')
+@arg('--reg',   '-r', help='Filter sequences by regexp on descriptions', type=str)
 @arg('--width', '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
 def encode(
 	*inputs,
-	fmt='codon', out=False, width=64,
+	fmt='codon', out=False, width=64, reg=None,
 	amino=False, degen=False, table=1,
 ):
 	"""Encode data into various formats."""
@@ -214,7 +215,9 @@ def encode(
 		amino = auto_select_amino(filename, amino_opt)
 		seqs = read_sequences(filename, amino)
 
-		lines = encode_sequences(seqs, width, fmt, amino=amino, table=table, degen=degen)
+		lines = encode_sequences(
+			seqs, width, fmt, reg=reg,
+			amino=amino, table=table, degen=degen)
 
 		if out:
 			ext = file_extension_for(fmt)
