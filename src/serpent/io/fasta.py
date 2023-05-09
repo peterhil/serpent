@@ -255,7 +255,7 @@ def regex_match(reg, descriptions):
 
 
 def regex_no_match(reg, descriptions):
-	"""Allow skipping sequences that do not match handle the regexp option on commands."""
+	"""Allow skipping sequences that do not match the regexp option on commands."""
 	return reg and re.search(reg, str_join(descriptions)) is None
 
 
