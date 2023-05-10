@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from collections.abc import Sequence
 
 import numpy as np
@@ -9,17 +10,19 @@ import numpy as np
 from serpent.math.basic import logn
 
 
-def entropy(data: Sequence[int], n=2, base=2):
+def entropy(data: Counter | Sequence, base: float=2):
 	"""Shannon entropy of the data.
 
 	Arguments:
 	---------
-	data: sequence of decoded integers
-	n: number of symbols in the data
-	base: base of encoding system (default: binary)
+	data: Counter or Sequence
+	base: unit of information (common choices: 2, e, 10...)
 	"""
-	assert np.min(data) >= 0, 'Expected positive integers'
-	assert np.max(data) < n, f'Expected data to fit in {n} symbols'
-	propabilities = np.ones(len(data)) / n  # Equal propabilites
+	stats = data if isinstance(data, Counter) else Counter(data)
+	counts = np.array([v for v in stats.values() if v != 0])
+	total = np.sum(counts)
+	probabilities = counts / total
 
-	return -np.sum(logn(propabilities, base))
+	entropy = np.sum(-probabilities * logn(probabilities, base))
+
+	return entropy
