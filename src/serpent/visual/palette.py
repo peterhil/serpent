@@ -61,17 +61,17 @@ def set_palette(im: Image, palette: ImagePalette):
 	return im
 
 
-def spectrum_layer_colours(amino: bool):
+def spectrum_layer_colours(amino: bool, degen: bool=False):
 	if amino:
 		# 27 colours
 		layers = 3
 		num_colours = 9
-		start = 1/3
+		start = 1/2
 	else:
-		# 64 colours
-		layers = 4
+		# 64 colours (256 for degen)
+		layers = 4 if not degen else 16
 		num_colours = 16
-		start = 0.5
+		start = 1/2
 	colours = spectrum_layers(num_colours, layers, start, offset=-10/360)
 
 	return colours
@@ -87,8 +87,8 @@ def spectrum_layer_colours_for(key: str, amino: bool=False):
 	return colours
 
 
-def spectrum_layer_colour_map(amino: bool):
-	colours = spectrum_layer_colours(amino)
+def spectrum_layer_colour_map(amino: bool, degen: bool=False):
+	colours = spectrum_layer_colours(amino, degen)
 	colour_map = OrderedDict((i, tuple(c)) for i, c in enumerate(colours))
 
 	return colour_map
@@ -96,6 +96,7 @@ def spectrum_layer_colour_map(amino: bool):
 
 amino_colour_map = spectrum_layer_colour_map(amino=True)
 codon_colour_map = spectrum_layer_colour_map(amino=False)
+degen_colour_map = spectrum_layer_colour_map(amino=False, degen=True)
 
 
 def apply_palette(img: Image, amino: bool=False) -> Image:

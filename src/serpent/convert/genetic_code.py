@@ -51,6 +51,7 @@ class GeneticCode(NamedTuple):
 	"""Standard genetic code table."""
 
 	code: OrderedDict[str, str]
+	raw: str
 	start: set
 	stop: set
 
@@ -71,11 +72,12 @@ def code_table(
 	err_msg = 'All arguments should have 64 characters.'
 	assert len(code) == len(special) == len(codons) == CODONS_LEN, err_msg
 
+	raw = code
 	code = genetic_code_map(code, codons)
 	start = special_set(codons, special, 'M')
 	stop = special_set(codons, special, '*')
 
-	return GeneticCode(code, start, stop)
+	return GeneticCode(code, raw, start, stop)
 
 
 sgc = code_table

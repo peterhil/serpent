@@ -8,7 +8,12 @@ from collections.abc import Iterable
 import numpy as np
 
 from serpent.math.basic import rescale
-from serpent.visual.palette import Rgb, amino_colour_map, codon_colour_map
+from serpent.visual.palette import (
+	Rgb,
+	amino_colour_map,
+	codon_colour_map,
+	degen_colour_map,
+)
 
 RGB_MAX = 255
 
@@ -37,11 +42,16 @@ def num_to_pixel(decoded, amino=False, degen=False):
 	return to_uint8(decoded, max_value, offset=1)  # 1, 5, 9, ..., 249, 253
 
 
-def num_to_rgb(decoded, amino=False) -> Iterable[Rgb]:
+def num_to_rgb(decoded, amino=False, degen=False) -> Iterable[Rgb]:
 	"""Convert decoded data into pixel values using a palette."""
-	colour_map = amino_colour_map if amino else codon_colour_map
-	default = (0, 0, 0)  # Black
-	pixels = (colour_map.get(n, default) for n in decoded)
+	# TODO Use alpha channel instead!
+	if degen and not amino:
+		decoded = decoded // 16
+		colour_map = degen_colour_map
+	else:
+		colour_map = amino_colour_map if amino else codon_colour_map
+
+	pixels = (colour_map[n] for n in decoded)
 
 	return pixels
 
@@ -51,7 +61,7 @@ def decoded_to_pixels(
 ) -> Iterable[Rgb] | Iterable[int]:
 	"""Convert decoded data into pixel values."""
 	if mode == 'P':
-		pixels = num_to_rgb(decoded, amino)
+		pixels = num_to_rgb(decoded, amino, degen)
 	else:
 		pixels = num_to_pixel(decoded, amino, degen)
 

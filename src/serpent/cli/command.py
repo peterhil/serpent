@@ -28,7 +28,7 @@ from serpent.cli.pulse import (
 from serpent.cli.quasar import dna_quasar_seq
 from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
-from serpent.convert.degenerate import is_degenerate
+from serpent.convert.dnt import is_degenerate
 from serpent.convert.quad import dna_to_quad
 from serpent.convert.split import split_aminos, split_encoded
 from serpent.fun import second, sort_values, str_join
@@ -44,20 +44,20 @@ from serpent.io.fasta import (
 )
 from serpent.io.files import (
 	check_paths,
-	echo,
 	file_extension_for,
 	image_name_for,
-	info,
 	openhook,
-	wait_user,
 	write_iterable,
 )
 from serpent.io.printing import (
 	auto_line_width_for,
+	echo,
 	format_counter,
 	format_decoded,
 	format_lines,
 	format_split,
+	info,
+	wait_user,
 )
 from serpent.math.basic import autowidth_for, normalise
 from serpent.math.dsp import fft_spectra
