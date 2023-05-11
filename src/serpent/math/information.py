@@ -80,6 +80,7 @@ def statistics_header():
 	return str_join([
 		'Rate',
 		'Entropy',
+		'Perplex',
 		'Inform.',
 		'Length',
 		'Abs.rdn',
@@ -102,11 +103,13 @@ def statistics(data: Counter | Sequence, base: float=2) -> float:
 	rel_red = abs_red / rate
 	eff = 1.0 - rel_red
 	max_compr = rate / entr
+	perplex = base ** entr
 
 	# TODO Split into format_info_stats
 	return str_join([
 		f'{rate}',
 		f'{entr :.2f}',
+		f'{perplex :.2f}',
 		f'{math.ceil(info)}',
 		f'{total}',
 		f'{abs_red :.2f}',
