@@ -39,6 +39,7 @@ from serpent.io.fasta import (
 	descriptions_and_data,
 	find_fasta_files,
 	find_fasta_sequences,
+	is_fasta,
 	read,
 	read_sequences,
 	regex_no_match,
@@ -161,9 +162,8 @@ def infostat(*inputs, base=2.0, amino=False, reg=None, seql=None):
 	for filename in check_paths(inputs):
 		if len(inputs) > 1:
 			info(f'file: {filename}')
-		is_fasta = str(filename).split('.')[-1].lower() in ['fa', 'fna', 'faa', 'fasta']
 
-		if is_fasta:
+		if is_fasta(filename):
 			amino = auto_select_amino(filename, amino_opt)
 			seqs = read_sequences(filename, amino)
 

@@ -268,3 +268,8 @@ def descriptions_and_data(sequence):
 	data = str_join(token.data for token in tokens if token.data)
 
 	yield from (descriptions, data)
+
+
+def is_fasta(filename):
+	extension = str(filename).split('.')[-1].lower()
+	return extension in ['fa', 'fna', 'faa', 'fasta']
