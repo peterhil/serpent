@@ -12,7 +12,6 @@ from collections import Counter
 
 import argh
 import matplotlib.pyplot as plt
-import more_itertools as mit
 import numpy as np
 from argh.decorators import aliases, arg, wrap_errors
 from PIL import Image
@@ -21,6 +20,7 @@ from serpent import dna
 from serpent.cli.encode import encode_data, encode_sequences
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
+from serpent.cli.infostat import format_infostat
 from serpent.cli.pep import all_symbols_for, peptides_of_length
 from serpent.cli.pulse import (
 	pulse_plot_sequences,
@@ -48,6 +48,7 @@ from serpent.io.files import (
 	file_extension_for,
 	image_name_for,
 	openhook,
+	readlines,
 	write_iterable,
 )
 from serpent.io.printing import (
@@ -62,7 +63,6 @@ from serpent.io.printing import (
 )
 from serpent.math.basic import autowidth_for, normalise
 from serpent.math.dsp import fft_spectra
-from serpent.math.information import statistics, statistics_header
 from serpent.math.statistic import ac_peaks, autocorrelogram, quasar_pulses
 from serpent.settings import (
 	COUNT_LIMIT,
@@ -160,20 +160,22 @@ def infostat(*inputs, base=2.0, amino=False, seql=None):
 	for filename in check_paths(inputs):
 		if len(inputs) > 1:
 			info(f'file: {filename}')
-		amino = auto_select_amino(filename, amino_opt)
-		seqs = read_sequences(filename, amino)
+		is_fasta = str(filename).split('.')[-1].lower() in ['fa', 'fna', 'faa', 'fasta']
 
-		for sequence in seqs:
-			[descriptions, data] = descriptions_and_data(sequence)
+		if is_fasta:
+			amino = auto_select_amino(filename, amino_opt)
+			seqs = read_sequences(filename, amino)
 
-			yield from descriptions
-			if seql:
-				print(statistics_header())
-				for chunk in mit.chunked(data, seql):
-					print(statistics(chunk, base))
-			else:
-				print(statistics_header())
-				print(statistics(data, base))
+			for sequence in seqs:
+				[descriptions, data] = descriptions_and_data(sequence)
+				yield from descriptions
+				yield from format_infostat(data, base, seql)
+		else:
+			lines = readlines(filename)
+			counts = Counter()
+			for line in lines:
+				counts.update(line)
+			yield from format_infostat(counts, base, seql)
 
 
 def cat(*inputs):

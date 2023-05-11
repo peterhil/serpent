@@ -79,6 +79,8 @@ def statistics_header():
 	return str_join([
 		'Rate',
 		'Entropy',
+		'Inform.',
+		'Length',
 		'Abs red',
 		'Rel red',
 		'Eff.',
@@ -92,6 +94,8 @@ def statistics(data: Counter | Sequence, base: float=2) -> float:
 
 	rate = abs_rate(c)
 	entr = entropy(c, base)
+	total = np.sum([*c.values()])
+	info = entr * total
 
 	abs_red = rate - entr
 	rel_red = abs_red / rate
@@ -102,6 +106,8 @@ def statistics(data: Counter | Sequence, base: float=2) -> float:
 	return str_join([
 		f'{rate}',
 		f'{entr :.2f}',
+		f'{info :.1f}',
+		f'{total}',
 		f'{abs_red :.2f}',
 		f'{percent(rel_red, 2) :.2f}%',
 		f'{percent(eff, 2) :.2f}%',

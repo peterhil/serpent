@@ -4,7 +4,7 @@ from collections.abc import Iterator, Sequence
 from fileinput import hook_encoded
 from functools import partial
 from pathlib import Path
-from sys import argv
+from sys import argv, stdin
 
 from serpent.io.printing import err
 from serpent.settings import BASE_ORDER
@@ -89,3 +89,13 @@ def write_iterable(lines, outfile):
 		for line in lines:
 			writeln(line)
 	print(f"Wrote: {outfile}")
+
+
+def openfile(filename):
+	return stdin if filename == '-' else Path(filename).open("r", encoding="UTF-8")
+
+
+def readlines(filename):
+	with openfile(filename) as f:
+		while (line := f.readline()):
+			yield line.rstrip()
