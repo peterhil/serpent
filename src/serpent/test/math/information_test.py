@@ -4,7 +4,21 @@ from collections import Counter
 
 import pytest
 
-from serpent.math.information import entropy
+from serpent.math.information import abs_rate, entropy
+
+abs_rates = [
+	(0, ''),
+	(1, 'AA'),
+	(2, 'GA'),
+	(3, 'GAC'),
+	(4, 'GACT'),
+	(4, 'ATGCCCTAG'),
+]
+
+@pytest.mark.parametrize(('expected', 'seq'), abs_rates)
+def test_abs_rate(expected, seq):
+	assert expected == abs_rate(seq) == abs_rate(Counter(seq))
+
 
 bin_entropies = [
 	(0.0, ''),

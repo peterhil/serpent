@@ -10,7 +10,14 @@ import numpy as np
 from serpent.math.basic import logn
 
 
-def entropy(data: Counter | Sequence, base: float=2):
+def abs_rate(data: Counter | Sequence) -> int:
+	"""Absolute rate: unique symbols in the data."""
+	stats = data if isinstance(data, Counter) else Counter(data)
+
+	return len(stats)
+
+
+def entropy(data: Counter | Sequence, base: float=2) -> float:
 	"""Shannon entropy of the data.
 
 	Arguments:
