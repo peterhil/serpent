@@ -12,6 +12,7 @@ from collections import Counter
 
 import argh
 import matplotlib.pyplot as plt
+import more_itertools as mit
 import numpy as np
 from argh.decorators import aliases, arg, wrap_errors
 from PIL import Image
@@ -61,6 +62,7 @@ from serpent.io.printing import (
 )
 from serpent.math.basic import autowidth_for, normalise
 from serpent.math.dsp import fft_spectra
+from serpent.math.information import statistics, statistics_header
 from serpent.math.statistic import ac_peaks, autocorrelogram, quasar_pulses
 from serpent.settings import (
 	COUNT_LIMIT,
@@ -145,6 +147,33 @@ def codons(filename, degen_only=False, width=20, stats=False, limit=COUNT_LIMIT)
 			yield from format_lines(unique, width)
 		else:
 			yield from format_lines(codons, width)
+
+
+@arg('--amino', '-a', help='Amino acid input')
+@arg('--base',  '-b', help='Base information unit', type=float)
+@arg('--seql',  '-q', help='Sequence length', type=int)
+@aliases('is')
+def infostat(*inputs, base=2.0, amino=False, seql=None):
+	"""Information theory statistics."""
+	amino_opt = amino
+
+	for filename in check_paths(inputs):
+		if len(inputs) > 1:
+			info(f'file: {filename}')
+		amino = auto_select_amino(filename, amino_opt)
+		seqs = read_sequences(filename, amino)
+
+		for sequence in seqs:
+			[descriptions, data] = descriptions_and_data(sequence)
+
+			yield from descriptions
+			if seql:
+				print(statistics_header())
+				for chunk in mit.chunked(data, seql):
+					print(statistics(chunk, base))
+			else:
+				print(statistics_header())
+				print(statistics(data, base))
 
 
 def cat(*inputs):
@@ -701,6 +730,7 @@ def main():
 		flow,
 		hist,
 		image,
+		infostat,
 		pep,
 		pepcount,
 		pulse,
