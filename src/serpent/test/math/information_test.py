@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from collections import Counter
 
 import pytest
@@ -7,17 +8,18 @@ import pytest
 from serpent.math.information import abs_rate, entropy
 
 abs_rates = [
-	(0, ''),
-	(1, 'AA'),
-	(2, 'GA'),
-	(3, 'GAC'),
-	(4, 'GACT'),
-	(4, 'ATGCCCTAG'),
+	(-math.inf, ''),
+	(0, 'AA'),
+	(0.5, 'GA'),
+	(0.792481250360578, 'GAC'),
+	(1, 'GACT'),
+	(1, 'ATGCCCTAG'),
 ]
 
 @pytest.mark.parametrize(('expected', 'seq'), abs_rates)
 def test_abs_rate(expected, seq):
-	assert expected == abs_rate(seq) == abs_rate(Counter(seq))
+	base = 4
+	assert expected == abs_rate(seq, base) == abs_rate(Counter(seq), base)
 
 
 bin_entropies = [

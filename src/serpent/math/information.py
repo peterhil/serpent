@@ -16,11 +16,14 @@ def ensure_counter(data: Counter | Sequence) -> Counter:
 	return data if isinstance(data, Counter) else Counter(data)
 
 
-def abs_rate(data: Counter | Sequence) -> int:
-	"""Absolute rate: unique symbols in the data."""
+def abs_rate(data: Counter | Sequence, base: float=2) -> float:
+	"""Absolute rate: Logarithm of unique symbols in the data."""
 	stats = ensure_counter(data)
+	cardinality = len(stats)
+	if cardinality == 0:
+		return -np.inf
 
-	return len(stats)
+	return logn(cardinality, base)
 
 
 def entropy(data: Counter | Sequence, base: float=2) -> float:
@@ -44,7 +47,7 @@ def entropy(data: Counter | Sequence, base: float=2) -> float:
 def abs_redundancy(data: Counter | Sequence, base: float=2) -> float:
 	"""Absolute redundancy."""
 	counts = ensure_counter(data)
-	rate = abs_rate(counts)
+	rate = abs_rate(counts, base)
 
 	return rate - entropy(counts, base)
 
@@ -52,7 +55,7 @@ def abs_redundancy(data: Counter | Sequence, base: float=2) -> float:
 def rel_redundancy(data: Counter | Sequence, base: float=2) -> float:
 	"""Relative redundancy."""
 	counts = ensure_counter(data)
-	rate = abs_rate(counts)
+	rate = abs_rate(counts, base)
 
 	return abs_redundancy(counts, base) / rate
 
@@ -60,7 +63,7 @@ def rel_redundancy(data: Counter | Sequence, base: float=2) -> float:
 def efficiency(data: Counter | Sequence, base: float=2) -> float:
 	"""Efficiency."""
 	counts = ensure_counter(data)
-	rate = abs_rate(counts)
+	rate = abs_rate(counts, base)
 	eff2 = entropy(counts, base) / rate
 	efficiency = 1.0 - rel_redundancy(counts, base)
 
@@ -71,7 +74,7 @@ def efficiency(data: Counter | Sequence, base: float=2) -> float:
 def max_compr_ratio(data: Counter | Sequence, base: float=2) -> float:
 	"""Maximum compression ratio."""
 	counts = ensure_counter(data)
-	rate = abs_rate(counts)
+	rate = abs_rate(counts, base)
 
 	return rate / entropy(counts, base)
 
@@ -94,7 +97,7 @@ def statistics(data: Counter | Sequence, base: float=2) -> float:
 	"""Information statistics."""
 	c = ensure_counter(data)
 
-	rate = abs_rate(c)
+	rate = abs_rate(c, base)
 	entr = entropy(c, base)
 	total = np.sum([*c.values()])
 	info = entr * total
@@ -107,7 +110,7 @@ def statistics(data: Counter | Sequence, base: float=2) -> float:
 
 	# TODO Split into format_info_stats
 	return str_join([
-		f'{rate}',
+		f'{rate :.2f}',
 		f'{entr :.2f}',
 		f'{perplex :.2f}',
 		f'{math.ceil(info)}',
