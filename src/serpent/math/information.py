@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from collections import Counter
 from collections.abc import Sequence
 
@@ -81,8 +82,8 @@ def statistics_header():
 		'Entropy',
 		'Inform.',
 		'Length',
-		'Abs red',
-		'Rel red',
+		'Abs.rdn',
+		'Rel.rdn',
 		'Eff.',
 		'Compmax',
 	], '\t')
@@ -106,7 +107,7 @@ def statistics(data: Counter | Sequence, base: float=2) -> float:
 	return str_join([
 		f'{rate}',
 		f'{entr :.2f}',
-		f'{info :.1f}',
+		f'{math.ceil(info)}',
 		f'{total}',
 		f'{abs_red :.2f}',
 		f'{percent(rel_red, 2) :.2f}%',
