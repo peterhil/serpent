@@ -151,9 +151,10 @@ def codons(filename, degen_only=False, width=20, stats=False, limit=COUNT_LIMIT)
 
 @arg('--amino', '-a', help='Amino acid input')
 @arg('--base',  '-b', help='Base information unit', type=float)
+@arg('--reg',   '-r', help='Filter sequences by regexp', type=str)
 @arg('--seql',  '-q', help='Sequence length', type=int)
 @aliases('is')
-def infostat(*inputs, base=2.0, amino=False, seql=None):
+def infostat(*inputs, base=2.0, amino=False, reg=None, seql=None):
 	"""Information theory statistics."""
 	amino_opt = amino
 
@@ -168,12 +169,16 @@ def infostat(*inputs, base=2.0, amino=False, seql=None):
 
 			for sequence in seqs:
 				[descriptions, data] = descriptions_and_data(sequence)
+				if regex_no_match(reg, descriptions):
+					continue
 				yield from descriptions
 				yield from format_infostat(data, base, seql)
 		else:
 			lines = readlines(filename)
 			counts = Counter()
 			for line in lines:
+				if regex_no_match(reg, line):
+					continue
 				counts.update(line)
 			yield from format_infostat(counts, base, seql)
 
