@@ -5,7 +5,7 @@ import more_itertools as mit
 from serpent.math.information import statistics, statistics_header
 
 
-def format_infostat(data, base=2, seql=None):
+def format_entropy(data, base=2, seql=None):
 	if seql:
 		yield statistics_header()
 		for chunk in mit.chunked(data, seql):

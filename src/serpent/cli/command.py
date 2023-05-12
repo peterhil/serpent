@@ -18,9 +18,9 @@ from PIL import Image
 
 from serpent import dna
 from serpent.cli.encode import encode_data, encode_sequences
+from serpent.cli.entropy import format_entropy
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
-from serpent.cli.infostat import format_infostat
 from serpent.cli.pep import all_symbols_for, peptides_of_length
 from serpent.cli.pulse import (
 	pulse_plot_sequences,
@@ -154,9 +154,9 @@ def codons(filename, degen_only=False, width=20, stats=False, limit=COUNT_LIMIT)
 @arg('--base',  '-b', help='Base information unit', type=float)
 @arg('--reg',   '-r', help='Filter sequences by regexp', type=str)
 @arg('--seql',  '-q', help='Sequence length', type=int)
-@aliases('is')
-def infostat(*inputs, base=2.0, amino=False, reg=None, seql=None):
-	"""Information theory statistics."""
+@aliases('ent')
+def entropy(*inputs, base=2.0, amino=False, reg=None, seql=None):
+	"""Entropy and other information theory statistics."""
 	amino_opt = amino
 
 	for filename in check_paths(inputs):
@@ -172,7 +172,7 @@ def infostat(*inputs, base=2.0, amino=False, reg=None, seql=None):
 				if regex_no_match(reg, descriptions):
 					continue
 				yield from descriptions
-				yield from format_infostat(data, base, seql)
+				yield from format_entropy(data, base, seql)
 		else:
 			lines = readlines(filename)
 			counts = Counter()
@@ -180,7 +180,7 @@ def infostat(*inputs, base=2.0, amino=False, reg=None, seql=None):
 				if regex_no_match(reg, line):
 					continue
 				counts.update(line)
-			yield from format_infostat(counts, base, seql)
+			yield from format_entropy(counts, base, seql)
 
 
 def cat(*inputs):
@@ -732,12 +732,12 @@ def main():
 		count,
 		decode,
 		encode,
+		entropy,
 		fft,
 		find,
 		flow,
 		hist,
 		image,
-		infostat,
 		pep,
 		pepcount,
 		pulse,
