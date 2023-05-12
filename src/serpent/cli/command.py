@@ -169,13 +169,14 @@ def entropy(*inputs, base=2.0, amino=False, plot=False, reg=None, seql=None, ste
 			amino = auto_select_amino(filename, amino_opt)
 			seqs = read_sequences(filename, amino)
 
-			for sequence in seqs:
+			for index, sequence in enumerate(seqs):
 				[descriptions, data] = descriptions_and_data(sequence)
 				if regex_no_match(reg, descriptions):
 					continue
 
 				if plot:
-					plot_entropy(data, base, seql, step)
+					color = DEFAULT_COLOR if index == 0 else None
+					plot_entropy(data, base, seql, step, color=color)
 				else:
 					yield from descriptions
 					yield from format_entropy(data, base, seql, step)
