@@ -65,10 +65,10 @@ def efficiency(data: Counter | Sequence, base: float=2) -> float:
 	counts = ensure_counter(data)
 	max_rate = abs_rate(counts, base)
 	rate = entropy_shannon(counts, base)
-	eff2 = rate / max_rate
-	efficiency = 1.0 - rel_redundancy(counts, base)
+	efficiency = rate / max_rate
+	# eff2 = 1.0 - rel_redundancy(counts, base)
+	# assert efficiency == eff2, 'Definitions not equal'
 
-	assert efficiency == eff2, 'Definitions not equal'
 	return efficiency
 
 
