@@ -154,8 +154,9 @@ def codons(filename, degen_only=False, width=20, stats=False, limit=COUNT_LIMIT)
 @arg('--base',  '-b', help='Base information unit', type=float)
 @arg('--reg',   '-r', help='Filter sequences by regexp', type=str)
 @arg('--seql',  '-q', help='Sequence length', type=int)
+@arg('--step',  '-s', help='Step size', type=int)
 @aliases('ent')
-def entropy(*inputs, base=2.0, amino=False, reg=None, seql=None):
+def entropy(*inputs, base=2.0, amino=False, reg=None, seql=None, step=None):
 	"""Entropy and other information theory statistics."""
 	amino_opt = amino
 
@@ -172,7 +173,7 @@ def entropy(*inputs, base=2.0, amino=False, reg=None, seql=None):
 				if regex_no_match(reg, descriptions):
 					continue
 				yield from descriptions
-				yield from format_entropy(data, base, seql)
+				yield from format_entropy(data, base, seql, step)
 		else:
 			lines = readlines(filename)
 			counts = Counter()
@@ -180,7 +181,7 @@ def entropy(*inputs, base=2.0, amino=False, reg=None, seql=None):
 				if regex_no_match(reg, line):
 					continue
 				counts.update(line)
-			yield from format_entropy(counts, base, seql)
+			yield from format_entropy(counts, base, seql, step)
 
 
 def cat(*inputs):
