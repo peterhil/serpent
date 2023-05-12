@@ -47,24 +47,25 @@ def entropy(data: Counter | Sequence, base: float=2) -> float:
 def abs_redundancy(data: Counter | Sequence, base: float=2) -> float:
 	"""Absolute redundancy."""
 	counts = ensure_counter(data)
-	rate = abs_rate(counts, base)
+	max_rate = abs_rate(counts, base)
 
-	return rate - entropy(counts, base)
+	return max_rate - entropy(counts, base)
 
 
 def rel_redundancy(data: Counter | Sequence, base: float=2) -> float:
 	"""Relative redundancy."""
 	counts = ensure_counter(data)
-	rate = abs_rate(counts, base)
+	max_rate = abs_rate(counts, base)
 
-	return abs_redundancy(counts, base) / rate
+	return abs_redundancy(counts, base) / max_rate
 
 
 def efficiency(data: Counter | Sequence, base: float=2) -> float:
 	"""Efficiency."""
 	counts = ensure_counter(data)
-	rate = abs_rate(counts, base)
-	eff2 = entropy(counts, base) / rate
+	max_rate = abs_rate(counts, base)
+	rate = entropy(counts, base)
+	eff2 = rate / max_rate
 	efficiency = 1.0 - rel_redundancy(counts, base)
 
 	assert efficiency == eff2, 'Definitions not equal'
@@ -74,9 +75,10 @@ def efficiency(data: Counter | Sequence, base: float=2) -> float:
 def max_compr_ratio(data: Counter | Sequence, base: float=2) -> float:
 	"""Maximum compression ratio."""
 	counts = ensure_counter(data)
-	rate = abs_rate(counts, base)
+	max_rate = abs_rate(counts, base)
+	rate = entropy(counts, base)
 
-	return rate / entropy(counts, base)
+	return max_rate / rate
 
 
 def statistics_header():
@@ -97,20 +99,23 @@ def statistics(data: Counter | Sequence, base: float=2) -> float:
 	"""Information statistics."""
 	c = ensure_counter(data)
 
-	rate = abs_rate(c, base)
 	entr = entropy(c, base)
+	max_rate = abs_rate(c, base)
+	# TODO Check if joint entropy is needed for a stochastic process!
+	# See: https://en.wikipedia.org/wiki/Redundancy_(information_theory)#Quantitative_definition
+	rate = entr
 	total = np.sum([*c.values()])
 	info = entr * total
 
-	abs_red = rate - entr
-	rel_red = abs_red / rate
+	abs_red = max_rate - rate
+	rel_red = abs_red / max_rate
 	eff = 1.0 - rel_red
-	max_compr = rate / entr
+	max_compr = max_rate / rate
 	perplex = base ** entr
 
 	# TODO Split into format_info_stats
 	return str_join([
-		f'{rate :.2f}',
+		f'{max_rate :.2f}',
 		f'{entr :.2f}',
 		f'{perplex :.2f}',
 		f'{math.ceil(info)}',
