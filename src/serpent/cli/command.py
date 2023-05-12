@@ -18,7 +18,7 @@ from PIL import Image
 
 from serpent import dna
 from serpent.cli.encode import encode_data, encode_sequences
-from serpent.cli.entropy import format_entropy
+from serpent.cli.entropy import format_entropy, plot_entropy
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
 from serpent.cli.pep import all_symbols_for, peptides_of_length
@@ -152,11 +152,12 @@ def codons(filename, degen_only=False, width=20, stats=False, limit=COUNT_LIMIT)
 
 @arg('--amino', '-a', help='Amino acid input')
 @arg('--base',  '-b', help='Base information unit', type=float)
+@arg('--plot',  '-p', help='Plot data')
 @arg('--reg',   '-r', help='Filter sequences by regexp', type=str)
 @arg('--seql',  '-q', help='Sequence length', type=int)
 @arg('--step',  '-s', help='Step size', type=int)
 @aliases('ent')
-def entropy(*inputs, base=2.0, amino=False, reg=None, seql=None, step=None):
+def entropy(*inputs, base=2.0, amino=False, plot=False, reg=None, seql=None, step=None):
 	"""Entropy and other information theory statistics."""
 	amino_opt = amino
 
@@ -172,8 +173,12 @@ def entropy(*inputs, base=2.0, amino=False, reg=None, seql=None, step=None):
 				[descriptions, data] = descriptions_and_data(sequence)
 				if regex_no_match(reg, descriptions):
 					continue
-				yield from descriptions
-				yield from format_entropy(data, base, seql, step)
+
+				if plot:
+					plot_entropy(data, base, seql, step)
+				else:
+					yield from descriptions
+					yield from format_entropy(data, base, seql, step)
 		else:
 			lines = readlines(filename)
 			counts = Counter()
@@ -182,6 +187,10 @@ def entropy(*inputs, base=2.0, amino=False, reg=None, seql=None, step=None):
 					continue
 				counts.update(line)
 			yield from format_entropy(counts, base, seql, step)
+
+	if plot:
+		interactive()
+		wait_user()
 
 
 def cat(*inputs):
