@@ -26,7 +26,7 @@ def abs_rate(data: Counter | Sequence, base: float=2) -> float:
 	return logn(cardinality, base)
 
 
-def entropy(data: Counter | Sequence, base: float=2) -> float:
+def entropy_shannon(data: Counter | Sequence, base: float=2) -> float:
 	"""Shannon entropy of the data.
 
 	Arguments:
@@ -49,7 +49,7 @@ def abs_redundancy(data: Counter | Sequence, base: float=2) -> float:
 	counts = ensure_counter(data)
 	max_rate = abs_rate(counts, base)
 
-	return max_rate - entropy(counts, base)
+	return max_rate - entropy_shannon(counts, base)
 
 
 def rel_redundancy(data: Counter | Sequence, base: float=2) -> float:
@@ -64,7 +64,7 @@ def efficiency(data: Counter | Sequence, base: float=2) -> float:
 	"""Efficiency."""
 	counts = ensure_counter(data)
 	max_rate = abs_rate(counts, base)
-	rate = entropy(counts, base)
+	rate = entropy_shannon(counts, base)
 	eff2 = rate / max_rate
 	efficiency = 1.0 - rel_redundancy(counts, base)
 
@@ -76,7 +76,7 @@ def max_compr_ratio(data: Counter | Sequence, base: float=2) -> float:
 	"""Maximum compression ratio."""
 	counts = ensure_counter(data)
 	max_rate = abs_rate(counts, base)
-	rate = entropy(counts, base)
+	rate = entropy_shannon(counts, base)
 
 	return max_rate / rate
 
@@ -99,7 +99,7 @@ def statistics(data: Counter | Sequence, base: float=2) -> float:
 	"""Information statistics."""
 	c = ensure_counter(data)
 
-	entr = entropy(c, base)
+	entr = entropy_shannon(c, base)
 	max_rate = abs_rate(c, base)
 	# TODO Check if joint entropy is needed for a stochastic process!
 	# See: https://en.wikipedia.org/wiki/Redundancy_(information_theory)#Quantitative_definition
