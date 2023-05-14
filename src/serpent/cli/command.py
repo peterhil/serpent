@@ -635,6 +635,7 @@ def vectors(filename, split='', amino=False, table=1, degen=False):
 @arg('--test',    '-t', help='Test path quality (compare to blueprint)')
 @arg('--unit',    '-u', help='Stay on unit square')
 @arg('--reg',     '-r', help='Filter sequences by regexp on descriptions', type=str)
+@wrap_errors(wrapped_errors)
 def walk(
 	filename,
 	reg=None,

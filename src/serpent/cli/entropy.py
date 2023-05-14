@@ -10,9 +10,8 @@ from serpent.math.information import efficiency, statistics, statistics_header
 def check_step_size(seql, step):
 	if step is None:
 		step = seql
-	if not 0 <= step <= seql:
-		err_msg = f'Step size should be between 0 and --seql/-q {seql} (inclusive)'
-		raise ValueError(err_msg)
+	err_msg = f'Step size should be between 1 and --seql/-q {seql} (inclusive)'
+	assert 1 <= step <= seql, err_msg
 
 	return step
 
