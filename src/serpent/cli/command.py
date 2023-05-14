@@ -632,12 +632,13 @@ def vectors(filename, split='', amino=False, table=1, degen=False):
 @arg('--length',  '-l', help='Exact sequence length as --seql/-q')
 @arg('--seql',    '-q', help='Path segments (sequence length with --length)', type=int)
 @arg('--step',    '-s', help='Step size (smoothing by overlap)', type=int)
+@arg('--test',    '-t', help='Test path quality (compare to blueprint)')
 @arg('--unit',    '-u', help='Stay on unit square')
 @arg('--reg',     '-r', help='Filter sequences by regexp on descriptions', type=str)
 def walk(
 	filename,
 	reg=None,
-	length=False, seql=1024, step=None, unit=False, norm=False,
+	length=False, seql=1024, step=None, test=False, unit=False, norm=False,
 	# amino=False, table=1,
 	degen=False,
 ):
@@ -656,6 +657,10 @@ def walk(
 
 		color = DEFAULT_COLOR if index == 0 else None
 		seql = seql if length else max([1, len(data) // seql])
+
+		if test:
+			path = walk_sequence(data, seql=1, step=1, degen=degen, norm=norm, unit=unit)
+			plt.plot(*path, color='#0ff7')
 
 		path = walk_sequence(data, seql, step, degen=degen, norm=norm, unit=unit)
 		plt.plot(*path, color=color)

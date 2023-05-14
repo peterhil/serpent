@@ -19,6 +19,6 @@ def walk_sequence(
 	step = check_step_size(seql, step)
 	quads = dna_to_quad(data, length=seql, degen=degen, step=step)
 	dirs = np.array(quads).T if unit else np.cumsum(quads, axis=0).T
-	path = normalise(dirs) if norm else dirs
+	path = normalise(dirs) if norm else dirs if unit else dirs * step
 
 	return path
