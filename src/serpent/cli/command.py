@@ -18,7 +18,7 @@ from PIL import Image
 
 from serpent import dna
 from serpent.cli.encode import encode_data, encode_sequences
-from serpent.cli.entropy import format_entropy, plot_entropy
+from serpent.cli.entropy import check_step_size, format_entropy, plot_entropy
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
 from serpent.cli.pep import all_symbols_for, peptides_of_length
@@ -628,13 +628,18 @@ def vectors(filename, split='', amino=False, table=1, degen=False):
 # @arg('--amino',   '-a', help='Amino acid input')
 # @arg('--table',   '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',   '-g', help='Degenerate data')
-@arg('--norm',    '-n', help='Normalise path to unit square')
-@arg('--quality', '-q', help='Quality parameter (determines path resolution)', type=int)
+@arg('--norm',    '-n', help='Normalise paths to unit square')
+@arg('--length',  '-l', help='Exact sequence length as --seql/-q')
+@arg('--seql',    '-q', help='Path segments (sequence length with --length)', type=int)
+@arg('--step',    '-s', help='Step size (smoothing by overlap)', type=int)
+@arg('--unit',    '-u', help='Stay on unit square')
 @arg('--reg',     '-r', help='Filter sequences by regexp on descriptions', type=str)
 def walk(
-	filename, quality=1024, norm=False, reg=None,
+	filename,
+	reg=None,
+	length=False, seql=1024, step=None, unit=False, norm=False,
 	# amino=False, table=1,
-	degen=False
+	degen=False,
 ):
 	"""Spatial walk visualisation of nucleotides in 2D space."""
 	amino = auto_select_amino(filename, False)
@@ -651,10 +656,11 @@ def walk(
 		yield from descriptions
 
 		color = DEFAULT_COLOR if index == 0 else None
-		seql = max([1, len(data) // quality])
+		seql = seql if length else max([1, len(data) // seql])
+		step = check_step_size(seql, step)
 
-		quads = dna_to_quad(data, length=seql, degen=degen)
-		dirs = np.cumsum(quads, axis=0).T
+		quads = dna_to_quad(data, length=seql, degen=degen, step=step)
+		dirs = np.array(quads).T if unit else np.cumsum(quads, axis=0).T
 		xy = normalise(dirs) if norm else dirs
 		plt.plot(*xy, color=color)
 

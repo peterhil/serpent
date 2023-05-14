@@ -10,6 +10,7 @@ import more_itertools as mit
 import numpy as np
 
 from serpent.convert.dnt import bits_to_dnt, dnt_to_bits
+from serpent.fun import str_join
 from serpent.settings import BASE_ORDER
 from serpent.visual.bitmap import yiq_to_rgb
 
@@ -52,10 +53,14 @@ def degen_to_quad(peptide: Iterable[str]):
 	return np.mean(quads, axis=0)
 
 
-def dna_to_quad(dna: Iterable[str], length=3, degen=False):
+def dna_to_quad(dna: Iterable[str], length=3, degen=False, step=1):
 	convert = degen_to_quad if degen else peptide_to_quad
-	# TODO Also try moving average and exponential smoothing!
-	quads = np.array([convert(peptide) for peptide in mit.chunked(dna, length)])
+	# TODO Also try exponential moving average smoothing!
+	chunks = [
+		str_join(filter(None, chunk))
+		for chunk in mit.windowed(dna, length, step=step)
+	]
+	quads = np.array([convert(peptide) for peptide in chunks])
 	return quads
 
 
