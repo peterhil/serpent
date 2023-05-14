@@ -18,7 +18,7 @@ from PIL import Image
 
 from serpent import dna
 from serpent.cli.encode import encode_data, encode_sequences
-from serpent.cli.entropy import check_step_size, format_entropy, plot_entropy
+from serpent.cli.entropy import format_entropy, plot_entropy
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.cli.image import dna_image
 from serpent.cli.pep import all_symbols_for, peptides_of_length
@@ -27,10 +27,10 @@ from serpent.cli.pulse import (
 	pulse_text,
 )
 from serpent.cli.quasar import dna_quasar_seq
+from serpent.cli.walk import walk_sequence
 from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
 from serpent.convert.dnt import is_degenerate
-from serpent.convert.quad import dna_to_quad
 from serpent.convert.split import split_aminos, split_encoded
 from serpent.fun import second, sort_values, str_join
 from serpent.io.fasta import (
@@ -62,7 +62,7 @@ from serpent.io.printing import (
 	info,
 	wait_user,
 )
-from serpent.math.basic import autowidth_for, normalise
+from serpent.math.basic import autowidth_for
 from serpent.math.dsp import fft_spectra
 from serpent.math.statistic import ac_peaks, autocorrelogram, quasar_pulses
 from serpent.settings import (
@@ -652,17 +652,13 @@ def walk(
 		[descriptions, data] = descriptions_and_data(sequence)
 		if regex_no_match(reg, descriptions):
 			continue
-
 		yield from descriptions
 
 		color = DEFAULT_COLOR if index == 0 else None
 		seql = seql if length else max([1, len(data) // seql])
-		step = check_step_size(seql, step)
 
-		quads = dna_to_quad(data, length=seql, degen=degen, step=step)
-		dirs = np.array(quads).T if unit else np.cumsum(quads, axis=0).T
-		xy = normalise(dirs) if norm else dirs
-		plt.plot(*xy, color=color)
+		path = walk_sequence(data, seql, step, degen=degen, norm=norm, unit=unit)
+		plt.plot(*path, color=color)
 
 	plt.axis('equal')
 	interactive()
