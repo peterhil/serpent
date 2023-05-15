@@ -27,6 +27,7 @@ from serpent.cli.pulse import (
 	pulse_text,
 )
 from serpent.cli.quasar import dna_quasar_seq
+from serpent.cli.tide import tide_sequence
 from serpent.cli.walk import walk_sequence
 from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
@@ -66,6 +67,7 @@ from serpent.math.basic import autowidth_for
 from serpent.math.dsp import fft_spectra
 from serpent.math.statistic import ac_peaks, autocorrelogram, quasar_pulses
 from serpent.settings import (
+	BASE_ORDER,
 	COUNT_LIMIT,
 	DEFAULT_COLOR,
 )
@@ -582,6 +584,34 @@ def seq(filename, seql=1, amino=False, degen=False, table=1):
 	wait_user()
 
 
+@arg('--cumulative', '-m', help='Cumulative')
+@arg('--seql',   '-q', help='Sequence length', type=int)
+@arg('--step',   '-s', help='Step size (smoothing by overlap)', type=int)
+@wrap_errors(wrapped_errors)
+def tide(*inputs, seql=64, step=None, cumulative=False):
+	"""Visualise averaged relative symbol frequencies."""
+	symbols = BASE_ORDER  # + DEGENERATE
+
+	for filename in check_paths(inputs):
+		if len(inputs) > 1:
+			info(f'file: {filename}')
+		seqs = read_sequences(filename, amino=False)
+
+		for sequence in seqs:
+			[descriptions, data] = descriptions_and_data(sequence)
+			yield from descriptions
+
+			tides = tide_sequence(data, symbols, seql, step)
+			tides = np.array([*tides])
+
+			if cumulative:
+				tides = np.cumsum(tides, axis=1)
+			plt.plot(tides)
+
+	interactive()
+	wait_user()
+
+
 @arg('--amino',  '-a', help='Amino acid input')
 @arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',  '-g', help='Degenerate data')
@@ -763,6 +793,7 @@ def main():
 		quasar,
 		seq,
 		split,
+		tide,
 		vectors,
 		walk,
 		zigzag,
