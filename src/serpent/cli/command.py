@@ -73,6 +73,7 @@ from serpent.settings import (
 )
 from serpent.spatial.path import amino_path_3d
 from serpent.visual import ansi
+from serpent.visual.palette import hex_spectrum
 from serpent.visual.plot import (
 	bin_choices,
 	interactive,
@@ -603,10 +604,20 @@ def tide(*inputs, seql=64, step=None, cumulative=False):
 
 			tides = tide_sequence(data, symbols, seql, step)
 			tides = np.array([*tides])
+			yield tides.shape
 
 			if cumulative:
 				tides = np.cumsum(tides, axis=1)
-			plt.plot(tides)
+
+			steps = 0  # 0.5 * np.arange(len(symbols)).T
+			colours = hex_spectrum(len(symbols) + 1, sat=0.75, lightness=245, offset=-15/360)
+			for tide, color in zip(tides.T + steps, colours):
+				plt.plot(tide, color)
+
+			# GC- and AT-content:
+			# tides = tides.T
+			# plt.plot(tides[0] + tides[1])
+			# plt.plot(tides[2] + tides[3])
 
 	interactive()
 	wait_user()

@@ -29,6 +29,10 @@ def spectrum(n=64, sat=1.0, lightness=255, offset=0):
 	return colours
 
 
+def hex_spectrum(n, **kwargs):
+	return [rgb_to_hex(c) for c in spectrum(n, **kwargs)]
+
+
 def spectrum_layers(n=9, layers=3, start=0.5, *, sat=0.75, offset=0):
 	"""Spectrum colours with layers of lightness."""
 	# TODO Rethink the amino acid to colour mapping?
