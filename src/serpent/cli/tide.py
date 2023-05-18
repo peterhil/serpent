@@ -10,6 +10,15 @@ from serpent.cli.entropy import check_step_size
 from serpent.fun import str_join
 
 
+def sequence_probabilities(seq, symbols):
+	counts = Counter(seq)
+
+	tide = np.array([counts.get(symbol, 0) for symbol in symbols])
+	total = np.sum(tide)
+
+	return tide / total
+
+
 def tide_sequence(data, symbols, seql=64, step=None):
 	step = check_step_size(seql, step)
 
@@ -25,9 +34,4 @@ def tide_sequence(data, symbols, seql=64, step=None):
 
 		seq = str_join(pool)
 		# yield seq
-		counts = Counter(seq)
-
-		tide = np.array([counts.get(symbol, 0) for symbol in symbols])
-		total = np.sum(tide)
-
-		yield tide / total
+		yield sequence_probabilities(seq, symbols)
