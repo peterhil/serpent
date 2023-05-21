@@ -27,7 +27,7 @@ from serpent.cli.pulse import (
 	pulse_text,
 )
 from serpent.cli.quasar import dna_quasar_seq
-from serpent.cli.tide import plot_tides, tide_sequence
+from serpent.cli.tide import plot_tides, tide_sequence, tide_total
 from serpent.cli.walk import walk_sequence
 from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
@@ -584,11 +584,18 @@ def seq(filename, seql=1, amino=False, degen=False, table=1):
 	wait_user()
 
 
-@arg('--cumulative', '-m', help='Cumulative')
+@arg('--cumulative', '-m', help='Cumulative probabilities')
+@arg('--norm',   '-n', help='Normalise series to unity')
+@arg('--slopes', '-l', help='Cumulative series')
+@arg('--ref',    '-r', help='Reference sequence length', type=int)
+@arg('--refstep', '-t', help='Reference step size (smoothing by overlap)', type=int)
 @arg('--seql',   '-q', help='Sequence length', type=int)
 @arg('--step',   '-s', help='Step size (smoothing by overlap)', type=int)
 @wrap_errors(wrapped_errors)
-def tide(*inputs, seql=64, step=None, cumulative=False):
+def tide(
+	*inputs, seql=1024, step=None, ref=64, refstep=1,
+	cumulative=False, norm=False, slopes=False,
+):
 	"""Visualise averaged relative symbol frequencies."""
 	symbols = BASE_ORDER  # + DEGENERATE
 
@@ -596,13 +603,35 @@ def tide(*inputs, seql=64, step=None, cumulative=False):
 		if len(inputs) > 1:
 			info(f'file: {filename}')
 		seqs = read_sequences(filename, amino=False)
+		alpha = '77'
 
 		for sequence in seqs:
 			[descriptions, data] = descriptions_and_data(sequence)
 			yield from descriptions
 
-			tides = tide_sequence(data, symbols, seql, step=step, cumulative=cumulative)
-			yield tides.shape
+			# Reference
+			tides = tide_sequence(
+				data, symbols, ref,
+				step=refstep,
+				cumulative=cumulative,
+				slopes=slopes,
+			)
+			yield f'tides: {tides.shape}'
+			total = tide_total(tides, norm=norm, color='#000000' + alpha)
+			yield f'total: {total.shape}'
+
+			plot_tides(tides, symbols, alpha)
+
+			# Actual
+			tides = tide_sequence(
+				data, symbols, seql,
+				step=step,
+				cumulative=cumulative,
+				slopes=slopes,
+			)
+			yield f'tides: {tides.shape}'
+			total = tide_total(tides, norm=norm)
+			yield f'total: {total.shape}'
 
 			plot_tides(tides, symbols)
 
