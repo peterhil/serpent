@@ -102,3 +102,13 @@ def quasar_pulses(data, cumulative=False, key=None):
 		]))
 
 	return pulses, height, scale
+
+
+def symbol_frequencies(seq, symbols):
+	counts = Counter(seq)
+	freqs = np.array([counts.get(symbol, 0) for symbol in symbols])
+
+	total = np.sum(freqs)
+	probabilities = freqs / total
+
+	return probabilities

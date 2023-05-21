@@ -27,7 +27,7 @@ from serpent.cli.pulse import (
 	pulse_text,
 )
 from serpent.cli.quasar import dna_quasar_seq
-from serpent.cli.tide import tide_sequence
+from serpent.cli.tide import sequence_probabilities
 from serpent.cli.walk import walk_sequence
 from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
@@ -602,7 +602,7 @@ def tide(*inputs, seql=64, step=None, cumulative=False):
 			[descriptions, data] = descriptions_and_data(sequence)
 			yield from descriptions
 
-			tides = tide_sequence(data, symbols, seql, step)
+			tides = sequence_probabilities(data, symbols, seql, step)
 			tides = np.array([*tides])
 			yield tides.shape
 
