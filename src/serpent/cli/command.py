@@ -27,7 +27,7 @@ from serpent.cli.pulse import (
 	pulse_text,
 )
 from serpent.cli.quasar import dna_quasar_seq
-from serpent.cli.tide import sequence_probabilities
+from serpent.cli.tide import plot_tides, tide_sequence
 from serpent.cli.walk import walk_sequence
 from serpent.cli.zigzag import zigzag_blocks, zigzag_text
 from serpent.convert.amino import aa_tables, aminos_for_table
@@ -73,7 +73,6 @@ from serpent.settings import (
 )
 from serpent.spatial.path import amino_path_3d
 from serpent.visual import ansi
-from serpent.visual.palette import hex_spectrum
 from serpent.visual.plot import (
 	bin_choices,
 	interactive,
@@ -602,16 +601,10 @@ def tide(*inputs, seql=64, step=None, cumulative=False):
 			[descriptions, data] = descriptions_and_data(sequence)
 			yield from descriptions
 
-			tides = sequence_probabilities(data, symbols, seql, step)
-			tides = np.array([*tides])
+			tides = tide_sequence(data, symbols, seql, step=step, cumulative=cumulative)
 			yield tides.shape
 
-			if cumulative:
-				tides = np.cumsum(tides, axis=1)
-
-			colours = hex_spectrum(len(symbols) + 1, sat=0.75, lightness=245, offset=-15/360)
-			for tide, color in zip(tides.T, colours):
-				plt.plot(tide, color)
+			plot_tides(tides, symbols)
 
 	interactive()
 	wait_user()
