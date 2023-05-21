@@ -609,15 +609,9 @@ def tide(*inputs, seql=64, step=None, cumulative=False):
 			if cumulative:
 				tides = np.cumsum(tides, axis=1)
 
-			steps = 0  # 0.5 * np.arange(len(symbols)).T
 			colours = hex_spectrum(len(symbols) + 1, sat=0.75, lightness=245, offset=-15/360)
-			for tide, color in zip(tides.T + steps, colours):
+			for tide, color in zip(tides.T, colours):
 				plt.plot(tide, color)
-
-			# GC- and AT-content:
-			# tides = tides.T
-			# plt.plot(tides[0] + tides[1])
-			# plt.plot(tides[2] + tides[3])
 
 	interactive()
 	wait_user()
