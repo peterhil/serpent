@@ -65,7 +65,7 @@ from serpent.io.printing import (
 )
 from serpent.math.basic import autowidth_for
 from serpent.math.dsp import fft_spectra
-from serpent.math.statistic import ac_peaks, autocorrelogram, quasar_pulses
+from serpent.math.statistic import ac_peaks, autocorrelogram, ewma, quasar_pulses
 from serpent.settings import (
 	BASE_ORDER,
 	COUNT_LIMIT,
@@ -603,37 +603,44 @@ def tide(
 		if len(inputs) > 1:
 			info(f'file: {filename}')
 		seqs = read_sequences(filename, amino=False)
-		alpha = '77'
 
 		for sequence in seqs:
 			[descriptions, data] = descriptions_and_data(sequence)
 			yield from descriptions
 
 			# Reference
+			alpha = '33'
 			tides = tide_sequence(
-				data, symbols, ref,
-				step=refstep,
+				data, symbols, ref, step=refstep,
 				cumulative=cumulative,
 				slopes=slopes,
 			)
-			yield f'tides: {tides.shape}'
-			total = tide_total(tides, norm=norm, color='#000000' + alpha)
-			yield f'total: {total.shape}'
-
+			yield f'ref:\t{tides.shape}'
 			plot_tides(tides, symbols, alpha)
+			tide_total(tides, norm=norm, color='#000000' + alpha)
 
 			# Actual
+			alpha = 'ff'
 			tides = tide_sequence(
-				data, symbols, seql,
-				step=step,
+				data, symbols, seql, step=step,
 				cumulative=cumulative,
 				slopes=slopes,
 			)
-			yield f'tides: {tides.shape}'
-			total = tide_total(tides, norm=norm)
-			yield f'total: {total.shape}'
+			yield f'tides:\t{tides.shape}'
+			plot_tides(tides, symbols, alpha)
+			tide_total(tides, norm=norm, color='#000000' + alpha)
 
-			plot_tides(tides, symbols)
+			# EWMA
+			alpha = '77'
+			tides = tide_sequence(
+				data, symbols, ref, step=1,
+				cumulative=cumulative,
+				slopes=slopes,
+			)
+			ewa = np.array([ewma(tide, alpha=0.1, window_size=ref) for tide in tides.T]).T
+			yield f'ewa:\t{ewa.shape}'
+			plot_tides(ewa, symbols, alpha)
+			tide_total(ewa, norm=norm, color='#000000' + alpha)
 
 	interactive()
 	wait_user()

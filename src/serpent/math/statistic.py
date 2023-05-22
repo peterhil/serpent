@@ -75,6 +75,21 @@ def map_pulses(data: Iterable[str], fn: Callable, key=None):
 	return result
 
 
+def ewma(data, alpha=0.1, window_size=10):
+	"""Exponential moving average.
+
+	From numpy_ewm_alpha_v2 at:
+	https://stackoverflow.com/a/42912903/470560
+	(a Stack Overflow answer).
+	"""
+	wghts = (1 - alpha) ** np.arange(window_size)
+	wghts /= wghts.sum()
+	out = np.convolve(data, wghts)
+	out[:window_size - 1] = np.nan
+
+	return out[:data.size]
+
+
 def quasar_pulses(data, cumulative=False, key=None):
 	[stat, scale] = pulse_repetition_intervals(data)
 	height = np.amax(np.array([len(s) for s in stat.values()]))
