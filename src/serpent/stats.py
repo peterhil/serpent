@@ -48,6 +48,7 @@ def entropy(data: Sequence[int], n=2, base=2):
 	data: sequence of decoded integers
 	n: number of symbols in the data
 	base: base of encoding system (default: binary)
+
 	"""
 	assert np.min(data) >= 0, 'Expected positive integers'
 	assert np.max(data) < n, f'Expected data to fit in {n} symbols'

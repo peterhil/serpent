@@ -3,7 +3,8 @@
 
 from __future__ import annotations
 
-from typing import Callable, Sequence
+from collections.abc import Sequence
+from typing import Callable
 
 from serpent.fun import str_join
 

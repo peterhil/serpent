@@ -191,6 +191,7 @@ def dna_image_data(
 	>>> im = dna_image(codons, width=4)
 	>>> [*im.getdata()]
 	[(1, 5, 9), (81, 85, 93), (161, 165, 169), (245, 249, 253)]
+
 	"""
 	# TODO decode data here, so gaps can be accomodated for requested width?
 	channels: int = len(mode)
@@ -286,7 +287,7 @@ def pulses_to_rgb(pulses, scale, mod=0, log=False, test=False) -> NDArray[np.uin
 	arr = np.vstack([*pulses.values()]).T
 
 	if test:
-		arr = np.arange(np.product(arr.shape)).reshape(arr.shape)
+		arr = np.arange(np.prod(arr.shape)).reshape(arr.shape)
 
 	if mod != 0:
 		if not log:
