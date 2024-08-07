@@ -5,7 +5,7 @@ from collections import Counter
 
 import pytest
 
-from serpent.math.information import abs_rate, entropy
+from serpent.math.information import abs_rate, entropy_shannon
 
 abs_rates = [
 	(-math.inf, ''),
@@ -42,20 +42,20 @@ quad_entropies = [
 
 
 @pytest.mark.parametrize(('expected', 'seq'), bin_entropies)
-def test_entropy(expected, seq):
-	assert expected == entropy(seq)
+def test_entropy_shannon(expected, seq):
+	assert expected == entropy_shannon(seq)
 
 
 @pytest.mark.parametrize(('expected', 'seq'), bin_entropies)
-def test_entropy_counter(expected, seq):
-	assert expected == entropy(Counter(seq))
+def test_entropy_shannon_counter(expected, seq):
+	assert expected == entropy_shannon(Counter(seq))
 
 
 @pytest.mark.parametrize(('expected', 'seq'), quad_entropies)
-def test_entropy_quad_base(expected, seq):
-	assert expected == entropy(seq, base=4)
+def test_entropy_shannon_quad_base(expected, seq):
+	assert expected == entropy_shannon(seq, base=4)
 
 
 @pytest.mark.parametrize(('expected', 'seq'), quad_entropies)
-def test_entropy_counter_quad_base(expected, seq):
-	assert expected == entropy(Counter(seq), base=4)
+def test_entropy_shannon_counter_quad_base(expected, seq):
+	assert expected == entropy_shannon(Counter(seq), base=4)
