@@ -11,7 +11,7 @@ def encode_data(data, fmt, amino=False, table=1, degen=False):
 		encoded = dna.to_amino(data, amino, table, degen)
 	elif fmt in ['b', 'base64', 'c', 'codon']:
 		decoded = dna.decode_iter(data, amino, table, degen)
-		encoded = dna.encode(decoded, fmt)
+		encoded = dna.encode(decoded, fmt, degen=degen)
 	else:
 		err_msg = f'Unknown format: {fmt}'
 		raise ValueError(err_msg)
