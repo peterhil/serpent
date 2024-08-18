@@ -26,9 +26,7 @@ def dna_image_data(
 	# TODO decode data here, so gaps can be accomodated for requested width?
 	channels: int = len(mode)
 
-	# TODO Use alpha channel instead!
-	if degen and not amino:
-		decoded = decoded // 16
+	# TODO Use alpha channel for degenerate data
 
 	if mode == 'P':
 		fill = RGB_MAX
