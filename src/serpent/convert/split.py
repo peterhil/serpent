@@ -16,12 +16,26 @@ def splitter_for(start, stop, split='n'):
 		def split(a, b):
 			return (a in stop or b in start) and a != b
 		return split
+	# 'frames': Split by open reading frames
+	elif split == 'f':
+		started = False
+		def split(_, b):
+			nonlocal started
+			if not started and b in start:
+				started = True
+				return True
+			elif started and b in stop:
+				started = False
+				return True
+			else:
+				return False
+		return split
 	else:
 		err_msg = 'Unknown split type'
 		raise ValueError(err_msg)
 
 
-def split_aminos(aminos, start='M', stop='*', split='r'):
+def split_aminos(aminos, start='M', stop='*', split='f'):
 	"""Split amino acid sequence by start and stop codons."""
 	# TODO Get all start and stop codons from the genetic code tables!
 	splitter = splitter_for(start, stop, split)
@@ -33,7 +47,7 @@ def split_aminos(aminos, start='M', stop='*', split='r'):
 def split_nucleotides(
 	codons,
 	table=1,
-	split='n'
+	split='f'
 ):
 	"""Split nucleotide sequence by start and stop codons."""
 	start = STANDARD_TABLES[table].start
@@ -45,7 +59,7 @@ def split_nucleotides(
 	yield from codons
 
 
-def split_encoded(encoded, fmt, table, split='n'):
+def split_encoded(encoded, fmt, table, split='f'):
 	if fmt in ['a', 'amino']:
 		regions = split_aminos(encoded, split=split)
 	else:

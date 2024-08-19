@@ -326,17 +326,16 @@ def count(
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen', '-g', help='Degenerate data')
 @arg('--fmt',   '-f', help='Output format', choices=['a', 'amino', 'c', 'codon'])
-@arg('--words', '-r', help='Split by either stop or start codons')
+@arg('--split', '-s', help='Splitter type', choices=['f', 'n', 'r'])
 @arg('--width', '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
 def split(
 	*inputs,
-	fmt='codon', words=False, width=64,
+	fmt='codon', split='f', width=64,
 	amino=False, degen=False, table=1,
 ):
 	"""Split data in various ways."""
 	amino_opt = amino
-	split = 'r' if words else 'n'
 
 	for filename in check_paths(inputs):
 		if len(inputs) > 1:
