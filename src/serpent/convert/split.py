@@ -5,20 +5,26 @@ import more_itertools as mit
 from serpent.convert.genetic_code import STANDARD_TABLES
 
 
-def start_or_stop(a, b, start, stop, split='n'):
+def splitter_for(start, stop, split='n'):
 	# 'sentences': Split when a start codon follows a stop codon
 	if split == 'n':
-		return (a in stop and b in start)
+		def split(a, b):
+			return (a in stop and b in start)
+		return split
 	# 'words': Split on start or stop codons
 	elif split == 'r':
-		return (a in stop or b in start) and a != b
+		def split(a, b):
+			return (a in stop or b in start) and a != b
+		return split
+	else:
+		err_msg = 'Unknown split type'
+		raise ValueError(err_msg)
 
 
 def split_aminos(aminos, start='M', stop='*', split='r'):
 	"""Split amino acid sequence by start and stop codons."""
 	# TODO Get all start and stop codons from the genetic code tables!
-	def splitter(a, b):
-		return start_or_stop(a, b, start, stop, split)
+	splitter = splitter_for(start, stop, split)
 	aminos = mit.split_when(aminos, splitter)
 
 	yield from aminos
@@ -33,8 +39,7 @@ def split_nucleotides(
 	start = STANDARD_TABLES[table].start
 	stop = STANDARD_TABLES[table].stop
 
-	def splitter(a, b):
-		return start_or_stop(a, b, start, stop, split)
+	splitter = splitter_for(start, stop, split)
 	codons = mit.split_when(codons, splitter)
 
 	yield from codons
