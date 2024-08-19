@@ -17,7 +17,7 @@ bases, codons, amino acids and genome data.
 
 ### Convert data
 
-* `serpent encode`: Convert data into [base 64] encoded representation
+* `serpent encode`: Convert data into different encoded representations
 * `serpent decode`: Map codons into numbers 0...64
 
 ### Analyse and plot FASTA data visually
@@ -40,6 +40,3 @@ See `serpent -h` for all subcommands and `serpent <subcommand> -h` for options!
 
 I have wanted to explore DNA data in order to to learn and maybe
 invent some compression algorithms for DNA data for about two decades.
-
-
-[base 64]: https://en.wikipedia.org/wiki/Base64

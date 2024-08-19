@@ -7,7 +7,6 @@ from serpent import (
          cli,
          convert,
          dna,
-         encoding,
          io,
          fun,
          math,

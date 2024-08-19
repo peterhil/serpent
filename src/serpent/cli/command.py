@@ -82,7 +82,7 @@ from serpent.visual.plot import (
 	plot_sequence_counts,
 )
 
-fmt_choices = ['a', 'amino', 'b', 'base64', 'c', 'codon']
+fmt_choices = ['a', 'amino', 'c', 'codon']
 wrapped_errors = [AssertionError, ParseError]
 
 

@@ -9,7 +9,6 @@ import numpy as np
 from numpy.typing import NDArray
 
 from serpent.convert.amino import codon_to_amino, decode_aminos
-from serpent.convert.base64 import num_to_base64
 from serpent.convert.codon import codon_to_num, num_to_codon
 from serpent.convert.degenerate import degen_to_amino, num_to_degen
 from serpent.convert.digits import change_base
@@ -33,13 +32,8 @@ def encode(
 	fmt: str = 'codon',
 	degen: bool = False
 ) -> Iterable[str]:
-	"""Encode decoded data into base64 or codon format."""
-	if fmt in ['b', 'base64']:
-		if degen:
-			err_msg = 'Can not use base64 for degenerate data'
-			raise ValueError(err_msg)
-		encoded = (num_to_base64.get(num) for num in decoded)
-	elif fmt in ['c', 'codon']:
+	"""Encode data into codons."""
+	if fmt in ['c', 'codon']:
 		convert = num_to_degen if degen else num_to_codon
 		encoded = (convert(num) for num in decoded)
 	else:

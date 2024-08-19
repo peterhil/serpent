@@ -30,7 +30,7 @@ def verbose_flow_blocks(
 
 	if fmt in ['a', 'amino']:
 		text = dna.to_amino(data, amino, table, degen)
-	elif fmt in ['c', 'codon', 'b', 'base64']:
+	elif fmt in ['c', 'codon']:
 		text = str_join(dna.encode(decoded, fmt=fmt, degen=degen))
 	else:
 		err_msg = 'Unknown format'
