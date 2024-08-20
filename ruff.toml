@@ -1,3 +1,8 @@
+target-version = "py310"
+src = ["src"]
+exclude = []
+
+[lint]
 select = [
 	"E", "F", "W",	# flake8
 	"ARG",	# flake8-unused-arguments
@@ -39,16 +44,13 @@ extend-ignore = [
 	# "PT004",	# Use underscore for non-returning fixture (use usefixture instead)
 	"RET504",	# Unnecessary variable assignment before return statement
 ]
-target-version = "py39"
 typing-modules = ["serpent.typing"]
-src = ["src"]
 unfixable = [
 	"T20",	# Removes print statements
 	"F841",	# Removes unused variables
 ]
-exclude = []
 flake8-unused-arguments.ignore-variadic-names = true
 isort.required-imports = ["from __future__ import annotations"]
 
-[per-file-ignores]
+[lint.per-file-ignores]
 "tests/**" = ["T20"]
