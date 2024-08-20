@@ -1,23 +1,16 @@
 """Lab for interactive work."""
-# flake8: noqa F401, F403
+# ruff: noqa: F401, F403
 
 from __future__ import annotations
 
-import itertools as itr
-import re
-from collections import Counter, OrderedDict, defaultdict
-from functools import partial
-
-import matplotlib.pyplot as plt
-import more_itertools as mit
-import numpy as np
-from PIL import Image
+from matplotlib import interactive
 
 from serpent import *
 from serpent.convert.amino import *
 from serpent.convert.codon import *
 from serpent.convert.degenerate import *
 from serpent.convert.digits import *
+
 # from serpent.convert.dnt import *
 from serpent.convert.format import *
 from serpent.convert.genetic_code import *
@@ -35,7 +28,6 @@ from serpent.math.statistic import *
 from serpent.padding import *
 from serpent.settings import *
 from serpent.spatial.path import *
-from serpent.visual import ansi
 from serpent.visual.bitmap import *
 from serpent.visual.block_elements import *
 from serpent.visual.palette import *

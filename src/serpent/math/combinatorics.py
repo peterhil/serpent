@@ -24,6 +24,7 @@ def spread(seq: Sequence, n: int, offset: int=0):
 
 	>>> spread(np.arange(7), n=2, offset=0)
 	array([0, 2, 4, 6, 1, 3, 5])
+
 	"""
 	if len(seq) == 0:
 		return seq
@@ -47,6 +48,7 @@ def unspread(seq: Sequence, n: int, offset: int=0):
 
 	>>> unspread(spread(np.arange(7), n=2, offset=2), n=2, offset=2)
 	array([0, 1, 2, 3, 4, 5, 6])
+
 	"""
 	if len(seq) == 0:
 		return seq

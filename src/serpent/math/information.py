@@ -33,6 +33,7 @@ def entropy_shannon(data: Counter | Sequence, base: float=2) -> float:
 	---------
 	data: Counter or Sequence
 	base: unit of information (common choices: 2, e, 10...)
+
 	"""
 	stats = ensure_counter(data)
 	counts = np.array([v for v in stats.values() if v != 0])

@@ -18,7 +18,7 @@ QUAD_ZERO = np.array((0, 0))
 
 nt_to_quad = OrderedDict(zip(
 	BASE_ORDER,
-	[*itr.product([1, -1], repeat=2)]
+	[*itr.product([1, -1], repeat=2)], strict=False
 ))
 
 
@@ -32,7 +32,8 @@ def peptide_to_quad(peptide: Iterable[str]):
 def create_dnt_to_quad(bases=BASE_ORDER):
 	def quad_mapping(nts: str) -> tuple[str, tuple[float, float, float]]:
 		"""Map string (combination) of nongenerate bases into YIQ quad value."""
-		summed = np.sum([dnt_to_bits[nt] for nt in nts])  # TODO Use map with operator.or_?
+		# TODO Use map with operator.or_?
+		summed = np.sum([dnt_to_bits[nt] for nt in nts])
 		dnt = bits_to_dnt[summed]
 		quad = np.concatenate([[1 - (len(nts) / len(bases))], peptide_to_quad(nts)])
 		return (dnt, quad)

@@ -53,4 +53,4 @@ coordinates = [
 ]
 
 
-amino_spiral = OrderedDict(zip(amino_spiral_order, coordinates))
+amino_spiral = OrderedDict(zip(amino_spiral_order, coordinates, strict=False))

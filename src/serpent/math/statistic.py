@@ -30,7 +30,7 @@ def ac_peaks(ac, limit=0.05):
 	peaks = np.arange(len(ac))[ac > limit]
 	values = ac[peaks]
 
-	return OrderedDict(zip(peaks, values))
+	return OrderedDict(zip(peaks, values, strict=False))
 
 
 def count_sorted(items):

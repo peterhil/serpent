@@ -20,9 +20,9 @@ fixture_genetic_table = {
 }
 
 fixture_code = OrderedDict({
-	1: OrderedDict(zip(fixture_codons, fixture_genetic_table[1])),
-	2: OrderedDict(zip(fixture_codons, fixture_genetic_table[2])),
-	5: OrderedDict(zip(fixture_codons, fixture_genetic_table[5])),
+	1: OrderedDict(zip(fixture_codons, fixture_genetic_table[1], strict=False)),
+	2: OrderedDict(zip(fixture_codons, fixture_genetic_table[2], strict=False)),
+	5: OrderedDict(zip(fixture_codons, fixture_genetic_table[5], strict=False)),
 })
 
 

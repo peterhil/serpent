@@ -1,9 +1,9 @@
 """Convert data between numbers and encodings."""
-# flake8: noqa F401
+# flake8: noqa: F401
 
 from __future__ import annotations
 
-from typing import Callable, Sequence
+from collections.abc import Callable, Sequence
 
 from serpent.fun import str_join
 

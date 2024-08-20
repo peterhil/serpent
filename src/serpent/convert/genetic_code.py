@@ -39,10 +39,8 @@ from __future__ import annotations
 from collections import OrderedDict
 from typing import NamedTuple
 
-import numpy as np
-
 from serpent.convert.codon import CODONS_LEN, codons_array
-from serpent.fun import find_offsets, inverse_od, str_join
+from serpent.fun import find_offsets, inverse_od
 
 STANDARD_CODONS = codons_array('GACT')
 
@@ -57,7 +55,7 @@ class GeneticCode(NamedTuple):
 
 
 def genetic_code_map(table: str, codons: str=STANDARD_CODONS) -> OrderedDict[str, str]:
-	table = OrderedDict(zip(codons, table))
+	table = OrderedDict(zip(codons, table, strict=False))
 	assert len(table) == CODONS_LEN, 'Codons and table should have 64 characters.'
 	return table
 
@@ -83,61 +81,61 @@ def code_table(
 sgc = code_table
 
 
-# flake8: noqa ET128
+# ruff: noqa: E101
 STANDARD_TABLES = OrderedDict({
 	#		"GGGGGGGGGGGGGGGGAAAAAAAAAAAAAAAACCCCCCCCCCCCCCCCTTTTTTTTTTTTTTTT"  # Base 1
 	#		"GGGGAAAACCCCTTTTGGGGAAAACCCCTTTTGGGGAAAACCCCTTTTGGGGAAAACCCCTTTT"  # Base 2
 	#		"GACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACT"  # Base 3
 	1:  sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLW*CC**YYSSSSLLFF",
-			"----------------------------M---------------M----*--**------M---"),
+	        "----------------------------M---------------M----*--**------M---"),
 	2:  sgc("GGGGEEDDAAAAVVVV**SSKKNNTTTTMMIIRRRRQQHHPPPPLLLLWWCC**YYSSSSLLFF",
-			"------------M---**----------MMMM--------------------**----------"),
+	        "------------M---**----------MMMM--------------------**----------"),
 	3:  sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMMIIRRRRQQHHPPPPTTTTWWCC**YYSSSSLLFF",
-			"------------M---------------MM----------------------**----------"),
+	        "------------M---------------MM----------------------**----------"),
 	4:  sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLWWCC**YYSSSSLLFF",
-			"------------M---------------MMMM------------M-------**------MM--"),
+	        "------------M---------------MMMM------------M-------**------MM--"),
 	5:  sgc("GGGGEEDDAAAAVVVVSSSSKKNNTTTTMMIIRRRRQQHHPPPPLLLLWWCC**YYSSSSLLFF",
-			"------------M---------------MMMM--------------------**------M---"),
+	        "------------M---------------MMMM--------------------**------M---"),
 	6:  sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLW*CCQQYYSSSSLLFF",
-			"----------------------------M--------------------*--------------"),
+	        "----------------------------M--------------------*--------------"),
 	9:  sgc("GGGGEEDDAAAAVVVVSSSSKNNNTTTTMIIIRRRRQQHHPPPPLLLLWWCC**YYSSSSLLFF",
-			"------------M---------------M-----------------------**----------"),
+	        "------------M---------------M-----------------------**----------"),
 	10: sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLWCCC**YYSSSSLLFF",
-			"----------------------------M-----------------------**----------"),
+	        "----------------------------M-----------------------**----------"),
 	11: sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLW*CC**YYSSSSLLFF",
-			"------------M---------------MMMM------------M----*--**------M---"),
+	        "------------M---------------MMMM------------M----*--**------M---"),
 	12: sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPSLLLW*CC**YYSSSSLLFF",
-			"----------------------------M---------------M----*--**----------"),
+	        "----------------------------M---------------M----*--**----------"),
 	13: sgc("GGGGEEDDAAAAVVVVGGSSKKNNTTTTMMIIRRRRQQHHPPPPLLLLWWCC**YYSSSSLLFF",
-			"------------M---------------MM----------------------**------M---"),
+	        "------------M---------------MM----------------------**------M---"),
 	14: sgc("GGGGEEDDAAAAVVVVSSSSKNNNTTTTMIIIRRRRQQHHPPPPLLLLWWCC*YYYSSSSLLFF",
-			"----------------------------M-----------------------*-----------"),
+	        "----------------------------M-----------------------*-----------"),
 	16: sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLW*CCL*YYSSSSLLFF",
-			"----------------------------M--------------------*---*----------"),
+	        "----------------------------M--------------------*---*----------"),
 	21: sgc("GGGGEEDDAAAAVVVVSSSSKNNNTTTTMMIIRRRRQQHHPPPPLLLLWWCC**YYSSSSLLFF",
-			"------------M---------------M-----------------------**----------"),
+	        "------------M---------------M-----------------------**----------"),
 	22: sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLW*CCL*YYS*SSLLFF",
-			"----------------------------M--------------------*---*---*------"),
+	        "----------------------------M--------------------*---*---*------"),
 	23: sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLW*CC**YYSSSSL*FF",
-			"------------M---------------M--M-----------------*--**-------*--"),
+	        "------------M---------------M--M-----------------*--**-------*--"),
 	24: sgc("GGGGEEDDAAAAVVVVKSSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLWWCC**YYSSSSLLFF",
-			"------------M---------------M---------------M-------**------M---"),
+	        "------------M---------------M---------------M-------**------M---"),
 	25: sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLWGCC**YYSSSSLLFF",
-			"------------M---------------M-----------------------**------M---"),
+	        "------------M---------------M-----------------------**------M---"),
 	26: sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPALLLW*CC**YYSSSSLLFF",
-			"----------------------------M---------------M----*--**----------"),
+	        "----------------------------M---------------M----*--**----------"),
 	27: sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLWWCCQQYYSSSSLLFF",
-			"----------------------------M--------------------*--------------"),
+	        "----------------------------M--------------------*--------------"),
 	28: sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLWWCCQQYYSSSSLLFF",
-			"----------------------------M--------------------*--**----------"),
+	        "----------------------------M--------------------*--**----------"),
 	29: sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLW*CCYYYYSSSSLLFF",
-			"----------------------------M--------------------*--------------"),
+	        "----------------------------M--------------------*--------------"),
 	30: sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLW*CCEEYYSSSSLLFF",
-			"----------------------------M--------------------*--------------"),
+	        "----------------------------M--------------------*--------------"),
 	31: sgc("GGGGEEDDAAAAVVVVRRSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLWWCCEEYYSSSSLLFF",
-			"----------------------------M-----------------------**----------"),
+	        "----------------------------M-----------------------**----------"),
 	33: sgc("GGGGEEDDAAAAVVVVKSSSKKNNTTTTMIIIRRRRQQHHPPPPLLLLWWCC*YYYSSSSLLFF",
-			"------------M---------------M---------------M-------*-------M---"),
+	        "------------M---------------M---------------M-------*-------M---"),
 	#		"GGGGGGGGGGGGGGGGAAAAAAAAAAAAAAAACCCCCCCCCCCCCCCCTTTTTTTTTTTTTTTT"  # Base 1
 	#		"GGGGAAAACCCCTTTTGGGGAAAACCCCTTTTGGGGAAAACCCCTTTTGGGGAAAACCCCTTTT"  # Base 2
 	#		"GACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACT"  # Base 3

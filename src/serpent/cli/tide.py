@@ -37,6 +37,7 @@ def tide_total(tides, norm=False, color='#000000'):
 	return total
 
 
+# ruff: noqa: PLR0913
 def tide_sequence(
 	data, symbols, seql,
 	*,
@@ -62,6 +63,6 @@ def tide_sequence(
 
 def plot_tides(tides, symbols, alpha=None):
 	colours = hex_spectrum(len(symbols) + 1, sat=0.75, lightness=245, offset=-15/360)
-	for tide, colour in zip(tides.T, colours):
+	for tide, colour in zip(tides.T, colours, strict=False):
 		color = colour + alpha if alpha else colour
 		plt.plot(tide, color)

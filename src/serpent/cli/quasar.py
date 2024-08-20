@@ -44,11 +44,11 @@ def pulses_to_rgb(pulses, scale, mod=0, log=False, test=False) -> NDArray[np.uin
 	arr = np.vstack([*pulses.values()]).T
 
 	if test:
-		arr = np.arange(np.product(arr.shape)).reshape(arr.shape)
+		arr = np.arange(np.prod(arr.shape)).reshape(arr.shape)
 
 	if mod != 0:
 		if not log:
-			err_msg = f'Modulo needs to be between 1 and {RGB_MAX} when not using the log option'
+			err_msg = f'Modulo needs to be 1...{RGB_MAX}, or use the log option'
 			assert mod <= RGB_MAX, err_msg
 		rgb = arr % mod
 

@@ -8,7 +8,7 @@ from numpy.testing import assert_array_equal
 from serpent.math.combinatorics import spread, unspread
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 @given(st.data())
 def test_spread_unspread(data):
 	seq = data.draw(st.lists(

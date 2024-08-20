@@ -3,15 +3,14 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Union
 
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
-LogBase = Union[int, float]
-Real = Union[int, float]
-Numeric = Union[int, float, complex]
-NumericSeq = Union[Sequence[Numeric], ArrayLike]
+LogBase = int | float
+Real = int | float
+Numeric = int | float | complex
+NumericSeq = Sequence[Numeric] | ArrayLike
 
 
 phi = (1 + np.sqrt(5)) / 2
@@ -74,6 +73,7 @@ def rescale(seq: NumericSeq, old, new):
 
 	>>> rescale(np.arange(-3, 4), 4, 12)
 	array([-9., -6., -3.,  0.,  3.,  6.,  9.])
+
 	"""
 	amax = np.amax(seq, initial=0)
 	assert amax < old, f'Expected max {amax} to be less than {old}.'

@@ -37,18 +37,22 @@ degen_codons = inverse_od(inv_degen_codons)
 
 
 def snp_to_degen(codons: list[str]) -> str:
-	"""Convert a list of single nucleotide molymorphic (SNP) codons to a degenerate codon.
+	"""Convert a list of SNP* codons to a degenerate codon.
+
+	* = single nucleotide polymorphic
 
 	>>> snp_to_degen(['ACG', 'ACA', 'ACC', 'ACT'])
 	'ACN'
 	>>> snp_to_degen(['ATA', 'ATC', 'ATT'])
 	'ATH'
+
 	"""
 	transposed = [str_join(list(g)) for g in mit.unzip(codons)]
 
 	# Assert SNP property of the codons
 	length_check = set(sorted([len(set(g)) for g in transposed])[:-1])
-	assert length_check == {1}, f'Codons should differ in only one position, got: {codons}'
+	err_msg = f'Codons should differ in only one position, got: {codons}'
+	assert length_check == {1}, err_msg
 
 	return str_join([compress_dntset(set(bases)) for bases in transposed])
 
@@ -58,8 +62,13 @@ def create_degen_to_amino_map(table: int=1) -> str:
 	"""Get a mapping for degenerate codon to an amino acid conversion."""
 	aminos = STANDARD_TABLES[table].raw
 	codons = STANDARD_CODONS
-	iterable = zip(aminos, codons)
-	grouper = mit.groupby_transform(iterable, itemgetter(0), itemgetter(1), snp_to_degen)
+	iterable = zip(aminos, codons, strict=False)
+	grouper = mit.groupby_transform(
+		iterable,
+		itemgetter(0),
+		itemgetter(1),
+		snp_to_degen
+	)
 
 	# TODO Handle degenerate B, J, and Z amino acid IUPAC codes:
 	# Update degenerate_amino on convert.amino to handle all tables
@@ -104,5 +113,5 @@ def num_to_degen(code: int) -> str:
 
 def degeneracy(degen: str):
 	"""Degree of degeneracy for a degenerate codon."""
-	degree = np.product([dnt_degree(dnt) for dnt in degen])
+	degree = np.prod([dnt_degree(dnt) for dnt in degen])
 	return degree
