@@ -46,6 +46,7 @@ dev = [
     "types-Pillow>=9.4.0.17",
     "pytest>=7.2.2",
     "hypothesis>=6.68.2",
+    "tox>=4.18.0",
 ]
 
 [tool.pdm.scripts]
