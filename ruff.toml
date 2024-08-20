@@ -2,6 +2,9 @@ target-version = "py310"
 src = ["src"]
 exclude = []
 
+[format]
+indent-style = "tab"
+
 [lint]
 select = [
 	"E", "F", "W",	# flake8
@@ -16,7 +19,7 @@ select = [
 	"G",	# flake8-logging-format
 	"I",	# isort
 	"ICN",	# flake8-import-conventions
-	"ISC",	# flake8-implicit-str-concat
+	# "ISC",	# flake8-implicit-str-concat
 	"NPY",	# NumPy specific rules
 	"PD",	# pandas-vet
 	"PGH",	# pygrep-hooks
@@ -43,6 +46,7 @@ extend-ignore = [
 	# "PLR",	# Design related pylint codes
 	# "PT004",	# Use underscore for non-returning fixture (use usefixture instead)
 	"RET504",	# Unnecessary variable assignment before return statement
+	"W191",	# Indentation contains tabs
 ]
 typing-modules = ["serpent.typing"]
 unfixable = [
