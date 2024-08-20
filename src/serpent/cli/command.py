@@ -6,9 +6,9 @@ from __future__ import annotations
 
 import fileinput
 import itertools as itr
-import os
 import sys
 from collections import Counter
+from pathlib import Path
 
 import argh
 import matplotlib.pyplot as plt
@@ -413,7 +413,7 @@ def image(
 
 	if not width:
 		channels = 3 if mode == 'Q' else len(mode)
-		file_size = os.path.getsize(filename)
+		file_size = Path(filename).stat().st_size
 		width = autowidth_for(file_size, amino, channels)
 		echo(f'Automatically set image width: {width} px')
 
@@ -461,8 +461,16 @@ def pulse(
 		wait_user()
 	else:
 		for sequence in seqs:
-			[aminos, descriptions] = dna.decode_seq(sequence, amino, table, degen, dna.to_amino)
-			pulses, height, scale = quasar_pulses(aminos, cumulative=cumulative, key=key)
+			[aminos, descriptions] = dna.decode_seq(
+				sequence,
+				amino, table, degen,
+				dna.to_amino
+			)
+			pulses, height, scale = quasar_pulses(
+				aminos,
+				cumulative=cumulative,
+				key=key
+			)
 
 			yield from descriptions
 			yield from pulse_text(pulses, height, scale)
@@ -636,7 +644,10 @@ def tide(
 				cumulative=cumulative,
 				slopes=slopes,
 			)
-			ewa = np.array([ewma(tide, alpha=0.1, window_size=ref) for tide in tides.T]).T
+			ewa = np.array([
+				ewma(tide, alpha=0.1, window_size=ref)
+				for tide in tides.T
+			]).T
 			yield f'ewa:\t{ewa.shape}'
 			plot_tides(ewa, symbols, alpha)
 			tide_total(ewa, norm=norm, color='#000000' + alpha)
@@ -723,7 +734,10 @@ def walk(
 		seql = seql if length else max([1, len(data) // seql])
 
 		if test:
-			path = walk_sequence(data, seql=1, step=1, degen=degen, norm=norm, unit=unit)
+			path = walk_sequence(
+				data, seql=1, step=1,
+				degen=degen, norm=norm, unit=unit
+			)
 			plt.plot(*path, color='#0ff7')
 
 		path = walk_sequence(data, seql, step, degen=degen, norm=norm, unit=unit)

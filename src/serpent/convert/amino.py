@@ -46,24 +46,21 @@ def num_to_amino(number: int, table: int=1) -> str:
 	return codon_to_amino(codon, table)
 
 
-aminos = OrderedDict([
-	(num, amino) for (num, amino)
-	in enumerate(genetic_code_inverse[1])
-])
+aminos = OrderedDict(list(enumerate(genetic_code_inverse[1])))
 
 aminos_inverse = inverse_od(aminos)
 
 
+# ruff: noqa: ARG001 # Unused function argument: `table`
 def decode_aminos(
 	dna,
-	table=1
+	# table=1
 ):
 	"""Decode amino acid data.
 
 	Uses given nucleotide base order and genetic code translation table.
 	"""
-	# TODO Use tables?
-	table
+	# TODO Use genetic code tables?
 	# return map_array(lambda d: amino_to_num(d, table), dna)
 	return map_array(lambda a: aminos_inverse.get(a, 0), dna)
 

@@ -19,7 +19,7 @@ def encode_data(data, fmt, amino=False, table=1, degen=False):
 	yield from encoded
 
 
-
+# ruff: noqa: PLR0913 # Too many arguments in function definition
 def encode_sequences(
 	seqs, width, fmt,
 	*,

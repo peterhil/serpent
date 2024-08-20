@@ -5,7 +5,6 @@ from __future__ import annotations
 from collections import OrderedDict
 from functools import reduce
 from operator import or_
-from typing import Union
 
 from serpent.fun import inverse_od, second, str_join
 from serpent.math.bits import popcount
@@ -14,7 +13,7 @@ from serpent.settings import BASE_ORDER
 
 Dnt = str
 DntBits = int
-DntSet = Union[set, str]
+DntSet = set | str
 
 def is_degenerate(nts: str, bases: str=BASE_ORDER) -> bool:
 	"""Return true if any nucleotide is degenerate in the given string.

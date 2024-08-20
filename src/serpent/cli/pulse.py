@@ -50,6 +50,7 @@ def pulse_plot_symbols_legend(ax, key, colours, width, height):
 		)
 
 
+# ruff: noqa: PLR0913 # Too many arguments in function definition
 def pulse_plot_sequences(
 	ax, seqs, key,
 	*,
@@ -75,8 +76,8 @@ def pulse_plot_sequences(
 
 			if count:
 				sorted_pulse = pulse_plot_counts(ax, pulse, colour, base=10)
-				for repeat, count in sorted_pulse.T:
-					sum_pulses[repeat] += count
+				for repeat, counted in sorted_pulse.T:
+					sum_pulses[repeat] += counted
 			else:
 				pulse_plot(ax, pulse, colour, symbol=aa, y_offset=pos * 100)
 

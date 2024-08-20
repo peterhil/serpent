@@ -53,6 +53,7 @@ def file_extension_for(fmt: str = 'codon'):
 	return extension
 
 
+# ruff: noqa: PLR0913 # Too many arguments in function definition
 def image_name_for(
 	filename, width=0, mode='RGB',
 	*,
@@ -90,6 +91,8 @@ def write_iterable(lines, outfile):
 
 
 def openfile(filename):
+	"""Open stdin or a file to be used in a context handler."""
+	# ruff: noqa: SIM115
 	return stdin if filename == '-' else Path(filename).open("r", encoding="UTF-8")
 
 

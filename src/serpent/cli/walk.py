@@ -7,6 +7,7 @@ from serpent.convert.quad import dna_to_quad
 from serpent.math.basic import normalise
 
 
+# ruff: noqa: PLR0913 # Too many arguments in function definition
 def walk_sequence(
 	data,
 	seql,

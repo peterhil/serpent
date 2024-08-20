@@ -8,6 +8,7 @@ from serpent.visual.bitmap import decoded_to_pixels
 from serpent.visual.block_elements import pixels_to_blocks, pixels_to_verbose_blocks
 
 
+# ruff: noqa: PLR0913 # Too many arguments in function definition
 def flow_blocks(
 	data, width=64, mode='RGB',
 	*,
@@ -18,6 +19,7 @@ def flow_blocks(
 	yield from pixels_to_blocks(pixels, width, mode=mode)
 
 
+# ruff: noqa: PLR0913 # Too many arguments in function definition
 def verbose_flow_blocks(
 	data, width=64, mode='RGB', fmt=None,
 	*,

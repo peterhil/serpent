@@ -17,7 +17,8 @@ def fft_spectra(decoded, n=None, *, norm='forward', **kwargs):
 	n = n or len(decoded)
 
 	dft = fft.rfft(decoded, n=n, norm=norm, **kwargs)
-	norm_freqs = fft.rfftfreq(n)  # Could use fftfreq(n, d=1/n) to directly get the freqs
+	# Could use fftfreq(n, d=1/n) to directly get the freqs
+	norm_freqs = fft.rfftfreq(n)
 
 	# Limit to positive frequencies (0 is DC, n / 2 is the Nyquist frequency)
 	positive = slice(1, n // 2)

@@ -25,7 +25,10 @@ def test_decode_degen():
 	('ACGTUWYS', ('ACGTU', 'WYS')),
 ])
 def test_cleaned_and_residual_base(data, expected):
-	actual = tuple(map(str_join, dna.cleaned_and_residual(data, amino=False, degen=False)))
+	actual = tuple(map(
+		str_join,
+		dna.cleaned_and_residual(data, amino=False, degen=False)
+	))
 	assert actual == expected
 
 
@@ -33,7 +36,10 @@ def test_cleaned_and_residual_base(data, expected):
 	(BASE + DEGENERATE + 'J?', (BASE + DEGENERATE, 'J?')),
 ])
 def test_cleaned_and_residual_base_degen(data, expected):
-	actual = tuple(map(str_join, dna.cleaned_and_residual(data, amino=False, degen=True)))
+	actual = tuple(map(
+		str_join,
+		dna.cleaned_and_residual(data, amino=False, degen=True)
+	))
 	assert actual == expected
 
 
@@ -42,5 +48,8 @@ def test_cleaned_and_residual_base_degen(data, expected):
 	('WAGMIGTSLSLIIRTELGNPS', ('WAGMIGTSLSLIIRTELGNPS', '')),
 ])
 def test_cleaned_and_residual_amino(data, expected):
-	actual = tuple(map(str_join, dna.cleaned_and_residual(data, amino=True, degen=False)))
+	actual = tuple(map(
+		str_join,
+		dna.cleaned_and_residual(data, amino=True, degen=False)
+	))
 	assert actual == expected
