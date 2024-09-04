@@ -31,6 +31,21 @@ class ZigzagState:
 	def total(self):
 		return len(self.inputs) or 1
 
+	def key(self, key):
+		if key is None:
+			return
+
+		self.dirty = True
+		match key:
+			case 'n':
+				self.next_input()
+			case 'p':
+				self.prev_input()
+			case '-':
+				self.width -= 1
+			case '+':
+				self.width += 1
+
 	def next_input(self):
 		self.file_no = (self.file_no + 1) % self.total
 		self.page_no = 0
@@ -112,17 +127,7 @@ def zigzag_blocks(
 				sys.stdout.flush()
 				state.dirty = False
 
-			key = term.inkey(timeout=None)
-			if key:
-				state.dirty = True
-			match key:
-				case 'n':
-					state.next_input()
-				case 'p':
-					state.prev_input()
-				case '-':
-					state.width -= 1
-				case '+':
-					state.width += 1
-				case 'q':
+			if key := term.inkey(timeout=None):
+				if key == 'q':
 					break
+				state.key(key)
