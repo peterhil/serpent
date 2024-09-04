@@ -659,7 +659,7 @@ def tide(
 @arg('--amino',  '-a', help='Amino acid input')
 @arg('--table',  '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen',  '-g', help='Degenerate data')
-@arg('--split',  '-s', help='Split by stop aNd/oR start codons', choices=('n', 'r'))
+@arg('--split',  '-s', help='Split by stop and start codons', choices=('f', 'n', 'r'))
 @aliases('vec')
 def vectors(filename, split='', amino=False, table=1, degen=False):
 	"""Spatial visualisation of amino acids in 3D vector space."""
@@ -676,9 +676,6 @@ def vectors(filename, split='', amino=False, table=1, degen=False):
 
 		if split:
 			for peptide in split_aminos(aminos, split=split):
-				# TODO Does it occur often that start and stop codons are next
-				# to each other, and what does it mean? (Stop not interpreted
-				# as stop, but amino acid?)
 				if len(peptide) == 0:
 					continue
 				dirs = amino_path_3d(peptide)
