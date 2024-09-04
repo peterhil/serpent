@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import blessed
 
 from serpent import dna
+from serpent.fun import str_join
 from serpent.io.fasta import auto_select_amino, descriptions_and_data, read_sequences
 from serpent.io.files import check_paths
 from serpent.visual.bitmap import decoded_to_pixels
@@ -17,6 +18,7 @@ class ZigzagState:
 	"""Dataclass for keeping track of the zigzag state."""
 
 	inputs: list[str]
+	width: int = 80
 	dirty: bool = True
 	file_no: int = 0
 	page_no: int = 0
@@ -45,9 +47,10 @@ def page(
 	term,
 	state,
 	*,
-	width=64, mode='RGB',
+	mode='RGB',
 	amino=False, degen=False, table=1,
 ):
+	width = state.width
 	height = term.height - 1
 	filename = state.current_input
 
@@ -63,8 +66,12 @@ def page(
 
 def status(term, state):
 	left_txt = f'file ({state.file_no + 1} / {state.total}): {state.current_input}'
-	right_txt = f'term {term.width}x{term.height}; ' + \
-		f'{term.number_of_colors} colors - ?: help'
+	right_txt = str_join([
+		f'term {term.width}x{term.height}',
+		f'width {state.width}',
+		# f'{term.number_of_colors} colors',
+		# '?: help',
+	], '; ')
 	return (
 		term.normal +
 		term.white_on_purple + term.clear_eol +
@@ -78,13 +85,14 @@ def status(term, state):
 def zigzag_blocks(
 	inputs,
 	*,
-	width=64, mode='RGB',
+	width=80, mode='RGB',
 	amino=False, degen=False, table=1,
 ):
 	"""Browse DNA data as text paged into variable line widths."""
 	term = blessed.Terminal()
 	state = ZigzagState(
-		inputs = [*map(str, check_paths(inputs))]
+		inputs = [*map(str, check_paths(inputs))],
+		width=width
 	)
 
 	with term.cbreak(), term.hidden_cursor(), term.fullscreen():
@@ -95,7 +103,6 @@ def zigzag_blocks(
 				yield from page(
 					term,
 					state,
-					width=width,
 					mode=mode,
 					amino=amino,
 					degen=degen,
@@ -106,9 +113,15 @@ def zigzag_blocks(
 				state.dirty = False
 
 			key = term.inkey(timeout=None)
+			if key:
+				state.dirty = True
 			if key == 'n':
 				state.next_input()
 			elif key == 'p':
 				state.prev_input()
+			elif key == '-':
+				state.width -= 1
+			elif key == '+':
+				state.width += 1
 			elif key == 'q':
 				break
