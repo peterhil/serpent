@@ -11,6 +11,7 @@ import numpy as np
 
 from serpent.io.files import check_paths
 from serpent.math.basic import rescale
+from serpent.visual import ansi
 from serpent.visual.block_elements import HALF_BLOCK
 
 
@@ -65,9 +66,13 @@ def screen_page(term, render_fn, t):
 	result = ''
 	for y in range(term.height - 1):
 		for x in range(term.width):
-			fg = term.color_rgb(*render_fn(term, x, y, t))
-			bg = term.on_color_rgb(*render_fn(term, x, y, t + 1))
-			result += bg + fg + HALF_BLOCK
+			# fg = term.color_rgb(*render_fn(term, x, y, t))
+			# bg = term.on_color_rgb(*render_fn(term, x, y, t + 1))
+			# result += fg + bg + HALF_BLOCK
+			fg = render_fn(term, x, y, t)
+			bg = render_fn(term, x, y, t + 1)
+			colours = ansi.rgb(fg, bg)
+			result += colours + HALF_BLOCK
 	return result
 
 

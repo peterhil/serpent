@@ -36,15 +36,15 @@ def colour_code(*rgb, bg=False):
 
 
 def rgb(front=None, back=None):
-	fg = colour_code(*front) if front else ''
-	bg = colour_code(*back, bg=True) if back else ''
+	fg = '' if front is None else colour_code(*front)
+	bg = '' if back is None else colour_code(*back, bg=True)
 
 	return sgr(str_join([fg, bg], ';'))
 
 
 def grey(front=None, back=None):
-	fg = colour_code(*(front, front, front)) if front else ''
-	bg = colour_code(*(back, back, back), bg=True) if back else ''
+	fg = '' if front is None else colour_code(*(front, front, front))
+	bg = '' if back is None else colour_code(*(back, back, back), bg=True)
 
 	return sgr(str_join([fg, bg], ';'))
 
