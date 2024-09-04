@@ -5,12 +5,10 @@ from dataclasses import dataclass
 
 import blessed
 
-from serpent import dna
+from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.fun import str_join
 from serpent.io.fasta import auto_select_amino, descriptions_and_data, read_sequences
 from serpent.io.files import check_paths
-from serpent.visual.bitmap import decoded_to_pixels
-from serpent.visual.block_elements import pixels_to_blocks
 
 
 @dataclass
@@ -23,6 +21,7 @@ class ZigzagState:
 	file_no: int = 0
 	page_no: int = 0
 	# last_key: str = ''
+	verbose: bool = False
 
 	@property
 	def current_input(self):
@@ -52,6 +51,8 @@ class ZigzagState:
 				self.width -= 9
 			case ':':
 				self.width += 9
+			case 'v':
+				self.verbose = not self.verbose
 
 	def next_input(self):
 		self.file_no = (self.file_no + 1) % self.total
@@ -69,7 +70,7 @@ def page(
 	term,
 	state,
 	*,
-	mode='RGB',
+	mode='RGB', fmt=None,
 	amino=False, degen=False, table=1,
 ):
 	width = state.width
@@ -81,9 +82,18 @@ def page(
 
 	for sequence in seqs:
 		[descriptions, data] = descriptions_and_data(sequence)
-		decoded = dna.decode(data, amino, table, degen)
-		pixels = decoded_to_pixels(decoded, mode, amino, degen)
-		yield from pixels_to_blocks(pixels, width=width, height=height, mode=mode)
+
+		if state.verbose:
+			yield from descriptions
+			yield from verbose_flow_blocks(
+				data, width, mode, fmt,
+				height=height,
+				amino=amino, degen=degen, table=table)
+		else:
+			yield from flow_blocks(
+				data, width, mode,
+				height=height,
+				amino=amino, degen=degen, table=table)
 
 
 def status(term, state):
@@ -108,14 +118,16 @@ def status(term, state):
 def zigzag_blocks(
 	inputs,
 	*,
-	width=80, mode='RGB',
+	width=80, mode='RGB', fmt=None,
 	amino=False, degen=False, table=1,
+	verbose=False,
 ):
 	"""Browse DNA data as text paged into variable line widths."""
 	term = blessed.Terminal()
 	state = ZigzagState(
 		inputs = [*map(str, check_paths(inputs))],
-		width=width
+		width=width,
+		verbose=verbose,
 	)
 
 	with term.cbreak(), term.hidden_cursor(), term.fullscreen():
@@ -127,6 +139,7 @@ def zigzag_blocks(
 					term,
 					state,
 					mode=mode,
+					fmt=fmt,
 					amino=amino,
 					degen=degen,
 					table=table,

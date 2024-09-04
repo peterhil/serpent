@@ -13,10 +13,11 @@ def flow_blocks(
 	data, width=64, mode='RGB',
 	*,
 	amino=False, degen=False, table=1,
+	height: int | None=None,
 ):
 	decoded = dna.decode(data, amino, table, degen)
 	pixels = decoded_to_pixels(decoded, mode, amino, degen)
-	yield from pixels_to_blocks(pixels, width, mode=mode)
+	yield from pixels_to_blocks(pixels, width, height=height, mode=mode)
 
 
 # ruff: noqa: PLR0913 # Too many arguments in function definition
@@ -24,6 +25,7 @@ def verbose_flow_blocks(
 	data, width=64, mode='RGB', fmt=None,
 	*,
 	amino=False, degen=False, table=1,
+	height: int | None=None,
 ):
 	decoded = dna.decode(data, amino, table, degen)
 
@@ -43,5 +45,5 @@ def verbose_flow_blocks(
 	repeat = 3 * len(mode) if fmt in ['c', 'codon'] else len(mode)
 
 	yield from pixels_to_verbose_blocks(
-		pixels, text, width, mode=mode, repeat=repeat
+		pixels, text, width, height=height, mode=mode, repeat=repeat
 	)
