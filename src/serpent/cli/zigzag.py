@@ -1,14 +1,10 @@
 from __future__ import annotations
 
-import sys
 from dataclasses import dataclass
-
-import blessed
 
 from serpent.cli.flow import flow_blocks, verbose_flow_blocks
 from serpent.fun import str_join
 from serpent.io.fasta import auto_select_amino, descriptions_and_data, read_sequences
-from serpent.io.files import check_paths
 
 
 @dataclass
@@ -66,7 +62,7 @@ class ZigzagState:
 
 
 # ruff: noqa: PLR0913 # Too many arguments in function definition
-def page(
+def zigzag_page(
 	term,
 	state,
 	*,
@@ -96,7 +92,7 @@ def page(
 				amino=amino, degen=degen, table=table)
 
 
-def status(term, state):
+def zigzag_status(term, state):
 	left_txt = f'file ({state.file_no + 1}/{state.total}): {state.current_input}'
 	right_txt = str_join([
 		f'term {term.width}x{term.height}',
@@ -112,43 +108,3 @@ def status(term, state):
 		term.rjust(right_txt, term.width - len(left_txt)) +
 		term.normal
 	)
-
-
-# ruff: noqa: PLR0913 # Too many arguments in function definition
-def zigzag_blocks(
-	inputs,
-	*,
-	width=80, mode='RGB', fmt=None,
-	amino=False, degen=False, table=1,
-	verbose=False,
-):
-	"""Browse DNA data as text paged into variable line widths."""
-	term = blessed.Terminal()
-	state = ZigzagState(
-		inputs = [*map(str, check_paths(inputs))],
-		width=width,
-		verbose=verbose,
-	)
-
-	with term.cbreak(), term.hidden_cursor(), term.fullscreen():
-		state.dirty = True
-		while True:
-			if state.dirty:
-				yield term.clear
-				yield from page(
-					term,
-					state,
-					mode=mode,
-					fmt=fmt,
-					amino=amino,
-					degen=degen,
-					table=table,
-				)
-				yield status(term, state)
-				sys.stdout.flush()
-				state.dirty = False
-
-			if key := term.inkey(timeout=None):
-				if key == 'q':
-					break
-				state.key(key)

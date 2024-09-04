@@ -11,6 +11,7 @@ from collections import Counter
 from pathlib import Path
 
 import argh
+import blessed
 import matplotlib.pyplot as plt
 import numpy as np
 from argh.decorators import aliases, arg, wrap_errors
@@ -29,7 +30,7 @@ from serpent.cli.pulse import (
 from serpent.cli.quasar import dna_quasar_seq
 from serpent.cli.tide import plot_tides, tide_sequence, tide_total
 from serpent.cli.walk import walk_sequence
-from serpent.cli.zigzag import zigzag_blocks
+from serpent.cli.zigzag import ZigzagState, zigzag_page, zigzag_status
 from serpent.convert.amino import aa_tables, aminos_for_table
 from serpent.convert.dnt import is_degenerate
 from serpent.convert.split import split_aminos, split_encoded
@@ -221,29 +222,6 @@ def find(*inputs, num=False, seq=False):
 @arg('--amino', '-a', help='Amino acid input')
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen', '-g', help='Degenerate data')
-@arg('--fmt',   '-f', help='Output format', choices=fmt_choices)
-@arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L', 'P'))
-@arg('--width', '-w', help='Line width', type=int)
-@aliases('zz')
-@wrap_errors(wrapped_errors)
-def zigzag(
-	*inputs,
-	width=80,
-	mode='RGB', fmt=None,
-	amino=False, degen=False, table=1,
-	verbose=False,
-):
-	"""Browse DNA data paged into variable line widths."""
-	yield from zigzag_blocks(
-		inputs,
-		amino=amino, degen=degen, table=table,
-		mode=mode, fmt=fmt, width=width, verbose=verbose,
-	)
-
-
-@arg('--amino', '-a', help='Amino acid input')
-@arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
-@arg('--degen', '-g', help='Degenerate data')
 @wrap_errors(wrapped_errors)
 def decode(filename, amino=False, degen=False, table=1):
 	"""Decode DNA data into numbers."""
@@ -404,6 +382,49 @@ def flow(
 				yield from flow_blocks(
 					data, width, mode,
 					amino=amino, degen=degen, table=table)
+
+
+@arg('--amino', '-a', help='Amino acid input')
+@arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen', '-g', help='Degenerate data')
+@arg('--fmt',   '-f', help='Output format', choices=fmt_choices)
+@arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L', 'P'))
+@arg('--width', '-w', help='Line width', type=int)
+@aliases('zz')
+@wrap_errors(wrapped_errors)
+def zigzag(
+	*inputs,
+	width=80,
+	mode='RGB', fmt=None,
+	amino=False, degen=False, table=1,
+	verbose=False,
+):
+	"""Browse DNA data paged into variable line widths."""
+	term = blessed.Terminal()
+	state = ZigzagState(
+		inputs = [*map(str, check_paths(inputs))],
+		width=width,
+		verbose=verbose,
+	)
+
+	with term.cbreak(), term.hidden_cursor(), term.fullscreen():
+		state.dirty = True
+		while True:
+			if state.dirty:
+				yield term.clear
+				yield from zigzag_page(
+					term, state,
+					mode=mode, fmt=fmt,
+					amino=amino, degen=degen, table=table,
+				)
+				yield zigzag_status(term, state)
+				sys.stdout.flush()
+				state.dirty = False
+
+			if key := term.inkey(timeout=None):
+				if key == 'q':
+					break
+				state.key(key)
 
 
 @arg('--amino',  '-a', help='Amino acid input')
