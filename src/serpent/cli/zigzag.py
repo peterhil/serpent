@@ -115,13 +115,14 @@ def zigzag_blocks(
 			key = term.inkey(timeout=None)
 			if key:
 				state.dirty = True
-			if key == 'n':
-				state.next_input()
-			elif key == 'p':
-				state.prev_input()
-			elif key == '-':
-				state.width -= 1
-			elif key == '+':
-				state.width += 1
-			elif key == 'q':
-				break
+			match key:
+				case 'n':
+					state.next_input()
+				case 'p':
+					state.prev_input()
+				case '-':
+					state.width -= 1
+				case '+':
+					state.width += 1
+				case 'q':
+					break
