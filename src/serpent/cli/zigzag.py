@@ -22,6 +22,7 @@ class ZigzagState:
 	dirty: bool = True
 	file_no: int = 0
 	page_no: int = 0
+	# last_key: str = ''
 
 	@property
 	def current_input(self):
@@ -34,6 +35,8 @@ class ZigzagState:
 	def key(self, key):
 		if key is None:
 			return
+		# else:
+		# 	self.last_key = key
 
 		self.dirty = True
 		match key:
@@ -41,10 +44,14 @@ class ZigzagState:
 				self.next_input()
 			case 'p':
 				self.prev_input()
-			case '-':
+			case ',':
 				self.width -= 1
-			case '+':
+			case '.':
 				self.width += 1
+			case ';':
+				self.width -= 9
+			case ':':
+				self.width += 9
 
 	def next_input(self):
 		self.file_no = (self.file_no + 1) % self.total
@@ -80,10 +87,11 @@ def page(
 
 
 def status(term, state):
-	left_txt = f'file ({state.file_no + 1} / {state.total}): {state.current_input}'
+	left_txt = f'file ({state.file_no + 1}/{state.total}): {state.current_input}'
 	right_txt = str_join([
 		f'term {term.width}x{term.height}',
 		f'width {state.width}',
+		# f'key {state.last_key}',
 		# f'{term.number_of_colors} colors',
 		# '?: help',
 	], '; ')
