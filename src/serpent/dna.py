@@ -1,7 +1,6 @@
 """DNA and codons data handling."""
 from __future__ import annotations
 
-import sys
 from collections.abc import Callable, Iterable, Iterator, Sequence
 
 import more_itertools as mit
@@ -162,8 +161,8 @@ def clean_non_dna(
 	if residual.peek(''):
 		err(f'Residual characters: {str_join([*residual])}')
 		if not degen:
-			err('Try again with the --degen / -g option.')
-			sys.exit(1)
+			err_msg = 'Try again with the --degen / -g option.'
+			raise AssertionError(err_msg)
 
 	yield from (cleaned, residual)
 

@@ -29,7 +29,7 @@ from serpent.cli.pulse import (
 from serpent.cli.quasar import dna_quasar_seq
 from serpent.cli.tide import plot_tides, tide_sequence, tide_total
 from serpent.cli.walk import walk_sequence
-from serpent.cli.zigzag import zigzag_blocks, zigzag_text
+from serpent.cli.zigzag import zigzag_blocks
 from serpent.convert.amino import aa_tables, aminos_for_table
 from serpent.convert.dnt import is_degenerate
 from serpent.convert.split import split_aminos, split_encoded
@@ -218,15 +218,23 @@ def find(*inputs, num=False, seq=False):
 			yield from find_fasta_files(fi)
 
 
-@arg('--text', '-x', help='Page as text')
+@arg('--amino', '-a', help='Amino acid input')
+@arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen', '-g', help='Degenerate data')
+@arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L', 'P'))
 @aliases('zz')
 @wrap_errors(wrapped_errors)
-def zigzag(*inputs, text=False):
+def zigzag(
+	*inputs,
+	amino=False, degen=False, table=1,
+	mode='RGB',
+):
 	"""Browse DNA data paged into variable line widths."""
-	if text:
-		zigzag_text(inputs)
-	else:
-		zigzag_blocks(inputs)
+	yield from zigzag_blocks(
+		inputs,
+		amino=amino, table=table, degen=degen,
+		mode=mode,
+	)
 
 
 @arg('--amino', '-a', help='Amino acid input')

@@ -1,18 +1,20 @@
 from __future__ import annotations
 
 import colorsys
-import fileinput
 import math
-import sys
 from dataclasses import dataclass
 
 import blessed
 import numpy as np
 
+from serpent import dna
+from serpent.fun import str_join
+from serpent.io.fasta import auto_select_amino, descriptions_and_data, read_sequences
 from serpent.io.files import check_paths
 from serpent.math.basic import rescale
 from serpent.visual import ansi
-from serpent.visual.block_elements import HALF_BLOCK
+from serpent.visual.bitmap import decoded_to_pixels
+from serpent.visual.block_elements import HALF_BLOCK, pixels_to_blocks
 
 
 @dataclass
@@ -76,9 +78,30 @@ def screen_page(term, render_fn, t):
 	return result
 
 
+# ruff: noqa: PLR0913 # Too many arguments in function definition
+def page(
+	term,
+	state,
+	*,
+	width=64, mode='RGB',
+	amino=False, degen=False, table=1,
+):
+	height = term.height - 1
+	filename = state.current_input
+
+	amino = auto_select_amino(filename, amino)
+	seqs = read_sequences(filename, amino)
+
+	for sequence in seqs:
+		[descriptions, data] = descriptions_and_data(sequence)
+		decoded = dna.decode(data, amino, table, degen)
+		pixels = decoded_to_pixels(decoded, mode, amino, degen)
+		yield from pixels_to_blocks(pixels, width, height=height, mode=mode)
+
+
 def status(term, state):
 	left_txt = f'file ({state.file_no + 1} / {state.total}): {state.current_input}'
-	right_txt = f'{term.number_of_colors} colors - ?: help'
+	right_txt = f'width {term.width}; {term.number_of_colors} colors - ?: help'
 	return (
 		'\n' + term.normal +
 		term.white_on_purple + term.clear_eol +
@@ -87,7 +110,13 @@ def status(term, state):
 	)
 
 
-def zigzag_blocks(inputs):
+# ruff: noqa: PLR0913 # Too many arguments in function definition
+def zigzag_blocks(
+	inputs,
+	*,
+	width=64, mode='RGB',
+	amino=False, degen=False, table=1,
+):
 	"""Browse DNA data as text paged into variable line widths."""
 	term = blessed.Terminal()
 	state = ZigzagState(
@@ -99,28 +128,25 @@ def zigzag_blocks(inputs):
 		while True:
 			if state.dirty:
 				outp = term.home
-				outp += screen_page(term, rgb_at_xy, state.file_no)
+				outp += str_join(page(
+					term,
+					state,
+					width=width,
+					mode=mode,
+					amino=amino,
+					degen=degen,
+					table=table,
+				))
 				outp += status(term, state)
-				print(outp, end='')
-				sys.stdout.flush()
+				# print(outp, end='')
+				# sys.stdout.flush()
+				yield outp
 				state.dirty = False
 
 			key = term.inkey(timeout=None)
-			if key == ' ':
+			if key == 'n':
 				state.next_input()
-			elif key == 'b':
+			elif key == 'p':
 				state.prev_input()
 			elif key == 'q':
 				break
-
-
-def zigzag_text(inputs):
-	"""Browse DNA data as text paged into variable line widths."""
-	inputs = check_paths(inputs)
-
-	# Read files in binary mode
-	with fileinput.input(inputs, mode='rb') as fi:
-		while (line := fi.readline()):
-			if fi.isstdin():
-				print('STDIN: ' , end='')
-			print(str(line, encoding='UTF-8', errors='surrogateescape'), end='')
