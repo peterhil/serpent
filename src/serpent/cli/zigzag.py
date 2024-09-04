@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass
 
 import blessed
 
 from serpent import dna
-from serpent.fun import str_join
 from serpent.io.fasta import auto_select_amino, descriptions_and_data, read_sequences
 from serpent.io.files import check_paths
 from serpent.visual.bitmap import decoded_to_pixels
@@ -58,17 +58,19 @@ def page(
 		[descriptions, data] = descriptions_and_data(sequence)
 		decoded = dna.decode(data, amino, table, degen)
 		pixels = decoded_to_pixels(decoded, mode, amino, degen)
-		yield from pixels_to_blocks(pixels, width, height=height, mode=mode)
+		yield from pixels_to_blocks(pixels, width=width, height=height, mode=mode)
 
 
 def status(term, state):
 	left_txt = f'file ({state.file_no + 1} / {state.total}): {state.current_input}'
-	right_txt = f'width {term.width}; {term.number_of_colors} colors - ?: help'
+	right_txt = f'term {term.width}x{term.height}; ' + \
+		f'{term.number_of_colors} colors - ?: help'
 	return (
-		'\n' + term.normal +
+		term.normal +
 		term.white_on_purple + term.clear_eol +
 		left_txt +
-		term.rjust(right_txt, term.width - len(left_txt))
+		term.rjust(right_txt, term.width - len(left_txt)) +
+		term.normal
 	)
 
 
@@ -89,8 +91,8 @@ def zigzag_blocks(
 		state.dirty = True
 		while True:
 			if state.dirty:
-				outp = term.home
-				outp += str_join(page(
+				yield term.clear
+				yield from page(
 					term,
 					state,
 					width=width,
@@ -98,11 +100,9 @@ def zigzag_blocks(
 					amino=amino,
 					degen=degen,
 					table=table,
-				))
-				outp += status(term, state)
-				# print(outp, end='')
-				# sys.stdout.flush()
-				yield outp
+				)
+				yield status(term, state)
+				sys.stdout.flush()
 				state.dirty = False
 
 			key = term.inkey(timeout=None)

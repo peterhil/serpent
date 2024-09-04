@@ -222,18 +222,19 @@ def find(*inputs, num=False, seq=False):
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen', '-g', help='Degenerate data')
 @arg('--mode',  '-m', help='Image mode', choices=('RGB', 'L', 'P'))
+@arg('--width', '-w', help='Line width', type=int)
 @aliases('zz')
 @wrap_errors(wrapped_errors)
 def zigzag(
 	*inputs,
 	amino=False, degen=False, table=1,
-	mode='RGB',
+	mode='RGB', width=80,
 ):
 	"""Browse DNA data paged into variable line widths."""
 	yield from zigzag_blocks(
 		inputs,
 		amino=amino, table=table, degen=degen,
-		mode=mode,
+		mode=mode, width=width,
 	)
 
 
