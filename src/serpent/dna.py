@@ -87,6 +87,7 @@ def _decoded_array(decoded: Iterable, degen: bool=False) -> NDArray:
 	return decoded
 
 
+# ruff: noqa: ARG001 # Unused function argument: `table`
 def decode_iter(
 	dna: Iterable,
 	amino: bool=False,
@@ -102,7 +103,10 @@ def decode_iter(
 	[dna, residual] = clean_non_dna(dna, amino, degen)
 
 	if amino:
-		return decode_aminos(dna, table)
+		return decode_aminos(
+			dna,
+			# table  # TODO Use tables and handle degenerate symbols
+		)
 
 	if degen:
 		# Handle degenerate data as individual symbols in base 16
