@@ -28,12 +28,11 @@ class ZigzagState:
 		return len(self.inputs) or 1
 
 	def key(self, key):
-		if key is None:
-			return
-		# else:
-		# 	self.last_key = key
+		dirty_keys = 'np,.;:v'
 
-		self.dirty = True
+		if key in dirty_keys:
+			self.dirty = True
+
 		match key:
 			case 'n':
 				self.next_input()
