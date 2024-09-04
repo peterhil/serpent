@@ -6,20 +6,19 @@ from serpent.convert.genetic_code import STANDARD_TABLES
 
 
 def splitter_for(start, stop, split='n'):
-	# 'sentences': Split when a start codon follows a stop codon
-	if split == 'n':
-		def split(a, b):
+	started = False
+
+	def splitter(a, b):
+		if split == 'n':
+			# sentences: Split when a start codon follows a stop codon
 			return (a in stop and b in start)
-		return split
-	# 'words': Split on start or stop codons
-	elif split == 'r':
-		def split(a, b):
+
+		elif split == 'r':
+			# words: Split on start or stop codons
 			return (a in stop or b in start) and a != b
-		return split
-	# 'frames': Split by open reading frames
-	elif split == 'f':
-		started = False
-		def split(_, b):
+
+		elif split == 'f':
+			# frames: Split by open reading frames
 			nonlocal started
 			if not started and b in start:
 				started = True
@@ -29,10 +28,11 @@ def splitter_for(start, stop, split='n'):
 				return True
 			else:
 				return False
-		return split
-	else:
-		err_msg = 'Unknown split type'
-		raise ValueError(err_msg)
+		else:
+			err_msg = 'Unknown split type'
+			raise ValueError(err_msg)
+
+	return splitter
 
 
 def split_aminos(aminos, start='M', stop='*', split='f'):
