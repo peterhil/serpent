@@ -18,7 +18,12 @@ HALF_BLOCK = '\u2580'
 
 
 def pixels_to_blocks(
-	pixels: Sequence, width: int, *, mode: str='RGB', repeat=1
+	pixels: Sequence,
+	width: int,
+	*,
+	height: int | None=None,
+	mode: str='RGB',
+	repeat=1,
 ) -> Iterator[str]:
 	"""Convert a sequence of RGB pixels to Unicode block element graphics."""
 	if mode == 'RGB':
@@ -27,6 +32,9 @@ def pixels_to_blocks(
 		rgb = pixels
 	lines = mit.chunked(rgb, width * 2)  # double the line width
 	zero_pixel = (0, 0, 0) if mode in COLOUR_MODES else 0
+
+	if height is not None:
+		lines = mit.take(height, lines)
 
 	for line in lines:
 		top_and_bottom = mit.chunked(line, width)  # split in half
@@ -44,8 +52,15 @@ def pixels_to_blocks(
 		yield blocks + ansi.RESET
 
 
+# ruff: noqa: PLR0913
 def pixels_to_verbose_blocks(
-	pixels: Sequence, data: str, width: int, *, mode: str='RGB', repeat=1
+	pixels: Sequence,
+	data: str,
+	width: int,
+	*,
+	height: int | None=None,
+	mode: str='RGB',
+	repeat=1,
 ) -> Iterator[str]:
 	columns = width // repeat
 	blocks = pixels_to_blocks(pixels, columns, mode=mode, repeat=repeat)
@@ -54,5 +69,8 @@ def pixels_to_verbose_blocks(
 
 	text = (ansi.dim_text(str_join(line)) for line in lines)
 	zipped = itr.zip_longest(text, blocks, text, fillvalue='~')
+
+	if height is not None:
+		zipped = mit.take(height // 3, zipped)
 
 	yield from (str_join(lines, '\n') for lines in zipped)
