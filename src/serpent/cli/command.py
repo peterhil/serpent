@@ -395,7 +395,7 @@ def flow(
 def zigzag(
 	*inputs,
 	width=80,
-	mode='RGB', fmt=None,
+	mode='P', fmt=None,
 	amino=False, degen=False, table=1,
 	verbose=False,
 ):
@@ -403,8 +403,9 @@ def zigzag(
 	term = blessed.Terminal()
 	state = ZigzagState(
 		inputs = [*map(str, check_paths(inputs))],
-		width=width,
-		verbose=verbose,
+		width = width,
+		height = term.height - 1,
+		verbose = verbose,
 	)
 
 	with term.cbreak(), term.hidden_cursor(), term.fullscreen():
