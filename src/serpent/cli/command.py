@@ -418,7 +418,6 @@ def zigzag(
 					amino=amino, degen=degen, table=table,
 				)
 				yield zigzag_status(term, state)
-				sys.stdout.flush()
 				state.dirty = False
 
 			if key := term.inkey(timeout=None):
