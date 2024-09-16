@@ -7,6 +7,7 @@ import itertools as itr
 import more_itertools as mit
 
 from serpent import dna
+from serpent.cli.encode import encode_data
 from serpent.visual.bitmap import decoded_to_pixels
 from serpent.visual.block_elements import pixels_to_blocks, pixels_to_verbose_blocks
 
@@ -30,22 +31,12 @@ def verbose_flow_blocks(
 	amino=False, degen=False, table=1,
 	height: int | None=None,
 ):
-	(data1, data2) = itr.tee(data, 2)
-
 	if not fmt:
 		fmt = 'amino' if amino else 'codon'
 
-	if fmt in ['a', 'amino']:
-		text = dna.to_amino(data1, amino, table, degen)
-	elif fmt in ['c', 'codon']:
-		if not amino:
-			text = data1
-		else:
-			decoded = dna.decode(data1, amino, table, degen)
-			text = mit.flatten(dna.encode(decoded, fmt=fmt, degen=degen))
-	else:
-		err_msg = 'Unknown format'
-		raise NotImplementedError(err_msg)
+	(data1, data2) = itr.tee(data, 2)
+
+	text = mit.flatten(encode_data(data1, fmt, amino, table, degen))
 
 	decoded = dna.decode(data2, amino, table, degen)
 	pixels = decoded_to_pixels(decoded, mode, amino, degen)
