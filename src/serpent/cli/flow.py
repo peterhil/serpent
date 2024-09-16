@@ -49,7 +49,6 @@ def verbose_flow_blocks(
 
 	decoded = dna.decode(data2, amino, table, degen)
 	pixels = decoded_to_pixels(decoded, mode, amino, degen)
-	# TODO Use three rows per codon for 1.5 times more data per screen?
 	repeat = 3 * len(mode) if fmt in ['c', 'codon'] else len(mode)
 
 	# TODO Decode data later after splitting to lines and
