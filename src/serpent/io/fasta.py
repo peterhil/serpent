@@ -263,9 +263,8 @@ def descriptions_and_data(sequence):
 	"""Partition a sequence into data and descriptions."""
 	[tokens, descriptions] = mit.partition(lambda t: t.is_description, sequence)
 
-	descriptions = [desc.value for desc in descriptions]
-	# FIXME Read data iteratively by removing str_join (which breaks things)
-	data = str_join(token.data for token in tokens if token.data)
+	descriptions = (desc.value for desc in descriptions)
+	data = mit.flatten(token.data for token in tokens if token.data)
 
 	yield from (descriptions, data)
 

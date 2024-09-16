@@ -648,11 +648,12 @@ def tide(
 		for sequence in seqs:
 			[descriptions, data] = descriptions_and_data(sequence)
 			yield from descriptions
+			(data1, data2, data3) = itr.tee(data, 3)
 
 			# Reference
 			alpha = '33'
 			tides = tide_sequence(
-				data, symbols, ref, step=refstep,
+				data1, symbols, ref, step=refstep,
 				cumulative=cumulative,
 				slopes=slopes,
 			)
@@ -663,7 +664,7 @@ def tide(
 			# Actual
 			alpha = 'ff'
 			tides = tide_sequence(
-				data, symbols, seql, step=step,
+				data2, symbols, seql, step=step,
 				cumulative=cumulative,
 				slopes=slopes,
 			)
@@ -674,7 +675,7 @@ def tide(
 			# EWMA
 			alpha = '77'
 			tides = tide_sequence(
-				data, symbols, ref, step=1,
+				data3, symbols, ref, step=1,
 				cumulative=cumulative,
 				slopes=slopes,
 			)
@@ -762,6 +763,7 @@ def walk(
 		yield from descriptions
 
 		color = DEFAULT_COLOR if index == 0 else None
+		data = str_join(data)  # TODO Use iterators?
 		seql = seql if length else max([1, len(data) // seql])
 
 		if test:
