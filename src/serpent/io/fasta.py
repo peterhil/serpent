@@ -96,6 +96,16 @@ def find_fasta_sequences(fi: FileInput, num=False, debug=DEBUG) -> Iterator[str]
 			yield line.rstrip()
 
 
+def is_data(token: FastaToken) -> bool:
+	"""Token contains sequence data."""
+	return token.type in DATA_TOKENS
+
+
+def is_description(token: FastaToken) -> bool:
+	"""Token is a description."""
+	return token.type == 'DESCRIPTION'
+
+
 class ParseError(Exception):
 	pass
 
@@ -108,16 +118,6 @@ class FastaToken(NamedTuple):
 	column: int
 	data: str = ''
 	value: str = ''
-
-	@property
-	def is_data(self):
-		"""True if the token contains sequence data."""
-		return self.type in DATA_TOKENS
-
-	@property
-	def is_description(self):
-		"""True if the token is a description."""
-		return self.type == 'DESCRIPTION'
 
 
 def re_token(group):
@@ -208,11 +208,11 @@ def read(filename: PathLike, amino: bool = False) -> str:
 	with Path(filename).open(encoding="UTF-8") as file:
 		while (line := file.readline().rstrip()) and description_count < max_count:
 			for token in tokenize(line, amino):
-				if token.type == "DESCRIPTION":
+				if is_description(token):
 					description_count += 1
 				if description_count == max_count:
 					break
-				if token.is_data:
+				if is_data(token):
 					data.append(token.data)
 
 	# TODO Create a TUI or add CLI option to select sequences or
@@ -235,7 +235,7 @@ def read_tokens(filename: PathLike, amino: bool = False) -> Iterable[FastaToken]
 		while (line := file.readline()):
 			lineno += 1
 			for token in tokenize(line, amino, lineno):
-				if token.type == "DESCRIPTION" or token.is_data:
+				if is_description(token) or is_data(token):
 					yield token
 				else:
 					print('Extra:', token)
@@ -244,7 +244,7 @@ def read_tokens(filename: PathLike, amino: bool = False) -> Iterable[FastaToken]
 def read_sequences(filename: PathLike, amino: bool=False) -> Iterable[list[FastaToken]]:
 	"""Read sequences from a FASTA file."""
 	tokens = read_tokens(filename, amino)
-	sequences = mit.split_before(tokens, lambda token: token.is_description)
+	sequences = mit.split_before(tokens, is_description)
 
 	yield from sequences
 
@@ -261,7 +261,7 @@ def regex_no_match(reg, descriptions):
 
 def descriptions_and_data(sequence):
 	"""Partition a sequence into data and descriptions."""
-	[tokens, descriptions] = mit.partition(lambda t: t.is_description, sequence)
+	[tokens, descriptions] = mit.partition(is_description, sequence)
 
 	descriptions = (desc.value for desc in descriptions)
 	data = mit.flatten(token.data for token in tokens if token.data)
