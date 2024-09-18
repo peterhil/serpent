@@ -8,10 +8,10 @@ from matplotlib import interactive
 from serpent import *
 from serpent.convert.amino import *
 from serpent.convert.codon import *
+from serpent.convert.complement import *
 from serpent.convert.degenerate import *
 from serpent.convert.digits import *
-
-# from serpent.convert.dnt import *
+from serpent.convert.dnt import *
 from serpent.convert.format import *
 from serpent.convert.genetic_code import *
 from serpent.convert.nucleotide import *
