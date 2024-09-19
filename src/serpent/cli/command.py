@@ -13,7 +13,6 @@ from pathlib import Path
 import argh
 import blessed
 import matplotlib.pyplot as plt
-import more_itertools as mit
 import numpy as np
 from argh.decorators import aliases, arg, wrap_errors
 from PIL import Image
@@ -29,6 +28,7 @@ from serpent.cli.pulse import (
 	pulse_text,
 )
 from serpent.cli.quasar import dna_quasar_seq
+from serpent.cli.strands import to_strands
 from serpent.cli.tide import plot_tides, tide_sequence, tide_total
 from serpent.cli.walk import walk_sequence
 from serpent.cli.zigzag import ZigzagState, zigzag_page, zigzag_status
@@ -366,15 +366,7 @@ def strands(
 		for sequence in seqs:
 			[descriptions, data] = descriptions_and_data(sequence)
 			yield from descriptions
-			# TODO Extract into function
-			strands = mit.stagger(data, offsets=(0, 1, 2), fillvalue=' ', longest=True)
-			lines = mit.chunked(strands, width * 3)
-			for line in lines:
-				yield from (
-					str_join(dna.to_amino(strand, table=table, degen=degen))
-					for strand in mit.transpose(line)
-				)
-				yield '-' * width
+			yield from to_strands(data, width, table=table, degen=degen)
 
 
 @arg('--amino',   '-a', help='Amino acid input')
