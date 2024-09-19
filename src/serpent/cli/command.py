@@ -13,6 +13,7 @@ from pathlib import Path
 import argh
 import blessed
 import matplotlib.pyplot as plt
+import more_itertools as mit
 import numpy as np
 from argh.decorators import aliases, arg, wrap_errors
 from PIL import Image
@@ -340,6 +341,40 @@ def split(
 			encoded = encode_data(data, fmt, amino, table, degen)
 			regions = split_encoded(encoded, fmt, table, split=split)
 			yield from format_split(regions, width, split=split)
+
+
+@arg('--amino', '-a', help='Amino acid input')
+@arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
+@arg('--degen', '-g', help='Degenerate data')
+@arg('--width', '-w', help='Line width', type=int)
+@wrap_errors(wrapped_errors)
+def strands(
+	*inputs,
+	width=64,
+	amino=False, degen=False, table=1,
+):
+	"""Display different strands of nucletide sequences."""
+	amino_opt = amino
+
+	for filename in check_paths(inputs):
+		amino = auto_select_amino(filename, amino_opt)
+		if amino:
+			err_msg = 'This command only works for nucleotide data.'
+			raise NotImplementedError(err_msg)
+		seqs = read_sequences(filename, amino)
+
+		for sequence in seqs:
+			[descriptions, data] = descriptions_and_data(sequence)
+			yield from descriptions
+			# TODO Extract into function
+			strands = mit.stagger(data, offsets=(0, 1, 2), fillvalue=' ', longest=True)
+			lines = mit.chunked(strands, width * 3)
+			for line in lines:
+				yield from (
+					str_join(dna.to_amino(strand, table=table, degen=degen))
+					for strand in mit.transpose(line)
+				)
+				yield '-' * width
 
 
 @arg('--amino',   '-a', help='Amino acid input')
@@ -873,6 +908,7 @@ def main():
 		quasar,
 		seq,
 		split,
+		strands,
 		tide,
 		vectors,
 		walk,
