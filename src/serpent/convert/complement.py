@@ -22,6 +22,6 @@ complement_dnt = OrderedDict({
 })
 
 
-def complement(seq):
+def to_complement(seq):
 	"""Complement a nucleotide sequence."""
 	return (complement_dnt.get(dnt) for dnt in seq)

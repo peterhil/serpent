@@ -33,6 +33,7 @@ from serpent.cli.tide import plot_tides, tide_sequence, tide_total
 from serpent.cli.walk import walk_sequence
 from serpent.cli.zigzag import ZigzagState, zigzag_page, zigzag_status
 from serpent.convert.amino import aa_tables, aminos_for_table
+from serpent.convert.complement import to_complement
 from serpent.convert.dnt import is_degenerate
 from serpent.convert.split import split_aminos, split_encoded
 from serpent.fun import second, sort_values, str_join
@@ -346,11 +347,13 @@ def split(
 @arg('--amino', '-a', help='Amino acid input')
 @arg('--table', '-t', help='Amino acid translation table', choices=aa_tables)
 @arg('--degen', '-g', help='Degenerate data')
+@arg('--comp',  '-c', help='Include complementary strands')
 @arg('--width', '-w', help='Line width', type=int)
 @wrap_errors(wrapped_errors)
 def strands(
 	*inputs,
 	width=64,
+	comp=False,
 	amino=False, degen=False, table=1,
 ):
 	"""Display different strands of nucletide sequences."""
@@ -366,7 +369,15 @@ def strands(
 		for sequence in seqs:
 			[descriptions, data] = descriptions_and_data(sequence)
 			yield from descriptions
-			yield from to_strands(data, width, table=table, degen=degen)
+
+			if not comp:
+				yield from to_strands(data, width, table=table, degen=degen)
+			else:
+				(fwd, bck) = itr.tee(data, 2)
+				bck = reversed(str_join(to_complement(bck)))
+				yield from to_strands(fwd, width, table=table, degen=degen)
+				yield '=' * width
+				yield from to_strands(bck, width, table=table, degen=degen)
 
 
 @arg('--amino',   '-a', help='Amino acid input')
