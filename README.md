@@ -42,7 +42,7 @@ See `serpent -h` for all subcommands and `serpent <subcommand> -h` for options!
 ## Sample data
 
 Get some sample data from NCBI datasets – I recommend starting with virus, bacteria or
-archea genomic data as they are smaller than plants or animals:
+archea genomic data as they are smaller than plants or animals.
 
 * [National Center for Biotechnology Information](https://www.ncbi.nlm.nih.gov/)
 * [Datasets - NCBI - NLM](https://www.ncbi.nlm.nih.gov/datasets/)
@@ -50,3 +50,5 @@ archea genomic data as they are smaller than plants or animals:
 * [Home - Nucleotide - NCBI](https://www.ncbi.nlm.nih.gov/nuccore/)
 * [Home - Protein - NCBI](https://www.ncbi.nlm.nih.gov/protein)
 * [Genome - NCBI - NLM](https://www.ncbi.nlm.nih.gov/datasets/genome/)
+
+A [SARS-CoV-2 genome](https://www.ncbi.nlm.nih.gov/nuccore/MN988713.1?report=fasta) is only 29 kb for example!
