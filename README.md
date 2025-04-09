@@ -6,6 +6,9 @@
 Serpent is an exploration into DNA and RNA sequences, nucleotide
 bases, codons, amino acids and genome data.
 
+My motivation to start this project was that I have wanted to explore DNA data in order to to learn and maybe
+invent some compression algorithms for DNA data for about two decades.
+
 
 ## Tools provided
 
@@ -36,7 +39,14 @@ bases, codons, amino acids and genome data.
 See `serpent -h` for all subcommands and `serpent <subcommand> -h` for options!
 
 
-## Motivation
+## Sample data
 
-I have wanted to explore DNA data in order to to learn and maybe
-invent some compression algorithms for DNA data for about two decades.
+Get some sample data from NCBI datasets – I recommend starting with virus, bacteria or
+archea genomic data as they are smaller than plants or animals:
+
+* [National Center for Biotechnology Information](https://www.ncbi.nlm.nih.gov/)
+* [Datasets - NCBI - NLM](https://www.ncbi.nlm.nih.gov/datasets/)
+* [RefSeq: NCBI Reference Sequence Database](https://www.ncbi.nlm.nih.gov/refseq/)
+* [Home - Nucleotide - NCBI](https://www.ncbi.nlm.nih.gov/nuccore/)
+* [Home - Protein - NCBI](https://www.ncbi.nlm.nih.gov/protein)
+* [Genome - NCBI - NLM](https://www.ncbi.nlm.nih.gov/datasets/genome/)
