@@ -10,6 +10,11 @@ My motivation to start this project was that I have wanted to explore DNA data i
 invent some compression algorithms for DNA data for about two decades.
 
 
+## Install
+
+Install serpent with `pip install serpent`, or develop with [pdm](https://pdm.fming.dev/).
+
+
 ## Tools provided
 
 ### Work with FASTA files and sequences
