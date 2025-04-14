@@ -85,7 +85,7 @@ def degen_to_amino(degen: str, table: int=1) -> str:
 	items = t.items(degen[:2])
 
 	matching = [amino for dg, amino in items if dnt_include(degen[2], dg[2])]
-	amino = matching[0] if len(matching) else 'X'
+	amino = matching[0] if matching else 'X'
 
 	return amino
 
