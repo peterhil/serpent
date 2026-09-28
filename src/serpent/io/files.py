@@ -92,7 +92,6 @@ def write_iterable(lines, outfile):
 
 def openfile(filename):
 	"""Open stdin or a file to be used in a context handler."""
-	# ruff: noqa: SIM115
 	return stdin if filename == '-' else Path(filename).open("r", encoding="UTF-8")
 
 
