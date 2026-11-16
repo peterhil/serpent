@@ -1,5 +1,5 @@
 """Lab for interactive work."""
-# ruff: noqa: F401, F403
+# ruff: noqa: F403
 
 from __future__ import annotations
 
